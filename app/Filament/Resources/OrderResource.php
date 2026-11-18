@@ -1,0 +1,409 @@
+<?php
+
+namespace App\Filament\Resources;
+
+use App\Filament\Resources\OrderResource\Pages;
+use App\Filament\Resources\OrderResource\RelationManagers\ItemsRelationManager;
+use App\Models\Blacklist;
+use App\Models\Order;
+use App\Models\Setting;
+use App\Services\BahokService;
+use App\Services\PathaoService;
+use App\Services\SteadfastService;
+use Filament\Forms;
+use Filament\Forms\Form;
+use Filament\Notifications\Notification;
+use Filament\Resources\Resource;
+use Filament\Tables;
+use Filament\Tables\Table;
+
+class OrderResource extends Resource
+{
+    protected static ?string $model = Order::class;
+
+    protected static ?string $navigationIcon = 'heroicon-o-shopping-cart';
+
+    protected static ?string $navigationLabel = 'Order';
+
+    protected static ?string $navigationGroup = null;
+
+    protected static ?int $navigationSort = 30;
+
+    /**
+     * Live-updates the (disabled, display-only) total_amount field in the form
+     * as delivery_charge/discount change, using the record's existing sub_total.
+     * The actual persisted value is recomputed again in EditOrder::mutateFormDataBeforeSave().
+     */
+    protected static function recalculateTotalPreview(callable $set, callable $get, ?Order $record): void
+    {
+        $subTotal = (float) ($record?->sub_total ?? 0);
+        $delivery = (float) ($get('delivery_charge') ?? 0);
+        $discount = (float) ($get('discount') ?? 0);
+
+        $set('total_amount', max(0, $subTotal + $delivery - $discount));
+    }
+
+    public static function form(Form $form): Form
+    {
+        return $form->schema([
+            Forms\Components\Placeholder::make('fraud_alert')
+                ->label('')
+                ->content(function (?Order $record) {
+                    if (!$record || !Setting::get('fraud_alert_high_return', true)) {
+                        return null;
+                    }
+
+                    $entry = Blacklist::where('phone_number', $record->customer_phone)->first();
+
+                    if (!$entry || $entry->return_count < 1) {
+                        return null;
+                    }
+
+                    return "⚠️ সতর্কতা: এই কাস্টমারের ({$entry->phone_number}) পূর্ববর্তী রিটার্ন হিস্ট্রি আছে — {$entry->return_count} বার। কারণ: " . ($entry->reason ?? 'উল্লেখ নেই');
+                })
+                ->visible(fn (?Order $record) => $record && Blacklist::where('phone_number', $record->customer_phone)->where('return_count', '>=', 1)->exists())
+                ->extraAttributes(['class' => 'text-danger-600 font-semibold']),
+
+            // Live own-store delivery-success rate for this customer — computed fresh
+            // from Order history every time the edit page opens (cheap, indexed query,
+            // see customer_phone index in the performance migration). The deeper
+            // network-wide Steadfast check lives on the separate Fraud Checker page
+            // (Settings > Fraud Checker) rather than here, since that's an external
+            // API call best kept on-demand instead of on every single order page load.
+            Forms\Components\Placeholder::make('fraud_history')
+                ->label('')
+                ->content(function (?Order $record) {
+                    if (!$record) {
+                        return null;
+                    }
+
+                    $orders = Order::where('customer_phone', $record->customer_phone)
+                        ->where('id', '!=', $record->id)
+                        ->get();
+
+                    $total = $orders->count();
+
+                    if ($total === 0) {
+                        return 'ℹ️ এই নম্বর থেকে এটাই প্রথম অর্ডার।';
+                    }
+
+                    $completed = $orders->where('status', 'completed')->count();
+                    $cancelled = $orders->where('status', 'cancelled')->count();
+                    $finished = $completed + $cancelled;
+                    $rate = $finished > 0 ? (int) round($completed / $finished * 100) : null;
+
+                    $rateText = $rate !== null ? "{$rate}% সাকসেস রেট" : 'এখনো কোনো অর্ডার সম্পন্ন/ক্যান্সেল হয়নি';
+
+                    return "📊 এই নম্বরের আগের {$total}টা অর্ডার — {$completed}টা ডেলিভারি সম্পন্ন, {$cancelled}টা ক্যান্সেল ({$rateText})। সম্পূর্ণ নেটওয়ার্ক-ওয়াইড ফ্রড চেকের জন্য Settings > Fraud Checker ব্যবহার করুন।";
+                })
+                ->visible(fn (?Order $record) => $record !== null)
+                ->extraAttributes(['class' => 'text-gray-600 text-sm']),
+
+            Forms\Components\Section::make('Customer Info')->schema([
+                Forms\Components\TextInput::make('order_number')->disabled(),
+                Forms\Components\TextInput::make('customer_name')->required(),
+                Forms\Components\TextInput::make('customer_phone')->required(),
+                Forms\Components\Textarea::make('customer_address')->required()->columnSpanFull(),
+                Forms\Components\Textarea::make('customer_note')->columnSpanFull(),
+                Forms\Components\TextInput::make('customer_ip')->label('Customer IP')->disabled()->dehydrated(false),
+                Forms\Components\TextInput::make('ip_location')->label('IP লোকেশন')->disabled()->dehydrated(false)
+                    ->helperText(fn (?Order $record) => $record?->ip_country_code && $record->ip_country_code !== 'BD' ? '⚠ বাংলাদেশের বাইরের IP — সতর্ক থাকুন' : null),
+            ])->columns(2),
+
+            Forms\Components\Section::make('Order Status')->schema([
+                Forms\Components\Select::make('status')
+                    ->options([
+                        'pending' => 'Pending',
+                        'processing' => 'Processing',
+                        'on_hold' => 'On Hold',
+                        'completed' => 'Completed',
+                        'cancelled' => 'Cancelled',
+                    ])
+                    ->required(),
+
+                Forms\Components\TextInput::make('sub_total')
+                    ->numeric()->prefix('৳')
+                    ->disabled()
+                    ->dehydrated(false)
+                    ->helperText('অর্ডার আইটেম থেকে অটো-ক্যালকুলেট হয়'),
+
+                Forms\Components\TextInput::make('delivery_charge')
+                    ->numeric()->prefix('৳')
+                    ->required()
+                    ->live()
+                    ->afterStateUpdated(fn ($state, callable $set, callable $get, ?Order $record) =>
+                        static::recalculateTotalPreview($set, $get, $record)
+                    ),
+
+                Forms\Components\TextInput::make('discount')
+                    ->label('ডিসকাউন্ট')
+                    ->numeric()->prefix('৳')
+                    ->default(0)
+                    ->live()
+                    ->afterStateUpdated(fn ($state, callable $set, callable $get, ?Order $record) =>
+                        static::recalculateTotalPreview($set, $get, $record)
+                    ),
+
+                Forms\Components\TextInput::make('total_amount')
+                    ->numeric()->prefix('৳')
+                    ->disabled()
+                    ->dehydrated(false)
+                    ->helperText('Sub-Total + Delivery − Discount'),
+            ])->columns(3),
+
+            // bKash/Nagad/Rocket ম্যানুয়াল পেমেন্ট — শুধু মোবাইল পেমেন্টের অর্ডারে দেখায়
+            Forms\Components\Section::make('Payment Info')
+                ->schema([
+                    Forms\Components\Placeholder::make('payment_method_label')
+                        ->label('পেমেন্ট মেথড')
+                        ->content(fn (?Order $record) => $record?->paymentLabel() ?? '—'),
+                    Forms\Components\TextInput::make('payment_trx_id')->label('TrxID')->disabled()->dehydrated(false),
+                    Forms\Components\TextInput::make('payment_sender_number')->label('প্রেরকের নম্বর')->disabled()->dehydrated(false),
+                    Forms\Components\Toggle::make('payment_verified')
+                        ->label('পেমেন্ট যাচাই হয়েছে')
+                        ->inline(false)
+                        ->helperText('bKash/Nagad/Rocket অ্যাপে TrxID ও টাকার পরিমাণ মিলিয়ে অন করুন। যাচাইয়ের আগে কুরিয়ারে পাঠাবেন না।'),
+                ])
+                ->columns(4)
+                ->visible(fn (?Order $record) => $record?->isMobilePayment() ?? false),
+
+            Forms\Components\Section::make('Courier Info')
+                ->schema([
+                    Forms\Components\Select::make('courier_name')
+                        ->label('কুরিয়ার সিলেক্ট করুন')
+                        ->options([
+                            'steadfast' => 'Steadfast',
+                            'pathao' => 'Pathao',
+                            'bahok' => 'Bahok',
+                        ])
+                        ->placeholder('কোনোটি নয়')
+                        ->live(),
+
+                    Forms\Components\TextInput::make('consignment_id')->label('Consignment ID')->disabled(),
+                    Forms\Components\TextInput::make('tracking_code')->label('Tracking Code')->disabled(),
+                    Forms\Components\TextInput::make('courier_status')->label('Courier Status')->disabled(),
+                ])
+                ->columns(4),
+        ]);
+    }
+
+    public static function table(Table $table): Table
+    {
+        return $table
+        // আইটেম/প্রোডাক্ট ছবি eager-load (N+1 এড়াতে) + এই নম্বরের আগের অর্ডার সংখ্যা ("New Customer" ব্যাজের জন্য)
+        ->modifyQueryUsing(fn ($query) => $query
+            ->with('items.product')
+            ->addSelect([
+                'orders.*',
+                'prior_orders' => \App\Models\Order::query()
+                    ->from('orders as o2')
+                    ->selectRaw('count(*)')
+                    ->whereColumn('o2.customer_phone', 'orders.customer_phone')
+                    ->whereColumn('o2.id', '<', 'orders.id'),
+            ])
+        )
+        ->columns([
+            Tables\Columns\ViewColumn::make('order_info')
+                ->label('Order')
+                ->view('filament.tables.columns.order-info')
+                ->searchable(['order_number'])
+                ->sortable(['created_at']),
+            Tables\Columns\ViewColumn::make('customer_info')
+                ->label('Customer')
+                ->view('filament.tables.columns.customer-info')
+                ->searchable(['customer_name', 'customer_phone', 'customer_address', 'customer_ip', 'payment_trx_id']),
+            Tables\Columns\ViewColumn::make('order_items')
+                ->label('Products')
+                ->view('filament.tables.columns.order-items'),
+            Tables\Columns\TextColumn::make('total_amount')->money('BDT')->sortable(),
+            Tables\Columns\TextColumn::make('payment_method')
+                ->label('Payment')
+                ->badge()
+                ->formatStateUsing(fn ($state, Order $record) => $record->isMobilePayment()
+                    ? $record->paymentLabel() . ($record->payment_verified ? ' ✓' : ' ⏳')
+                    : 'COD')
+                ->color(fn ($state, Order $record) => ! $record->isMobilePayment()
+                    ? 'gray'
+                    : ($record->payment_verified ? 'success' : 'warning'))
+                ->description(fn (Order $record) => $record->isMobilePayment() ? $record->payment_trx_id : null),
+            // টেবিল থেকেই সরাসরি স্ট্যাটাস বদলানো যায় — সিলেক্ট করলেই সেভ হয়ে যায়
+            Tables\Columns\SelectColumn::make('status')
+                ->label('Status')
+                ->options([
+                    'pending' => 'Pending',
+                    'processing' => 'Processing',
+                    'on_hold' => 'On Hold',
+                    'completed' => 'Completed',
+                    'cancelled' => 'Cancelled',
+                ])
+                ->selectablePlaceholder(false)
+                ->afterStateUpdated(fn () => Notification::make()->title('স্ট্যাটাস আপডেট হয়েছে')->success()->send()),
+            Tables\Columns\BadgeColumn::make('courier_name')
+                ->label('Courier')
+                ->colors([
+                    'gray' => fn ($state) => blank($state),
+                    'info' => 'steadfast',
+                    'warning' => 'pathao',
+                    'success' => 'bahok',
+                ])
+                ->formatStateUsing(fn ($state) => $state ? ucfirst($state) : '—'),
+            Tables\Columns\TextColumn::make('courier_status')
+                ->label('Courier Status')
+                ->badge()
+                ->placeholder('—'),
+        ])
+        ->defaultSort('created_at', 'desc')
+        ->filters([
+            Tables\Filters\SelectFilter::make('status')
+                ->options([
+                    'pending' => 'Pending',
+                    'processing' => 'Processing',
+                    'on_hold' => 'On Hold',
+                    'completed' => 'Completed',
+                    'cancelled' => 'Cancelled',
+                ]),
+            Tables\Filters\SelectFilter::make('courier_name')
+                ->label('Courier')
+                ->options([
+                    'steadfast' => 'Steadfast',
+                    'pathao' => 'Pathao',
+                    'bahok' => 'Bahok',
+                ]),
+        ])
+        ->actions([
+            Tables\Actions\Action::make('verify_payment')
+                ->label('পেমেন্ট যাচাই হয়েছে')
+                ->icon('heroicon-o-check-badge')
+                ->color('success')
+                ->visible(fn (Order $record) => $record->isMobilePayment() && ! $record->payment_verified)
+                ->requiresConfirmation()
+                ->modalHeading('পেমেন্ট যাচাই করুন')
+                ->modalDescription(fn (Order $record) => "{$record->paymentLabel()} — TrxID: {$record->payment_trx_id}, প্রেরক: {$record->payment_sender_number}, পরিমাণ: ৳" . number_format((float) $record->total_amount, 0) . '। অ্যাপে মিলিয়ে দেখেছেন?')
+                ->action(function (Order $record) {
+                    $record->update(['payment_verified' => true]);
+
+                    Notification::make()->title('পেমেন্ট যাচাই হয়েছে')->success()->send();
+                }),
+
+            Tables\Actions\Action::make('send_steadfast')
+                ->label('Steadfast এ পাঠান')
+                ->icon('heroicon-o-truck')
+                ->color('info')
+                ->visible(fn (Order $record) => blank($record->consignment_id))
+                ->requiresConfirmation()
+                ->action(function (Order $record) {
+                    $result = app(SteadfastService::class)->createOrder($record);
+
+                    Notification::make()
+                        ->title($result['message'])
+                        ->color($result['success'] ? 'success' : 'danger')
+                        ->send();
+                }),
+
+            Tables\Actions\Action::make('send_pathao')
+                ->label('Pathao তে পাঠান')
+                ->icon('heroicon-o-paper-airplane')
+                ->color('warning')
+                ->visible(fn (Order $record) => blank($record->courier_order_id))
+                ->requiresConfirmation()
+                ->action(function (Order $record) {
+                    $result = app(PathaoService::class)->createOrder($record);
+
+                    Notification::make()
+                        ->title($result['message'])
+                        ->color($result['success'] ? 'success' : 'danger')
+                        ->send();
+                }),
+
+            Tables\Actions\Action::make('send_bahok')
+                ->label('Bahok এ পাঠান')
+                ->icon('heroicon-o-truck')
+                ->color('success')
+                ->visible(fn (Order $record) => blank($record->courier_order_id))
+                ->requiresConfirmation()
+                ->action(function (Order $record) {
+                    $result = app(BahokService::class)->createOrder($record);
+
+                    Notification::make()
+                        ->title($result['message'])
+                        ->color($result['success'] ? 'success' : 'danger')
+                        ->send();
+                }),
+
+            Tables\Actions\Action::make('check_status')
+                ->label('স্ট্যাটাস চেক করুন')
+                ->icon('heroicon-o-arrow-path')
+                ->color('gray')
+                ->visible(fn (Order $record) => filled($record->courier_name))
+                ->action(function (Order $record) {
+                    $service = match ($record->courier_name) {
+                        'steadfast' => app(SteadfastService::class),
+                        'pathao' => app(PathaoService::class),
+                        'bahok' => app(BahokService::class),
+                        default => app(SteadfastService::class),
+                    };
+
+                    $result = $service->checkStatus($record);
+
+                    Notification::make()
+                        ->title('বর্তমান স্ট্যাটাস: ' . ($result['status'] ?? 'পাওয়া যায়নি'))
+                        ->color($result['success'] ? 'success' : 'danger')
+                        ->send();
+                }),
+
+            Tables\Actions\Action::make('view_invoice')
+                ->label('Invoice Print')
+                ->icon('heroicon-o-document-text')
+                ->color('gray')
+                ->url(fn (Order $record) => route('admin.orders.invoice.view', $record))
+                ->openUrlInNewTab(),
+
+            Tables\Actions\Action::make('pos_invoice')
+                ->label('POS Invoice Print')
+                ->icon('heroicon-o-printer')
+                ->color('gray')
+                ->url(fn (Order $record) => route('admin.orders.invoice.pos', $record))
+                ->openUrlInNewTab(),
+
+            Tables\Actions\EditAction::make(),
+            Tables\Actions\DeleteAction::make(),
+        ])
+        ->bulkActions([
+            Tables\Actions\BulkActionGroup::make([
+                Tables\Actions\DeleteBulkAction::make(),
+                Tables\Actions\BulkAction::make('bulk_send_steadfast')
+                    ->label('Steadfast এ পাঠান (Bulk)')
+                    ->icon('heroicon-o-truck')
+                    ->requiresConfirmation()
+                    ->action(function ($records) {
+                        $service = app(SteadfastService::class);
+                        foreach ($records as $record) {
+                            if (blank($record->consignment_id)) {
+                                $service->createOrder($record);
+                            }
+                        }
+
+                        Notification::make()
+                            ->title('সিলেক্ট করা অর্ডারগুলো Steadfast এ পাঠানো হয়েছে।')
+                            ->success()
+                            ->send();
+                    }),
+            ]),
+        ]);
+    }
+
+    public static function getRelations(): array
+    {
+        return [
+            ItemsRelationManager::class,
+        ];
+    }
+
+    public static function getPages(): array
+    {
+        return [
+            'index' => Pages\ListOrders::route('/'),
+            'edit' => Pages\EditOrder::route('/{record}/edit'),
+        ];
+    }
+}

@@ -1,0 +1,14 @@
+---
+deployment:
+  tasks:
+    # rafamarts.com — cPanel ইউজার: rafamart, PHP 8.5
+    - export WEB=/home/rafamart/public_html
+    - export APP=$WEB/rafamarts
+    - export PHP=/opt/cpanel/ea-php85/root/usr/bin/php
+    # ১) অ্যাপের কোড → public_html/rafamarts (.env, storage, vendor, public বাদে)
+    - /bin/rsync -a --exclude='.git' --exclude='/public' --exclude='/.env' --exclude='/storage' --exclude='/vendor' --exclude='/.cpanel.yml' --exclude='/DEPLOY.md' ./ $APP/
+    # ২) public এর জিনিস (css, js, fonts, images) → public_html (আপনার index.php, .htaccess, storage, robots.txt অক্ষত থাকবে)
+    - /bin/rsync -a --exclude='index.php' --exclude='.htaccess' --exclude='/storage' --exclude='robots.txt' --exclude='*.pdf' ./public/ $WEB/
+    # ৩) ডাটাবেস আপডেট ও ক্যাশ পরিষ্কার
+    - cd $APP && $PHP artisan migrate --force
+    - cd $APP && $PHP artisan optimize:clear
