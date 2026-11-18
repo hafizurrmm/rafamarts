@@ -1,14 +1,25 @@
 ---
 deployment:
   tasks:
-    # rafamarts.com — cPanel ইউজার: rafamart, PHP 8.5
+    # rafamarts.com — cPanel ইউজার: rafamart, PHP 8.5 (এই হোস্টে rsync নেই, তাই cp ব্যবহার)
     - export WEB=/home/rafamart/public_html
     - export APP=$WEB/rafamarts
-    - export PHP=/opt/cpanel/ea-php85/root/usr/bin/php
-    # ১) অ্যাপের কোড → public_html/rafamarts (.env, storage, vendor, public বাদে)
-    - /bin/rsync -a --exclude='.git' --exclude='/public' --exclude='/.env' --exclude='/storage' --exclude='/vendor' --exclude='/.cpanel.yml' --exclude='/DEPLOY.md' ./ $APP/
-    # ২) public এর জিনিস (css, js, fonts, images) → public_html (আপনার index.php, .htaccess, storage, robots.txt অক্ষত থাকবে)
-    - /bin/rsync -a --exclude='index.php' --exclude='.htaccess' --exclude='/storage' --exclude='robots.txt' --exclude='*.pdf' ./public/ $WEB/
+    - export PHP=/usr/local/bin/ea-php85
+    # ১) অ্যাপের কোড → public_html/rafamarts (.env, storage, vendor ছোঁয়া হয় না)
+    - /bin/mkdir -p $APP/app $APP/bootstrap $APP/config $APP/database $APP/resources $APP/routes
+    - /bin/cp -a app/. $APP/app/
+    - /bin/cp -a bootstrap/. $APP/bootstrap/
+    - /bin/cp -a config/. $APP/config/
+    - /bin/cp -a database/. $APP/database/
+    - /bin/cp -a resources/. $APP/resources/
+    - /bin/cp -a routes/. $APP/routes/
+    - /bin/cp -a .htaccess $APP/.htaccess
+    # ২) public এর জিনিস → public_html (আপনার index.php, .htaccess, storage, robots.txt অক্ষত থাকবে)
+    - /bin/mkdir -p $WEB/css $WEB/fonts $WEB/images $WEB/js
+    - /bin/cp -a public/css/. $WEB/css/
+    - /bin/cp -a public/fonts/. $WEB/fonts/
+    - /bin/cp -a public/images/. $WEB/images/
+    - /bin/cp -a public/js/. $WEB/js/
     # ৩) ডাটাবেস আপডেট ও ক্যাশ পরিষ্কার
     - cd $APP && $PHP artisan migrate --force
     - cd $APP && $PHP artisan optimize:clear
