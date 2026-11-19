@@ -1,4 +1,5 @@
-# public_html/.htaccess — স্ট্যান্ডার্ড Laravel রিরাইট
+# স্ট্যান্ডার্ড Laravel রিরাইট — public_html/.htaccess ফাইলের নিচে যোগ করুন (ওভাররাইট নয়,
+# cPanel এর লেখা PHP ভার্সনের লাইনগুলো রেখে দিন)
 <IfModule mod_rewrite.c>
     <IfModule mod_negotiation.c>
         Options -MultiViews -Indexes

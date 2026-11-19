@@ -20,7 +20,7 @@
 4. **`.env`**: `APP_DIR/.env.example` কপি করে `.env` নাম দিন। এডিট করুন: `APP_NAME`, `APP_URL` (https সহ), `DB_DATABASE`, `DB_USERNAME`, `DB_PASSWORD`। `APP_KEY` খালি রাখুন।
 5. **`public_html` সাজান**:
    - `APP_DIR/deploy/cpanel/index.php` → `public_html/index.php` কপি করে ভেতরের `APP_DIR` শব্দ আসল ফোল্ডারের নামে বদলান।
-   - `APP_DIR/deploy/cpanel/public.htaccess` → `public_html/.htaccess`।
+   - `APP_DIR/deploy/cpanel/public.htaccess` এর লেখা `public_html/.htaccess` ফাইলের **নিচে যোগ করুন**। ⚠️ ফাইলটা ওভাররাইট করবেন না: cPanel এতে PHP ভার্সনের কনফিগ লিখে রাখে, মুছলে ভুল PHP ভার্সনে চলবে। `.well-known`, `cgi-bin`, `.user.ini`, `php.ini` ও কিছু মুছবেন না।
    - `APP_DIR/public/` এর ভেতরের `css`, `js`, `fonts`, `images`, `favicon.ico`, `robots.txt` → `public_html/` এ কপি।
    - `APP_DIR/deploy/cpanel/app-folder.htaccess` → `APP_DIR/.htaccess` (অ্যাপ ফোল্ডার ব্রাউজার থেকে বন্ধ)।
    - `APP_DIR/deploy/cpanel/storage-public.htaccess` → `APP_DIR/storage/app/public/.htaccess` (ছবি দেখা যাবে, PHP চলবে না)।
