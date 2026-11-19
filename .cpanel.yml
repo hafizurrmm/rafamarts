@@ -1,25 +1,22 @@
 ---
 deployment:
   tasks:
-    # rafamarts.com — cPanel ইউজার: rafamart, PHP 8.5 (এই হোস্টে rsync নেই, তাই cp ব্যবহার)
-    - export WEB=/home/rafamart/public_html
-    - export APP=$WEB/rafamarts
-    - export PHP=/usr/local/bin/ea-php85
-    # ১) অ্যাপের কোড → public_html/rafamarts (.env, storage, vendor ছোঁয়া হয় না)
-    - /bin/mkdir -p $APP/app $APP/bootstrap $APP/config $APP/database $APP/resources $APP/routes
-    - /bin/cp -a app/. $APP/app/
-    - /bin/cp -a bootstrap/. $APP/bootstrap/
-    - /bin/cp -a config/. $APP/config/
-    - /bin/cp -a database/. $APP/database/
-    - /bin/cp -a resources/. $APP/resources/
-    - /bin/cp -a routes/. $APP/routes/
-    - /bin/cp -a .htaccess $APP/.htaccess
-    # ২) public এর জিনিস → public_html (আপনার index.php, .htaccess, storage, robots.txt অক্ষত থাকবে)
-    - /bin/mkdir -p $WEB/css $WEB/fonts $WEB/images $WEB/js
-    - /bin/cp -a public/css/. $WEB/css/
-    - /bin/cp -a public/fonts/. $WEB/fonts/
-    - /bin/cp -a public/images/. $WEB/images/
-    - /bin/cp -a public/js/. $WEB/js/
-    # ৩) ডাটাবেস আপডেট ও ক্যাশ পরিষ্কার
-    - cd $APP && $PHP artisan migrate --force
-    - cd $APP && $PHP artisan optimize:clear
+    # rafamarts.com (cPanel ইউজার: rafamart, PHP 8.5)। এই হোস্টে rsync নেই, তাই cp।
+    # প্রতিটি লাইন স্বয়ংসম্পূর্ণ (সম্পূর্ণ পাথ), cPanel ধাপগুলো আলাদা শেলে চালালেও নিরাপদ।
+    # ১) নিরাপত্তা-পরীক্ষা: লাইভ অ্যাপ ফোল্ডার না পেলে এখানেই থেমে যাবে
+    - /bin/test -d /home/rafamart/public_html/rafamarts/vendor
+    # ২) অ্যাপের কোড → public_html/rafamarts (.env, storage, vendor ছোঁয়া হয় না)
+    - /bin/cp -a app/. /home/rafamart/public_html/rafamarts/app/
+    - /bin/cp -a bootstrap/. /home/rafamart/public_html/rafamarts/bootstrap/
+    - /bin/cp -a config/. /home/rafamart/public_html/rafamarts/config/
+    - /bin/cp -a database/. /home/rafamart/public_html/rafamarts/database/
+    - /bin/cp -a resources/. /home/rafamart/public_html/rafamarts/resources/
+    - /bin/cp -a routes/. /home/rafamart/public_html/rafamarts/routes/
+    # ৩) public এর জিনিস → public_html (আপনার index.php, .htaccess, storage, robots.txt অক্ষত)
+    - /bin/cp -a public/css/. /home/rafamart/public_html/css/
+    - /bin/cp -a public/fonts/. /home/rafamart/public_html/fonts/
+    - /bin/cp -a public/images/. /home/rafamart/public_html/images/
+    - /bin/cp -a public/js/. /home/rafamart/public_html/js/
+    # ৪) ডাটাবেস আপডেট ও ক্যাশ পরিষ্কার
+    - /usr/local/bin/ea-php85 /home/rafamart/public_html/rafamarts/artisan migrate --force
+    - /usr/local/bin/ea-php85 /home/rafamart/public_html/rafamarts/artisan optimize:clear
