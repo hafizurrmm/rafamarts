@@ -47,6 +47,8 @@
     @php
         $primaryColor = \App\Models\Setting::get('primary_color', '#16a34a');
         $secondaryColor = \App\Models\Setting::get('secondary_color', '#0f172a');
+        $bodyBg = \App\Models\Setting::get('body_bg_color', '#f9fafb');
+        if (! preg_match('/^#[0-9a-fA-F]{3,8}$/', (string) $bodyBg)) { $bodyBg = '#f9fafb'; }
         $productImageHeight = \App\Models\Setting::get('product_image_height', '18rem');
         $productTitleSize = \App\Models\Setting::get('product_title_font_size', '0.875rem');
         $productPriceSize = \App\Models\Setting::get('product_price_font_size', '1rem');
@@ -61,6 +63,7 @@
         :root {
             --brand-primary: {{ $primaryColor }};
             --brand-secondary: {{ $secondaryColor }};
+            --body-bg: {{ $bodyBg }};
             --product-image-height: {{ $productImageHeight }};
             --product-title-size: {{ $productTitleSize }};
             --product-price-size: {{ $productPriceSize }};
@@ -69,6 +72,7 @@
             --section-heading-size: {{ $sectionHeadingSize }};
         }
 
+        .site-body { background-color: var(--body-bg) !important; }
         .brand-bg { background-color: var(--brand-primary) !important; }
         .brand-bg-secondary { background-color: var(--brand-secondary) !important; }
         .brand-text { color: var(--brand-primary) !important; }
@@ -92,7 +96,7 @@
     @endif
     @include('partials.facebook-pixel')
 </head>
-<body class="bg-gray-50 text-gray-800">
+<body class="site-body text-gray-800">
 
     @php
         $siteName = \App\Models\Setting::get('site_name', 'ShopBD');

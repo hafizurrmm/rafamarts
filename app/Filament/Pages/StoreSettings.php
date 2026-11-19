@@ -98,6 +98,7 @@ class StoreSettings extends Page
             // Theme & Typography
             'primary_color' => Setting::get('primary_color', '#16a34a'),
             'secondary_color' => Setting::get('secondary_color', '#0f172a'),
+            'body_bg_color' => Setting::get('body_bg_color', '#f9fafb'),
             'product_image_height' => Setting::get('product_image_height', '18rem'),
             'product_title_font_size' => Setting::get('product_title_font_size', '0.875rem'),
             'product_price_font_size' => Setting::get('product_price_font_size', '1rem'),
@@ -331,6 +332,9 @@ class StoreSettings extends Page
                                     ->label('প্রাইমারি কালার (বাটন, দাম, লিংক)'),
                                 Forms\Components\ColorPicker::make('secondary_color')
                                     ->label('সেকেন্ডারি কালার (হেডার/ফুটার ব্যাকগ্রাউন্ড)'),
+                                Forms\Components\ColorPicker::make('body_bg_color')
+                                    ->label('বডি ব্যাকগ্রাউন্ড কালার (পুরো সাইটের পেছনের রঙ)')
+                                    ->helperText('ডিফল্ট হালকা ধূসর (#f9fafb)। সাদা চাইলে #ffffff দিন।'),
                             ])->columns(2),
 
                             Forms\Components\Section::make('প্রোডাক্ট কন্টেন্ট সাইজ (Typography)')
