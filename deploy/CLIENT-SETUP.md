@@ -20,14 +20,14 @@
 4. **`.env`**: `APP_DIR/.env.example` কপি করে `.env` নাম দিন। এডিট করুন: `APP_NAME`, `APP_URL` (https সহ), `DB_DATABASE`, `DB_USERNAME`, `DB_PASSWORD`। `APP_KEY` খালি রাখুন।
 5. **`public_html` সাজান**:
    - `APP_DIR/deploy/cpanel/index.php` → `public_html/index.php` কপি করে ভেতরের `APP_DIR` শব্দ আসল ফোল্ডারের নামে বদলান।
-   - `APP_DIR/deploy/cpanel/public.htaccess` এর লেখা `public_html/.htaccess` ফাইলের **নিচে যোগ করুন**। ⚠️ ফাইলটা ওভাররাইট করবেন না: cPanel এতে PHP ভার্সনের কনফিগ লিখে রাখে, মুছলে ভুল PHP ভার্সনে চলবে। `.well-known`, `cgi-bin`, `.user.ini`, `php.ini` ও কিছু মুছবেন না।
+   - `APP_DIR/deploy/cpanel/public.htaccess` এর লেখা `public_html/.htaccess` ফাইলের **নিচে যোগ করুন** (ভেতরের `APP_DIR` আসল ফোল্ডারের নামে বদলান; ছবির `/storage` পাথ এই রিরাইট রুলেই চলে, symlink লাগে না)। ⚠️ ফাইলটা ওভাররাইট করবেন না: cPanel এতে PHP ভার্সনের কনফিগ লিখে রাখে, মুছলে ভুল PHP ভার্সনে চলবে। `.well-known`, `cgi-bin`, `.user.ini`, `php.ini` ও কিছু মুছবেন না।
    - `APP_DIR/public/` এর ভেতরের `css`, `js`, `fonts`, `images`, `favicon.ico`, `robots.txt` → `public_html/` এ কপি।
    - `APP_DIR/deploy/cpanel/app-folder.htaccess` → `APP_DIR/.htaccess` (অ্যাপ ফোল্ডার ব্রাউজার থেকে বন্ধ)।
    - `APP_DIR/deploy/cpanel/storage-public.htaccess` → `APP_DIR/storage/app/public/.htaccess` (ছবি দেখা যাবে, PHP চলবে না)।
 6. **ফোল্ডার অনুমতি**: `APP_DIR/storage` ও `APP_DIR/bootstrap/cache` কে 775 (সাব-ফোল্ডারসহ)।
 7. **ইনস্টল (একবারের Cron)**: Cron Jobs → সময় `* * * * *` → Command (এক লাইনে, নিজের তথ্য বসিয়ে):
 ```
-( cd /home/USER/public_html/APP_DIR && /usr/local/bin/ea-php84 artisan shop:install --site-name="দোকানের নাম" --email=admin@client.com --phone=01XXXXXXXXX && ln -sfn /home/USER/public_html/APP_DIR/storage/app/public /home/USER/public_html/storage ) > /home/USER/install.log 2>&1
+( cd /home/USER/public_html/APP_DIR && /usr/local/bin/ea-php84 artisan shop:install --site-name="দোকানের নাম" --email=admin@client.com --phone=01XXXXXXXXX ) > /home/USER/install.log 2>&1
 ```
 8. ২–৩ মিনিট পর `/home/USER/install.log` খুলে **অ্যাডমিন পাসওয়ার্ড** টুকে নিন। তারপর **Cron জব মুছুন ও `install.log` মুছে ফেলুন** (ফাইলে পাসওয়ার্ড থাকে)।
 9. **SSL**: cPanel → SSL/TLS Status → AutoSSL চালান। `APP_URL` https রাখুন।
@@ -37,7 +37,6 @@
 cd ~/public_html/APP_DIR
 cp .env.example .env   # এডিট করুন
 php artisan shop:install --site-name="..." --email=... --phone=...
-ln -sfn ~/public_html/APP_DIR/storage/app/public ~/public_html/storage
 ```
 (বাকি ফাইল সাজানো উপরের ৫ নম্বর ধাপের মতো।)
 

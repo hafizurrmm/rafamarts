@@ -1,11 +1,14 @@
 # স্ট্যান্ডার্ড Laravel রিরাইট — public_html/.htaccess ফাইলের নিচে যোগ করুন (ওভাররাইট নয়,
-# cPanel এর লেখা PHP ভার্সনের লাইনগুলো রেখে দিন)
+# cPanel এর লেখা PHP ভার্সনের লাইনগুলো রেখে দিন)। APP_DIR = অ্যাপ ফোল্ডারের নাম (যেমন shopapp)।
 <IfModule mod_rewrite.c>
     <IfModule mod_negotiation.c>
         Options -MultiViews -Indexes
     </IfModule>
 
     RewriteEngine On
+
+    # আপলোড করা ছবি: /storage/x → APP_DIR/storage/app/public/x (symlink লাগে না, শেয়ার্ড হোস্টে নিরাপদ)
+    RewriteRule ^storage/(.*)$ APP_DIR/storage/app/public/$1 [L]
 
     # Authorization হেডার
     RewriteCond %{HTTP:Authorization} .
@@ -24,4 +27,18 @@
     RewriteCond %{REQUEST_FILENAME} !-d
     RewriteCond %{REQUEST_FILENAME} !-f
     RewriteRule ^ index.php [L]
+</IfModule>
+
+<IfModule mod_deflate.c>
+    AddOutputFilterByType DEFLATE text/html text/css application/javascript application/json image/svg+xml
+</IfModule>
+
+<IfModule mod_expires.c>
+    ExpiresActive On
+    ExpiresByType image/webp "access plus 1 year"
+    ExpiresByType image/png "access plus 1 year"
+    ExpiresByType image/jpeg "access plus 1 year"
+    ExpiresByType image/svg+xml "access plus 1 year"
+    ExpiresByType text/css "access plus 1 month"
+    ExpiresByType application/javascript "access plus 1 month"
 </IfModule>
