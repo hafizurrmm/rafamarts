@@ -27,7 +27,7 @@ jobs:
       - name: Package
         run: |
           zip -qr shop-release.zip . \
-            -x ".git/*" ".github/*" "tests/*" "node_modules/*" ".env" "phpunit.xml" "*.log"
+            -x ".git/*" ".github/*" "tests/*" "node_modules/*" ".env" ".cpanel.yml" "DEPLOY.md" "phpunit.xml" "*.log"
           ls -la shop-release.zip
 
       - uses: actions/upload-artifact@v4
