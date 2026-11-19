@@ -1,16 +1,20 @@
+# গোপন তথ্য — কখনো কমিট করবেন না
 .env
 .env.*
+!.env.example
+
+# লাইব্রেরি ও বিল্ড
 /vendor
 /node_modules
-/storage/*.key
-/storage/logs/*
-/storage/framework/cache/*
-/storage/framework/sessions/*
-/storage/framework/views/*
+/public/build
+/public/hot
+
+# আপলোড করা ছবি ও রানটাইম ফাইল (প্রতিটি ক্লায়েন্টের নিজস্ব)
 /public/storage/*
 !/public/storage/.gitignore
 /public/*.pdf
 /public/error_log
 error_log
 *.log
+.phpunit.result.cache
 .DS_Store

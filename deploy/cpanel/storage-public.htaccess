@@ -1,0 +1,14 @@
+# public_html/APP_DIR/storage/app/public/.htaccess — আপলোড করা ছবি ব্রাউজারে দেখার অনুমতি,
+# কিন্তু ওই ফোল্ডারে কোনো PHP ফাইল চালানো যাবে না।
+<IfModule mod_authz_core.c>
+    Require all granted
+</IfModule>
+<IfModule !mod_authz_core.c>
+    Order allow,deny
+    Allow from all
+</IfModule>
+<FilesMatch "\.(php|phtml|phar)$">
+    <IfModule mod_authz_core.c>
+        Require all denied
+    </IfModule>
+</FilesMatch>
