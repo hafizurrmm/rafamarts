@@ -151,14 +151,14 @@
                 @if($hotline)
                     {{-- ক্লিক করলে সরাসরি কল ওপেন হবে (মোবাইলে ডায়ালার) --}}
                     <a href="tel:{{ preg_replace('/[^0-9+]/', '', $hotline) }}" class="hidden sm:flex items-center gap-2 text-sm hover:opacity-80">
-                        <span class="text-xl">📞</span>
+                        <svg xmlns="http://www.w3.org/2000/svg" class="w-6 h-6 brand-text shrink-0" fill="currentColor" viewBox="0 0 24 24" aria-hidden="true"><path d="M6.62 10.79a15.05 15.05 0 0 0 6.59 6.59l2.2-2.2a1 1 0 0 1 1.02-.24c1.12.37 2.33.57 3.57.57a1 1 0 0 1 1 1V20a1 1 0 0 1-1 1C10.61 21 3 13.39 3 4a1 1 0 0 1 1-1h3.5a1 1 0 0 1 1 1c0 1.25.2 2.45.57 3.57a1 1 0 0 1-.25 1.02l-2.2 2.2z"/></svg>
                         <div>
                             <div class="text-gray-500 leading-none">অর্ডার করতে কল করুন</div>
-                            <div class="text-red-600 font-bold">{{ $hotline }}</div>
+                            <div class="text-black font-bold">{{ $hotline }}</div>
                         </div>
                     </a>
                     {{-- মোবাইলে জায়গা কম, তাই শুধু ফোন আইকন --}}
-                    <a href="tel:{{ preg_replace('/[^0-9+]/', '', $hotline) }}" class="sm:hidden text-2xl" aria-label="কল করুন">📞</a>
+                    <a href="tel:{{ preg_replace('/[^0-9+]/', '', $hotline) }}" class="sm:hidden brand-text" aria-label="কল করুন"><svg xmlns="http://www.w3.org/2000/svg" class="w-7 h-7" fill="currentColor" viewBox="0 0 24 24" aria-hidden="true"><path d="M6.62 10.79a15.05 15.05 0 0 0 6.59 6.59l2.2-2.2a1 1 0 0 1 1.02-.24c1.12.37 2.33.57 3.57.57a1 1 0 0 1 1 1V20a1 1 0 0 1-1 1C10.61 21 3 13.39 3 4a1 1 0 0 1 1-1h3.5a1 1 0 0 1 1 1c0 1.25.2 2.45.57 3.57a1 1 0 0 1-.25 1.02l-2.2 2.2z"/></svg></a>
                 @endif
                 {{-- কার্ট: সবুজ কার্ট আইকন + গোল ব্যাজ, নিচে লেখা --}}
                 <a href="{{ route('cart.index') }}" class="flex flex-col items-center leading-tight hover:opacity-80">

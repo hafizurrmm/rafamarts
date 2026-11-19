@@ -36,6 +36,7 @@ class StoreSettings extends Page
             'whatsapp_number' => Setting::get('whatsapp_number'),
             'facebook_url' => Setting::get('facebook_url'),
             'site_description' => Setting::get('site_description'),
+            'product_return_policy' => Setting::get('product_return_policy'),
 
             // Facebook Pixel & Conversions API (CAPI)
             'fb_enabled' => (bool) Setting::get('fb_enabled', false),
@@ -156,6 +157,11 @@ class StoreSettings extends Page
                                 ->label('সাইট বর্ণনা (SEO / Facebook লিংক প্রিভিউ)')
                                 ->helperText('গুগল সার্চ এবং ফেসবুকে লিংক শেয়ার করলে এই লেখাটা দেখাবে। ১৫০-১৬০ অক্ষরের মধ্যে রাখুন।')
                                 ->rows(3)
+                                ->columnSpanFull(),
+                            Forms\Components\RichEditor::make('product_return_policy')
+                                ->label('রিটার্ন পলিসি (প্রোডাক্ট পেজের "রিটার্ন পলিসি" ট্যাব)')
+                                ->helperText('খালি রাখলে একটা ডিফল্ট লেখা দেখাবে। সব প্রোডাক্টে একই লেখা যাবে।')
+                                ->toolbarButtons(['h2', 'h3', 'bold', 'italic', 'bulletList', 'orderedList', 'link', 'undo', 'redo'])
                                 ->columnSpanFull(),
                         ])->columns(2),
 

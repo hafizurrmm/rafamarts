@@ -44,7 +44,11 @@ class ProductResource extends Resource
                     ->searchable()
                     ->required(),
 
-                Forms\Components\Textarea::make('description')
+                Forms\Components\RichEditor::make('description')
+                    ->label('বিস্তারিত বর্ণনা')
+                    ->helperText('প্রোডাক্ট পেজের নিচে "বর্ণনা" ট্যাবে দেখাবে (হেডিং, বোল্ড, লিস্ট, ছবি ব্যবহার করা যাবে)।')
+                    ->toolbarButtons(['h2', 'h3', 'bold', 'italic', 'underline', 'bulletList', 'orderedList', 'blockquote', 'link', 'attachFiles', 'undo', 'redo'])
+                    ->fileAttachmentsDirectory('product-descriptions')
                     ->columnSpanFull(),
 
                 Forms\Components\FileUpload::make('image')
