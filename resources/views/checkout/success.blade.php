@@ -27,6 +27,7 @@
             <div class="flex justify-between font-bold border-t pt-2"><span>Total</span><span>৳ {{ number_format($order->total_amount, 0) }}</span></div>
         </div>
 
+        <a href="{{ route('track.show') }}" class="inline-block text-sm text-gray-600 underline mb-4">📦 অর্ডার ট্র্যাক করুন</a><br>
         <a href="{{ route('home') }}" class="inline-block bg-green-600 text-white font-semibold px-6 py-2 rounded">
             আরও কেনাকাটা করুন
         </a>

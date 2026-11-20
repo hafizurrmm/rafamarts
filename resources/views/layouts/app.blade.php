@@ -320,6 +320,7 @@
                     @endforeach
                 </nav>
             @endif
+            <div><a href="{{ route('track.show') }}" class="hover:text-white">📦 অর্ডার ট্র্যাক করুন</a></div>
             @if($facebookUrl)
                 <div><a href="{{ $facebookUrl }}" target="_blank" class="hover:text-white">📘 Facebook Page</a></div>
             @endif
