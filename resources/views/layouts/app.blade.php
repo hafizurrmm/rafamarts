@@ -107,6 +107,19 @@
 
         // Admin > Website > Menus থেকে বানানো মেনু। হেডার মেনু না থাকলে আগের মতো ক্যাটাগরিগুলোই নেভিগেশনে দেখায়।
         $navItems = \App\Models\Menu::tree('header');
+
+        // শুধু HomeController/PageController $categories পাঠাত, তাই প্রোডাক্ট/কার্ট/চেকআউট পেজে মেনু বার ফাঁকা থাকত।
+        // এখন লেআউট নিজেই (একই ক্যাশ থেকে, প্লেইন অ্যারে হিসেবে) ক্যাটাগরি এনে নেয়।
+        if (empty($navItems) && ! isset($categories)) {
+            try {
+                $categories = \App\Models\Category::hydrate(\Illuminate\Support\Facades\Cache::remember('home:categories', now()->addHours(6), function () {
+                    return \App\Models\Category::where('is_active', true)->orderBy('sort_order')->get()->toArray();
+                }));
+            } catch (\Throwable $e) {
+                $categories = collect();
+            }
+        }
+
         if (empty($navItems)) {
             $navItems = collect($categories ?? [])->map(fn ($c) => [
                 'label' => $c->name,
