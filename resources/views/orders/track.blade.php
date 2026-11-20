@@ -26,7 +26,7 @@
         @csrf
         <div>
             <label class="block font-semibold mb-1">অর্ডার আইডি (Order ID) <span class="text-red-500">*</span></label>
-            <div class="flex items-center border rounded-lg overflow-hidden focus-within:ring-2 focus-within:ring-amber-400">
+            <div class="flex items-center border rounded-lg overflow-hidden focus-within:ring-2 focus-within:ring-[var(--brand-primary)]">
                 <span class="px-3 text-gray-400 font-bold">#</span>
                 <input type="text" name="order_id" required value="{{ old('order_id') }}" placeholder="উদাহরণ: ORD-AB12CD34"
                        class="w-full py-3 pr-3 outline-none">
@@ -34,7 +34,7 @@
         </div>
         <div>
             <label class="block font-semibold mb-1">মোবাইল নম্বর (Phone Number) <span class="text-red-500">*</span></label>
-            <div class="flex items-center border rounded-lg overflow-hidden focus-within:ring-2 focus-within:ring-amber-400">
+            <div class="flex items-center border rounded-lg overflow-hidden focus-within:ring-2 focus-within:ring-[var(--brand-primary)]">
                 <span class="px-3 text-gray-400">📞</span>
                 <input type="tel" name="phone" required value="{{ old('phone') }}" placeholder="উদাহরণ: 017XXXXXXXX"
                        class="w-full py-3 pr-3 outline-none">
@@ -43,7 +43,7 @@
         @if($errors->any())
             <p class="text-red-600 text-sm">অর্ডার আইডি ও ফোন নম্বর দুটোই সঠিকভাবে লিখুন।</p>
         @endif
-        <button type="submit" class="w-full py-3 rounded-lg font-bold text-white shadow bg-gradient-to-r from-amber-400 to-orange-500 hover:opacity-90">
+        <button type="submit" class="w-full py-3 rounded-lg font-bold text-white shadow brand-bg hover:opacity-90">
             🔍 অর্ডার ট্র্যাক করুন
         </button>
     </form>
