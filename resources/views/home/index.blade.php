@@ -58,7 +58,7 @@
                 @endif
                 <div class="relative z-10 py-6 pr-6 pl-[69px] md:py-12 md:pr-12 md:pl-[93px] w-full md:w-1/2">
                     @if($bEyebrow)<div class="text-xs md:text-sm font-bold tracking-[0.2em] brand-text mb-3 uppercase">{{ $bEyebrow }}</div>@endif
-                    <h1 class="text-3xl md:text-5xl font-extrabold leading-tight mb-3">
+                    <h1 class="text-4xl md:text-6xl lg:text-7xl font-extrabold leading-[1.1] mb-4">
                         {{ $bHeading }}@if($bHighlight) <span class="brand-text">{{ $bHighlight }}</span>@endif
                     </h1>
                     @if($bSub)<p class="text-sm md:text-base opacity-80 mb-5 max-w-md">{{ $bSub }}</p>@endif
