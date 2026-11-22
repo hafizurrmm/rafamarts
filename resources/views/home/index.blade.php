@@ -48,6 +48,7 @@
                 $bSub = \App\Models\Setting::get('banner_subtext');
                 $bBtn = \App\Models\Setting::get('banner_button_text'); // খালি থাকলে বাটন দেখাবে না
                 $bUrl = \App\Models\Setting::get('banner_button_url', '#all-products') ?: '#all-products';
+                $isBn = (bool) preg_match('/\p{Bengali}/u', $bHeading . $bHighlight . $bEyebrow);
                 if (! preg_match('~^(#|/|https?://)~i', $bUrl)) { $bUrl = '#all-products'; }
             @endphp
             <div class="mb-10 rounded-xl overflow-hidden relative flex items-center min-h-[240px] md:min-h-[445px]" style="background: {{ $bBg }}; color: {{ $bFg }};">
@@ -56,8 +57,8 @@
                     <img src="{{ asset('storage/' . $bannerImage) }}" alt="{{ $bHeading ?: 'Banner' }}" class="absolute inset-0 w-full h-full object-cover object-left" fetchpriority="high">
                 @endif
                 <div class="relative z-10 py-5 pr-6 pl-[30px] md:py-12 md:pr-12 md:pl-[93px] w-full md:w-1/2">
-                    @if($bEyebrow)<div class="text-xs md:text-sm font-bold tracking-[0.2em] brand-text mb-1 uppercase">{{ $bEyebrow }}</div>@endif
-                    <h1 class="text-3xl md:text-[4rem] font-extrabold leading-[0.95] tracking-tight mb-2">
+                    @if($bEyebrow)<div class="text-xs md:text-sm font-bold {{ $isBn ? '' : 'tracking-[0.2em] uppercase' }} brand-text mb-1">{{ $bEyebrow }}</div>@endif
+                    <h1 class="text-3xl md:text-[4rem] font-extrabold {{ $isBn ? 'leading-[1.2]' : 'leading-[0.95] tracking-tight' }} mb-2">
                         {{ $bHeading }}@if($bHighlight) <span class="brand-text">{{ $bHighlight }}</span>@endif
                     </h1>
                     @if($bSub)<p class="text-sm md:text-base leading-snug opacity-80 mb-4 max-w-xl">{!! nl2br(e($bSub)) !!}</p>@endif
