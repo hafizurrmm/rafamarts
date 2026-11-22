@@ -37,6 +37,36 @@
                     <img src="{{ asset('storage/' . $bannerImage) }}" alt="Banner" class="w-full object-cover" fetchpriority="high">
                 </a>
             </div>
+        @elseif($bannerType === 'split' && ($bannerImage || \App\Models\Setting::get('banner_heading')))
+            @php
+                $hex = fn ($v, $d) => preg_match('/^#[0-9a-fA-F]{6}$/', (string) $v) ? $v : $d;
+                $bBg = $hex(\App\Models\Setting::get('banner_bg_color'), '#ffffff');
+                $bFg = $hex(\App\Models\Setting::get('banner_text_color'), '#0f2a43');
+                $bEyebrow = \App\Models\Setting::get('banner_eyebrow');
+                $bHeading = \App\Models\Setting::get('banner_heading');
+                $bHighlight = \App\Models\Setting::get('banner_heading_highlight');
+                $bSub = \App\Models\Setting::get('banner_subtext');
+                $bBtn = \App\Models\Setting::get('banner_button_text', 'SHOP NOW');
+                $bUrl = \App\Models\Setting::get('banner_button_url', '#all-products') ?: '#all-products';
+                if (! preg_match('~^(#|/|https?://)~i', $bUrl)) { $bUrl = '#all-products'; }
+            @endphp
+            <div class="mb-10 rounded-xl overflow-hidden grid md:grid-cols-2 items-center" style="background: {{ $bBg }}; color: {{ $bFg }};">
+                <div class="p-6 md:p-10 order-2 md:order-1">
+                    @if($bEyebrow)<div class="text-xs md:text-sm font-bold tracking-[0.2em] brand-text mb-3 uppercase">{{ $bEyebrow }}</div>@endif
+                    <h1 class="text-3xl md:text-5xl font-extrabold leading-tight mb-3">
+                        {{ $bHeading }}@if($bHighlight) <span class="brand-text">{{ $bHighlight }}</span>@endif
+                    </h1>
+                    @if($bSub)<p class="text-sm md:text-base opacity-80 mb-5 max-w-md">{{ $bSub }}</p>@endif
+                    @if($bBtn)
+                        <a href="{{ $bUrl }}" class="inline-block brand-bg text-white font-bold px-6 py-3 rounded-full shadow hover:opacity-90 transition">{{ $bBtn }} →</a>
+                    @endif
+                </div>
+                @if($bannerImage)
+                    <div class="order-1 md:order-2">
+                        <img src="{{ asset('storage/' . $bannerImage) }}" alt="{{ $bHeading ?: 'Banner' }}" class="w-full h-full object-cover" fetchpriority="high">
+                    </div>
+                @endif
+            </div>
         @else
             <div class="brand-bg-secondary rounded-xl text-white p-8 md:p-12 mb-10 flex flex-col md:flex-row items-center justify-between gap-6">
                 <div>

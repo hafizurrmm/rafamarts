@@ -32,6 +32,14 @@ class StoreSettings extends Page
             'banner_type' => Setting::get('banner_type', 'static'),
             'banner_image' => Setting::get('banner_image'),
             'banner_images' => Setting::getArray('banner_images'),
+            'banner_eyebrow' => Setting::get('banner_eyebrow'),
+            'banner_heading' => Setting::get('banner_heading'),
+            'banner_heading_highlight' => Setting::get('banner_heading_highlight'),
+            'banner_subtext' => Setting::get('banner_subtext'),
+            'banner_button_text' => Setting::get('banner_button_text', 'SHOP NOW'),
+            'banner_button_url' => Setting::get('banner_button_url', '#all-products'),
+            'banner_bg_color' => Setting::get('banner_bg_color', '#ffffff'),
+            'banner_text_color' => Setting::get('banner_text_color', '#0f2a43'),
             'hotline_number' => Setting::get('hotline_number'),
             'whatsapp_number' => Setting::get('whatsapp_number'),
             'facebook_url' => Setting::get('facebook_url'),
@@ -135,6 +143,7 @@ class StoreSettings extends Page
                                 ->options([
                                     'static' => 'স্ট্যাটিক (একটাই ছবি)',
                                     'slider' => 'স্লাইড (একাধিক ছবি ঘুরে ঘুরে দেখাবে)',
+                                    'split' => 'বাম পাশে আসল টেক্সট + ডান পাশে ছবি',
                                 ])
                                 ->default('static')
                                 ->live()
@@ -142,8 +151,24 @@ class StoreSettings extends Page
 
                             Forms\Components\FileUpload::make('banner_image')
                                 ->label('Banner Image')
+                                ->helperText(fn (callable $get) => $get('banner_type') === 'split' ? 'এখানে শুধু ডান পাশের ছবি দিন (টেক্সট ছাড়া)। বাম পাশের লেখা নিচের ঘরগুলো থেকে আসবে।' : null)
                                 ->image()->directory('settings')->imageEditor()
-                                ->visible(fn (callable $get) => $get('banner_type') === 'static'),
+                                ->visible(fn (callable $get) => in_array($get('banner_type'), ['static', 'split'], true)),
+
+                            Forms\Components\Section::make('ব্যানারের বাম পাশের লেখা')
+                                ->visible(fn (callable $get) => $get('banner_type') === 'split')
+                                ->columnSpanFull()
+                                ->columns(2)
+                                ->schema([
+                                    Forms\Components\TextInput::make('banner_eyebrow')->label('ছোট লেখা (উপরে)')->placeholder('YOUR ONE-STOP ONLINE SHOP'),
+                                    Forms\Components\TextInput::make('banner_button_text')->label('বাটনের লেখা')->placeholder('SHOP NOW')->helperText('খালি রাখলে বাটন দেখাবে না'),
+                                    Forms\Components\TextInput::make('banner_heading')->label('বড় হেডিং')->placeholder('Quality Products for a'),
+                                    Forms\Components\TextInput::make('banner_heading_highlight')->label('হেডিংয়ের রঙিন অংশ (থিম কালার)')->placeholder('Better Life'),
+                                    Forms\Components\Textarea::make('banner_subtext')->label('ছোট বর্ণনা')->rows(2)->columnSpanFull(),
+                                    Forms\Components\TextInput::make('banner_button_url')->label('বাটনের লিংক')->placeholder('#all-products'),
+                                    Forms\Components\ColorPicker::make('banner_bg_color')->label('ব্যানার ব্যাকগ্রাউন্ড'),
+                                    Forms\Components\ColorPicker::make('banner_text_color')->label('হেডিং/টেক্সটের রং'),
+                                ]),
 
                             Forms\Components\FileUpload::make('banner_images')
                                 ->label('Banner Images (একাধিক)')
