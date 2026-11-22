@@ -36,7 +36,7 @@ class StoreSettings extends Page
             'banner_heading' => Setting::get('banner_heading'),
             'banner_heading_highlight' => Setting::get('banner_heading_highlight'),
             'banner_subtext' => Setting::get('banner_subtext'),
-            'banner_button_text' => Setting::get('banner_button_text', 'SHOP NOW'),
+            'banner_button_text' => Setting::get('banner_button_text'),
             'banner_button_url' => Setting::get('banner_button_url', '#all-products'),
             'banner_bg_color' => Setting::get('banner_bg_color', '#ffffff'),
             'banner_text_color' => Setting::get('banner_text_color', '#0f2a43'),

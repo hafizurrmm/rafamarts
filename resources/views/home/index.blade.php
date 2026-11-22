@@ -46,7 +46,7 @@
                 $bHeading = \App\Models\Setting::get('banner_heading');
                 $bHighlight = \App\Models\Setting::get('banner_heading_highlight');
                 $bSub = \App\Models\Setting::get('banner_subtext');
-                $bBtn = \App\Models\Setting::get('banner_button_text', 'SHOP NOW');
+                $bBtn = \App\Models\Setting::get('banner_button_text'); // খালি থাকলে বাটন দেখাবে না
                 $bUrl = \App\Models\Setting::get('banner_button_url', '#all-products') ?: '#all-products';
                 if (! preg_match('~^(#|/|https?://)~i', $bUrl)) { $bUrl = '#all-products'; }
             @endphp
@@ -56,7 +56,7 @@
                     <img src="{{ asset('storage/' . $bannerImage) }}" alt="{{ $bHeading ?: 'Banner' }}" class="absolute inset-0 w-full h-full object-cover object-right" fetchpriority="high">
                     <div class="absolute inset-0 md:hidden" style="background: {{ $bBg }}; opacity: .82;"></div>
                 @endif
-                <div class="relative z-10 p-6 md:p-12 w-full md:w-1/2">
+                <div class="relative z-10 py-6 pr-6 pl-[69px] md:py-12 md:pr-12 md:pl-[93px] w-full md:w-1/2">
                     @if($bEyebrow)<div class="text-xs md:text-sm font-bold tracking-[0.2em] brand-text mb-3 uppercase">{{ $bEyebrow }}</div>@endif
                     <h1 class="text-3xl md:text-5xl font-extrabold leading-tight mb-3">
                         {{ $bHeading }}@if($bHighlight) <span class="brand-text">{{ $bHighlight }}</span>@endif
