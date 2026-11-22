@@ -50,12 +50,12 @@
                 $bUrl = \App\Models\Setting::get('banner_button_url', '#all-products') ?: '#all-products';
                 if (! preg_match('~^(#|/|https?://)~i', $bUrl)) { $bUrl = '#all-products'; }
             @endphp
-            <div class="mb-10 rounded-xl overflow-hidden relative flex items-center min-h-[445px]" style="background: {{ $bBg }}; color: {{ $bFg }};">
+            <div class="mb-10 rounded-xl overflow-hidden relative md:flex md:items-center md:min-h-[445px]" style="background: {{ $bBg }}; color: {{ $bFg }};">
                 {{-- ছবি পুরো ব্যানারের ব্যাকগ্রাউন্ডে; লেখা তার উপরে বাম পাশে --}}
                 @if($bannerImage)
-                    <img src="{{ asset('storage/' . $bannerImage) }}" alt="{{ $bHeading ?: 'Banner' }}" class="absolute inset-0 w-full h-full object-cover object-left" fetchpriority="high">
+                    <img src="{{ asset('storage/' . $bannerImage) }}" alt="{{ $bHeading ?: 'Banner' }}" class="block w-full h-auto md:absolute md:inset-0 md:h-full md:object-cover md:object-left" fetchpriority="high">
                 @endif
-                <div class="relative z-10 py-6 pr-6 pl-[30px] md:py-12 md:pr-12 md:pl-[93px] w-full md:w-1/2">
+                <div class="relative z-10 py-5 pr-6 pl-[30px] md:py-12 md:pr-12 md:pl-[93px] w-full md:w-1/2">
                     @if($bEyebrow)<div class="text-xs md:text-sm font-bold tracking-[0.2em] brand-text mb-1 uppercase">{{ $bEyebrow }}</div>@endif
                     <h1 class="text-4xl md:text-[4rem] font-extrabold leading-[0.95] tracking-tight mb-2">
                         {{ $bHeading }}@if($bHighlight) <span class="brand-text">{{ $bHighlight }}</span>@endif
