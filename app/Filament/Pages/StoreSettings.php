@@ -164,7 +164,7 @@ class StoreSettings extends Page
                                     Forms\Components\TextInput::make('banner_button_text')->label('বাটনের লেখা')->placeholder('SHOP NOW')->helperText('খালি রাখলে বাটন দেখাবে না'),
                                     Forms\Components\TextInput::make('banner_heading')->label('বড় হেডিং')->placeholder('Quality Products for a'),
                                     Forms\Components\TextInput::make('banner_heading_highlight')->label('হেডিংয়ের রঙিন অংশ (থিম কালার)')->placeholder('Better Life'),
-                                    Forms\Components\Textarea::make('banner_subtext')->label('ছোট বর্ণনা')->rows(2)->columnSpanFull(),
+                                    Forms\Components\Textarea::make('banner_subtext')->label('ছোট বর্ণনা')->helperText('Enter চাপলে নতুন লাইন হবে')->rows(2)->columnSpanFull(),
                                     Forms\Components\TextInput::make('banner_button_url')->label('বাটনের লিংক')->placeholder('#all-products'),
                                     Forms\Components\ColorPicker::make('banner_bg_color')->label('ব্যানার ব্যাকগ্রাউন্ড'),
                                     Forms\Components\ColorPicker::make('banner_text_color')->label('হেডিং/টেক্সটের রং'),
