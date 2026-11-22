@@ -50,8 +50,13 @@
                 $bUrl = \App\Models\Setting::get('banner_button_url', '#all-products') ?: '#all-products';
                 if (! preg_match('~^(#|/|https?://)~i', $bUrl)) { $bUrl = '#all-products'; }
             @endphp
-            <div class="mb-10 rounded-xl overflow-hidden grid md:grid-cols-2 items-center" style="background: {{ $bBg }}; color: {{ $bFg }};">
-                <div class="p-6 md:p-10 order-2 md:order-1">
+            <div class="mb-10 rounded-xl overflow-hidden relative flex items-center min-h-[300px] md:min-h-[400px]" style="background: {{ $bBg }}; color: {{ $bFg }};">
+                {{-- ছবি পুরো ব্যানারের ব্যাকগ্রাউন্ডে; লেখা তার উপরে বাম পাশে --}}
+                @if($bannerImage)
+                    <img src="{{ asset('storage/' . $bannerImage) }}" alt="{{ $bHeading ?: 'Banner' }}" class="absolute inset-0 w-full h-full object-cover object-right" fetchpriority="high">
+                    <div class="absolute inset-0 md:hidden" style="background: {{ $bBg }}; opacity: .82;"></div>
+                @endif
+                <div class="relative z-10 p-6 md:p-12 w-full md:w-1/2">
                     @if($bEyebrow)<div class="text-xs md:text-sm font-bold tracking-[0.2em] brand-text mb-3 uppercase">{{ $bEyebrow }}</div>@endif
                     <h1 class="text-3xl md:text-5xl font-extrabold leading-tight mb-3">
                         {{ $bHeading }}@if($bHighlight) <span class="brand-text">{{ $bHighlight }}</span>@endif
@@ -61,11 +66,6 @@
                         <a href="{{ $bUrl }}" class="inline-block brand-bg text-white font-bold px-6 py-3 rounded-full shadow hover:opacity-90 transition">{{ $bBtn }} →</a>
                     @endif
                 </div>
-                @if($bannerImage)
-                    <div class="order-1 md:order-2">
-                        <img src="{{ asset('storage/' . $bannerImage) }}" alt="{{ $bHeading ?: 'Banner' }}" class="w-full h-full object-cover" fetchpriority="high">
-                    </div>
-                @endif
             </div>
         @else
             <div class="brand-bg-secondary rounded-xl text-white p-8 md:p-12 mb-10 flex flex-col md:flex-row items-center justify-between gap-6">

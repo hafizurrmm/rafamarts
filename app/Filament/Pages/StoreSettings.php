@@ -151,7 +151,7 @@ class StoreSettings extends Page
 
                             Forms\Components\FileUpload::make('banner_image')
                                 ->label('Banner Image')
-                                ->helperText(fn (callable $get) => $get('banner_type') === 'split' ? 'এখানে শুধু ডান পাশের ছবি দিন (টেক্সট ছাড়া)। বাম পাশের লেখা নিচের ঘরগুলো থেকে আসবে।' : null)
+                                ->helperText(fn (callable $get) => $get('banner_type') === 'split' ? 'পুরো ব্যানারের ব্যাকগ্রাউন্ড ছবি দিন — বাম পাশ ফাঁকা/টেক্সট-ছাড়া রাখুন। বাম পাশের লেখা নিচের ঘরগুলো থেকে ছবির উপরে বসবে।' : null)
                                 ->image()->directory('settings')->imageEditor()
                                 ->visible(fn (callable $get) => in_array($get('banner_type'), ['static', 'split'], true)),
 
