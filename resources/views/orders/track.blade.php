@@ -55,7 +55,7 @@
     @endif
 
     @if($order)
-        @php([$label, $badge] = $statusLabels[$order->status] ?? [ucfirst($order->status), 'bg-gray-100 text-gray-800'])
+        @php [$label, $badge] = $statusLabels[$order->status] ?? [ucfirst($order->status), 'bg-gray-100 text-gray-800']; @endphp
         <div class="mt-6 bg-white rounded-xl shadow-sm border p-6">
             <div class="flex flex-wrap items-center justify-between gap-2 mb-4">
                 <div>

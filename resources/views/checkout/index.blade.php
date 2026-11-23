@@ -3,6 +3,7 @@
 @section('title', 'Checkout')
 
 @section('content')
+    @php $acct = auth()->user()?->role === 'customer' ? auth()->user() : null; @endphp
 
     @php
         $subTotal = collect($cart)->sum(fn ($item) => $item['price'] * $item['quantity']);
@@ -32,21 +33,21 @@
 
                 <div>
                     <label class="block text-sm font-medium mb-1">আপনার নাম <span class="text-red-500">*</span></label>
-                    <input type="text" name="customer_name" value="{{ old('customer_name') }}" required
+                    <input type="text" name="customer_name" value="{{ old('customer_name', $acct?->name) }}" required
                            placeholder="আপনার নাম"
                            class="w-full border rounded px-3 py-2 focus:outline-none focus:ring-2 focus:ring-green-500">
                 </div>
 
                 <div>
                     <label class="block text-sm font-medium mb-1">আপনার মোবাইল নম্বর <span class="text-red-500">*</span></label>
-                    <input type="text" name="customer_phone" value="{{ old('customer_phone') }}" required
+                    <input type="text" name="customer_phone" value="{{ old('customer_phone', $acct?->phone) }}" required
                            placeholder="আপনার মোবাইল নম্বর"
                            class="w-full border rounded px-3 py-2 focus:outline-none focus:ring-2 focus:ring-green-500">
                 </div>
 
                 <div>
                     <label class="block text-sm font-medium mb-1">আপনার সম্পূর্ণ ঠিকানা (জেলা ও থানা সহ)</label>
-                    <input type="text" name="customer_address" value="{{ old('customer_address') }}" required
+                    <input type="text" name="customer_address" value="{{ old('customer_address', $acct?->address) }}" required
                            placeholder="আপনার সম্পূর্ণ ঠিকানা"
                            class="w-full border rounded px-3 py-2 focus:outline-none focus:ring-2 focus:ring-green-500">
                 </div>

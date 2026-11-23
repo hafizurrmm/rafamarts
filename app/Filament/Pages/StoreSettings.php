@@ -43,6 +43,7 @@ class StoreSettings extends Page
             'hotline_number' => Setting::get('hotline_number'),
             'whatsapp_number' => Setting::get('whatsapp_number'),
             'facebook_url' => Setting::get('facebook_url'),
+            'customer_login_enabled' => (bool) Setting::get('customer_login_enabled', true),
             'site_description' => Setting::get('site_description'),
             'product_return_policy' => Setting::get('product_return_policy'),
 
@@ -178,6 +179,7 @@ class StoreSettings extends Page
 
                             Forms\Components\TextInput::make('hotline_number')->label('Hotline Number'),
                             Forms\Components\TextInput::make('whatsapp_number')->label('WhatsApp Number')->placeholder('8801XXXXXXXXX')->helperText('দেশের কোডসহ দিন (880...)। 01XXXXXXXXX দিলেও সাইট নিজে থেকে ঠিক করে নেবে।'),
+                            Forms\Components\Toggle::make('customer_login_enabled')->label('কাস্টমার সাইন ইন / একাউন্ট চালু')->helperText('বন্ধ করলে হেডারের সাইন ইন আইকন ও /login, /register, /account বন্ধ হবে।')->inline(false),
                             Forms\Components\TextInput::make('facebook_url')->label('Facebook Page URL')->url(),
                             Forms\Components\Textarea::make('site_description')
                                 ->label('সাইট বর্ণনা (SEO / Facebook লিংক প্রিভিউ)')

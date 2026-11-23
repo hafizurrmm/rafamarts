@@ -179,10 +179,15 @@
                     {{-- মোবাইলে জায়গা কম, তাই শুধু ফোন আইকন --}}
                     <a href="tel:{{ preg_replace('/[^0-9+]/', '', $hotline) }}" class="sm:hidden w-9 h-9 rounded-full brand-bg text-white flex items-center justify-center" aria-label="কল করুন"><svg xmlns="http://www.w3.org/2000/svg" class="w-5 h-5" fill="currentColor" viewBox="0 0 24 24" aria-hidden="true"><path d="M6.62 10.79a15.05 15.05 0 0 0 6.59 6.59l2.2-2.2a1 1 0 0 1 1.02-.24c1.12.37 2.33.57 3.57.57a1 1 0 0 1 1 1V20a1 1 0 0 1-1 1C10.61 21 3 13.39 3 4a1 1 0 0 1 1-1h3.5a1 1 0 0 1 1 1c0 1.25.2 2.45.57 3.57a1 1 0 0 1-.25 1.02l-2.2 2.2z"/></svg></a>
                 @endif
-                {{-- সাইন ইন --}}
-                <a href="{{ url('/admin/login') }}" class="flex items-center brand-text hover:opacity-80" title="সাইন ইন" aria-label="সাইন ইন">
-                    <svg xmlns="http://www.w3.org/2000/svg" class="w-8 h-8" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.8" aria-hidden="true"><path stroke-linecap="round" stroke-linejoin="round" d="M15.75 6a3.75 3.75 0 11-7.5 0 3.75 3.75 0 017.5 0zM4.5 20.118a7.5 7.5 0 0115 0A17.933 17.933 0 0112 21.75c-2.676 0-5.216-.584-7.5-1.632z"/></svg>
-                </a>
+                {{-- সাইন ইন / আমার একাউন্ট --}}
+                @if(\App\Http\Controllers\CustomerAuthController::enabled())
+                    @php $authUser = auth()->user(); @endphp
+                    <a href="{{ $authUser ? ($authUser->role === 'admin' ? url('/admin') : route('account.index')) : route('login') }}"
+                       class="flex items-center brand-text hover:opacity-80"
+                       title="{{ $authUser ? 'আমার একাউন্ট' : 'সাইন ইন' }}" aria-label="{{ $authUser ? 'আমার একাউন্ট' : 'সাইন ইন' }}">
+                        <svg xmlns="http://www.w3.org/2000/svg" class="w-8 h-8" fill="{{ $authUser ? 'currentColor' : 'none' }}" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.8" aria-hidden="true"><path stroke-linecap="round" stroke-linejoin="round" d="M15.75 6a3.75 3.75 0 11-7.5 0 3.75 3.75 0 017.5 0zM4.5 20.118a7.5 7.5 0 0115 0A17.933 17.933 0 0112 21.75c-2.676 0-5.216-.584-7.5-1.632z"/></svg>
+                    </a>
+                @endif
                 {{-- পছন্দের তালিকা (Wishlist) — ব্রাউজারে সেভ থাকে --}}
                 <a href="{{ route('wishlist.index') }}" class="flex items-center hover:opacity-80" title="পছন্দের তালিকা" aria-label="পছন্দের তালিকা">
                     <span class="relative brand-text">
@@ -373,7 +378,17 @@
             const KEY = 'shop_wishlist';
             const read = () => { try { return JSON.parse(localStorage.getItem(KEY)) || []; } catch (e) { return []; } };
             const write = (a) => { try { localStorage.setItem(KEY, JSON.stringify(a)); } catch (e) {} };
-            window.Wishlist = { read, write };
+            const authed = @json(auth()->check() && auth()->user()->role === 'customer');
+            const post = (ids, mode) => fetch('{{ route('wishlist.sync') }}', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json', 'Accept': 'application/json', 'X-CSRF-TOKEN': '{{ csrf_token() }}' },
+                body: JSON.stringify({ ids: ids, mode: mode })
+            }).then(r => r.json());
+            // লগইন করা থাকলে সার্ভারের তালিকার সাথে মিলিয়ে নেয়
+            const ready = authed
+                ? post(read(), 'merge').then(d => { write(d.ids.map(Number)); paint(); }).catch(() => {})
+                : Promise.resolve();
+            window.Wishlist = { read, write, ready };
             function paint() {
                 const ids = read();
                 document.querySelectorAll('[data-wl-count]').forEach(el => el.textContent = ids.length);
@@ -388,6 +403,7 @@
                 ids = ids.includes(id) ? ids.filter(x => x !== id) : ids.concat(id);
                 write(ids);
                 paint();
+                if (authed) { post(ids, 'replace').catch(() => {}); }
                 document.dispatchEvent(new CustomEvent('wishlist:change', { detail: { id, ids } }));
             });
             document.addEventListener('DOMContentLoaded', paint);

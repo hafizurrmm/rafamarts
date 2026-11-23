@@ -42,7 +42,7 @@
             checkEmpty();
         });
 
-        load();
+        window.Wishlist.ready.then(load);
     })();
 </script>
 @endpush
