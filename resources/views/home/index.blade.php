@@ -87,7 +87,7 @@
 
         {{-- ব্যানারের নিচের ফিচার স্ট্রিপ (Settings → স্টোর ব্র্যান্ডিং থেকে বদলানো যায়) --}}
         @if((bool) \App\Models\Setting::get('features_enabled', true))
-            <div class="mb-10 bg-white rounded-xl border border-gray-100 shadow-sm px-4 py-5 grid grid-cols-2 lg:grid-cols-4 gap-x-4 gap-y-5">
+            <div class="mb-10 bg-white rounded-xl border border-gray-100 shadow-sm px-4 py-5 grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-x-4 gap-y-4">
                 @foreach(\App\Models\Setting::featureItems() as $f)
                     <div class="flex items-center gap-3 min-w-0">
                         @include('home.partials.feature-icon', ['icon' => $f['icon'] ?? 'tag'])
