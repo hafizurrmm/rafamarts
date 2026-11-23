@@ -29,6 +29,24 @@ class OrderResource extends Resource
 
     protected static ?int $navigationSort = 30;
 
+    public const STATUS_OPTIONS = [
+        'pending' => 'Pending',
+        'processing' => 'Processing',
+        'on_hold' => 'On Hold',
+        'completed' => 'Completed',
+        'cancelled' => 'Cancelled',
+    ];
+
+    public const COURIER_STATUS_OPTIONS = [
+        'sent' => 'Sent to courier',
+        'in_transit' => 'In transit',
+        'delivered' => 'Delivered',
+        'partial_delivered' => 'Partial delivered',
+        'returned' => 'Returned',
+        'hold' => 'On hold',
+        'cancelled' => 'Cancelled',
+    ];
+
     /**
      * Live-updates the (disabled, display-only) total_amount field in the form
      * as delivery_charge/discount change, using the record's existing sub_total.
@@ -369,27 +387,83 @@ class OrderResource extends Resource
             Tables\Actions\DeleteAction::make(),
         ])
         ->bulkActions([
-            Tables\Actions\BulkActionGroup::make([
-                Tables\Actions\DeleteBulkAction::make(),
-                Tables\Actions\BulkAction::make('bulk_send_steadfast')
-                    ->label('Steadfast এ পাঠান (Bulk)')
-                    ->icon('heroicon-o-truck')
-                    ->requiresConfirmation()
-                    ->action(function ($records) {
-                        $service = app(SteadfastService::class);
-                        foreach ($records as $record) {
-                            if (blank($record->consignment_id)) {
-                                $service->createOrder($record);
-                            }
-                        }
+            // অর্ডার সিলেক্ট করলে উপরে এই অ্যাকশনগুলো আসে
+            Tables\Actions\BulkAction::make('bulk_status')
+                ->label('অর্ডার স্ট্যাটাস আপডেট')
+                ->icon('heroicon-o-check-circle')
+                ->color('success')
+                ->form([
+                    Forms\Components\Select::make('status')
+                        ->label('নতুন স্ট্যাটাস')
+                        ->options(self::STATUS_OPTIONS)
+                        ->required(),
+                ])
+                ->action(function (\Illuminate\Support\Collection $records, array $data) {
+                    // একে একে save() — যাতে অর্ডার মডেলের observer/ইভেন্ট (নোটিফিকেশন ইত্যাদি) চলে
+                    $records->each(fn (Order $o) => $o->update(['status' => $data['status']]));
 
-                        Notification::make()
-                            ->title('সিলেক্ট করা অর্ডারগুলো Steadfast এ পাঠানো হয়েছে।')
-                            ->success()
-                            ->send();
-                    }),
-            ]),
-        ]);
+                    Notification::make()->title($records->count() . 'টি অর্ডারের স্ট্যাটাস আপডেট হয়েছে')->success()->send();
+                })
+                ->deselectRecordsAfterCompletion(),
+
+            Tables\Actions\BulkAction::make('bulk_courier_status')
+                ->label('কুরিয়ার স্ট্যাটাস আপডেট')
+                ->icon('heroicon-o-truck')
+                ->color('info')
+                ->form([
+                    Forms\Components\Select::make('courier_status')
+                        ->label('কুরিয়ার স্ট্যাটাস')
+                        ->options(self::COURIER_STATUS_OPTIONS)
+                        ->required(),
+                ])
+                ->action(function (\Illuminate\Support\Collection $records, array $data) {
+                    $records->each(fn (Order $o) => $o->update(['courier_status' => $data['courier_status']]));
+
+                    Notification::make()->title($records->count() . 'টি অর্ডারের কুরিয়ার স্ট্যাটাস আপডেট হয়েছে')->success()->send();
+                })
+                ->deselectRecordsAfterCompletion(),
+
+            Tables\Actions\BulkAction::make('bulk_send_steadfast')
+                ->label('Steadfast এ পাঠান')
+                ->icon('heroicon-o-paper-airplane')
+                ->requiresConfirmation()
+                ->action(function ($records) {
+                    $service = app(SteadfastService::class);
+                    foreach ($records as $record) {
+                        if (blank($record->consignment_id)) {
+                            $service->createOrder($record);
+                        }
+                    }
+
+                    Notification::make()
+                        ->title('সিলেক্ট করা অর্ডারগুলো Steadfast এ পাঠানো হয়েছে।')
+                        ->success()
+                        ->send();
+                })
+                ->deselectRecordsAfterCompletion(),
+
+            Tables\Actions\BulkAction::make('bulk_export')
+                ->label('সিলেক্টেড এক্সপোর্ট (CSV)')
+                ->icon('heroicon-o-arrow-down-tray')
+                ->action(function (\Illuminate\Support\Collection $records) {
+                    return response()->streamDownload(function () use ($records) {
+                        $out = fopen('php://output', 'w');
+                        fwrite($out, "\xEF\xBB\xBF"); // Excel এ বাংলা ঠিকমতো দেখাতে
+                        fputcsv($out, ['Order', 'Date', 'Customer', 'Phone', 'Address', 'Total', 'Payment', 'Status', 'Courier', 'Courier Status', 'Consignment']);
+                        foreach ($records as $o) {
+                            fputcsv($out, [
+                                $o->order_number, $o->created_at?->format('Y-m-d H:i'), $o->customer_name, $o->customer_phone,
+                                $o->customer_address, $o->total_amount, $o->paymentLabel(), $o->status,
+                                $o->courier_name, $o->courier_status, $o->consignment_id,
+                            ]);
+                        }
+                        fclose($out);
+                    }, 'orders-' . now()->format('Ymd-His') . '.csv');
+                }),
+
+            Tables\Actions\DeleteBulkAction::make()->label('সিলেক্টেড ডিলিট'),
+        ])
+        ->checkIfRecordIsSelectableUsing(fn () => true);
     }
 
     public static function getRelations(): array
