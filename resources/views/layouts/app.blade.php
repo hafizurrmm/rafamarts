@@ -372,9 +372,14 @@
             window.addEventListener('resize', function () { if (window.innerWidth >= 768) closeMenu(); });
         })();
     </script>
-    {{-- মোবাইল বটম নেভিগেশন: ট্র্যাক · সাইন ইন · পছন্দ · কার্ট --}}
+    {{-- মোবাইল বটম নেভিগেশন: হোম · ট্র্যাক · সাইন ইন · পছন্দ · কার্ট --}}
     <nav class="md:hidden fixed bottom-0 inset-x-0 z-40 bg-white border-t shadow-[0_-2px_8px_rgba(0,0,0,0.06)]" aria-label="দ্রুত মেনু">
-        <div class="grid grid-cols-4 text-[11px] font-semibold text-gray-600">
+        @php $bnCols = \App\Http\Controllers\CustomerAuthController::enabled() ? 'grid-cols-5' : 'grid-cols-4'; @endphp
+        <div class="grid {{ $bnCols }} text-[11px] font-semibold text-gray-600">
+            <a href="{{ route('home') }}" class="flex flex-col items-center gap-0.5 py-2 {{ request()->routeIs('home') && ! request()->query() ? 'brand-text' : '' }}">
+                <svg xmlns="http://www.w3.org/2000/svg" class="w-6 h-6" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.8" aria-hidden="true"><path stroke-linecap="round" stroke-linejoin="round" d="M2.25 12l8.954-8.955a1.126 1.126 0 011.591 0L21.75 12M4.5 9.75v10.125c0 .621.504 1.125 1.125 1.125H9.75v-4.875c0-.621.504-1.125 1.125-1.125h2.25c.621 0 1.125.504 1.125 1.125V21h4.125c.621 0 1.125-.504 1.125-1.125V9.75M8.25 21h8.25"/></svg>
+                <span>হোম</span>
+            </a>
             <a href="{{ route('track.show') }}" class="flex flex-col items-center gap-0.5 py-2 {{ request()->routeIs('track.*') ? 'brand-text' : '' }}">
                 <svg xmlns="http://www.w3.org/2000/svg" class="w-6 h-6" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.8" aria-hidden="true"><path stroke-linecap="round" stroke-linejoin="round" d="M20.25 7.5l-.625 10.632a2.25 2.25 0 01-2.247 2.118H6.622a2.25 2.25 0 01-2.247-2.118L3.75 7.5M10 11.25h4M3.375 7.5h17.25c.621 0 1.125-.504 1.125-1.125v-1.5c0-.621-.504-1.125-1.125-1.125H3.375c-.621 0-1.125.504-1.125 1.125v1.5c0 .621.504 1.125 1.125 1.125z"/></svg>
                 <span>অর্ডার ট্র্যাক</span>
@@ -384,11 +389,6 @@
                 <a href="{{ $bnUser ? ($bnUser->role === 'admin' ? url('/admin') : route('account.index')) : route('login') }}" class="flex flex-col items-center gap-0.5 py-2 {{ request()->routeIs('login', 'register', 'account.*') ? 'brand-text' : '' }}">
                     <svg xmlns="http://www.w3.org/2000/svg" class="w-6 h-6" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.8" aria-hidden="true"><path stroke-linecap="round" stroke-linejoin="round" d="M15.75 6a3.75 3.75 0 11-7.5 0 3.75 3.75 0 017.5 0zM4.5 20.118a7.5 7.5 0 0115 0A17.933 17.933 0 0112 21.75c-2.676 0-5.216-.584-7.5-1.632z"/></svg>
                     <span>{{ $bnUser ? 'একাউন্ট' : 'সাইন ইন' }}</span>
-                </a>
-            @else
-                <a href="{{ route('home') }}" class="flex flex-col items-center gap-0.5 py-2">
-                    <svg xmlns="http://www.w3.org/2000/svg" class="w-6 h-6" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.8" aria-hidden="true"><path stroke-linecap="round" stroke-linejoin="round" d="M2.25 12l8.954-8.955a1.126 1.126 0 011.591 0L21.75 12M4.5 9.75v10.125c0 .621.504 1.125 1.125 1.125H9.75v-4.875c0-.621.504-1.125 1.125-1.125h2.25c.621 0 1.125.504 1.125 1.125V21h4.125c.621 0 1.125-.504 1.125-1.125V9.75M8.25 21h8.25"/></svg>
-                    <span>হোম</span>
                 </a>
             @endif
             <a href="{{ route('wishlist.index') }}" class="relative flex flex-col items-center gap-0.5 py-2 {{ request()->routeIs('wishlist.*') ? 'brand-text' : '' }}">
