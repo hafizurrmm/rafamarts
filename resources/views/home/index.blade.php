@@ -106,13 +106,13 @@
                 <div class="swiper category-swiper">
                     <div class="swiper-wrapper">
                         @foreach($categories as $category)
-                            <div class="swiper-slide text-center">
-                                <a href="{{ route('home', ['category' => $category->slug]) }}" class="block bg-white rounded-lg shadow-sm p-4">
+                            <div class="swiper-slide h-auto text-center">
+                                <a href="{{ route('home', ['category' => $category->slug]) }}" class="block h-full bg-white rounded-lg shadow-sm p-3 md:p-4">
                                     <img src="{{ $category->image ? asset('storage/' . $category->image) : asset('images/placeholder-product.png') }}"
                                          alt="{{ $category->name }}"
-                                         class="w-full max-w-[8rem] md:max-w-[9rem] aspect-square mx-auto rounded-full object-cover"
+                                         class="w-20 h-20 md:w-full md:h-auto md:max-w-[9rem] aspect-square mx-auto rounded-full object-cover"
                                          loading="lazy" decoding="async">
-                                    <p class="mt-3 text-base font-medium brand-hover-text">{{ $category->name }}</p>
+                                    <p class="mt-3 text-sm md:text-base leading-snug font-medium brand-hover-text line-clamp-2 min-h-[2.75em]">{{ $category->name }}</p>
                                 </a>
                             </div>
                         @endforeach
