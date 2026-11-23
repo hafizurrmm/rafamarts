@@ -153,7 +153,7 @@
             </a>
 
             {{-- সার্চ বার (ডেস্কটপ): গোল কোণা, ডানে সবুজ সার্চ বাটন --}}
-            <form action="{{ route('home') }}" method="GET" class="flex-1 max-w-2xl hidden md:flex">
+            <form action="{{ route('home') }}" method="GET" class="flex-1 max-w-[32rem] hidden md:flex">
                 <div class="flex w-full rounded-xl border border-gray-300 bg-white overflow-hidden focus-within:ring-2 focus-within:border-transparent"
                      style="--tw-ring-color: var(--brand-primary)">
                     <input type="text" name="q" value="{{ request('q') }}" placeholder="পণ্য, ব্র্যান্ড এবং আরও খুঁজুন..."
