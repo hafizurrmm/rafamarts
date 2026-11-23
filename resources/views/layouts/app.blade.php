@@ -323,12 +323,12 @@
             }
         @endphp
         <a href="https://wa.me/{{ $waDigits }}" target="_blank"
-           class="fixed bottom-5 right-5 bg-green-500 hover:bg-green-600 text-white rounded-full w-14 h-14 flex items-center justify-center text-2xl shadow-lg z-50">
+           class="fixed bottom-20 md:bottom-5 right-4 md:right-5 bg-green-500 hover:bg-green-600 text-white rounded-full w-14 h-14 flex items-center justify-center text-2xl shadow-lg z-50">
             💬
         </a>
     @endif
 
-    <footer class="brand-bg-secondary text-gray-300 mt-10">
+    <footer class="brand-bg-secondary text-gray-300 mt-10 pb-16 md:pb-0">
         <div class="max-w-7xl mx-auto px-4 py-8 text-center text-sm space-y-2">
             @if(!empty($footerMenu))
                 <nav class="flex flex-wrap justify-center gap-x-5 gap-y-2 pb-3">
@@ -372,6 +372,42 @@
             window.addEventListener('resize', function () { if (window.innerWidth >= 768) closeMenu(); });
         })();
     </script>
+    {{-- মোবাইল বটম নেভিগেশন: ট্র্যাক · সাইন ইন · পছন্দ · কার্ট --}}
+    <nav class="md:hidden fixed bottom-0 inset-x-0 z-40 bg-white border-t shadow-[0_-2px_8px_rgba(0,0,0,0.06)]" aria-label="দ্রুত মেনু">
+        <div class="grid grid-cols-4 text-[11px] font-semibold text-gray-600">
+            <a href="{{ route('track.show') }}" class="flex flex-col items-center gap-0.5 py-2 {{ request()->routeIs('track.*') ? 'brand-text' : '' }}">
+                <svg xmlns="http://www.w3.org/2000/svg" class="w-6 h-6" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.8" aria-hidden="true"><path stroke-linecap="round" stroke-linejoin="round" d="M20.25 7.5l-.625 10.632a2.25 2.25 0 01-2.247 2.118H6.622a2.25 2.25 0 01-2.247-2.118L3.75 7.5M10 11.25h4M3.375 7.5h17.25c.621 0 1.125-.504 1.125-1.125v-1.5c0-.621-.504-1.125-1.125-1.125H3.375c-.621 0-1.125.504-1.125 1.125v1.5c0 .621.504 1.125 1.125 1.125z"/></svg>
+                <span>অর্ডার ট্র্যাক</span>
+            </a>
+            @if(\App\Http\Controllers\CustomerAuthController::enabled())
+                @php $bnUser = auth()->user(); @endphp
+                <a href="{{ $bnUser ? ($bnUser->role === 'admin' ? url('/admin') : route('account.index')) : route('login') }}" class="flex flex-col items-center gap-0.5 py-2 {{ request()->routeIs('login', 'register', 'account.*') ? 'brand-text' : '' }}">
+                    <svg xmlns="http://www.w3.org/2000/svg" class="w-6 h-6" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.8" aria-hidden="true"><path stroke-linecap="round" stroke-linejoin="round" d="M15.75 6a3.75 3.75 0 11-7.5 0 3.75 3.75 0 017.5 0zM4.5 20.118a7.5 7.5 0 0115 0A17.933 17.933 0 0112 21.75c-2.676 0-5.216-.584-7.5-1.632z"/></svg>
+                    <span>{{ $bnUser ? 'একাউন্ট' : 'সাইন ইন' }}</span>
+                </a>
+            @else
+                <a href="{{ route('home') }}" class="flex flex-col items-center gap-0.5 py-2">
+                    <svg xmlns="http://www.w3.org/2000/svg" class="w-6 h-6" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.8" aria-hidden="true"><path stroke-linecap="round" stroke-linejoin="round" d="M2.25 12l8.954-8.955a1.126 1.126 0 011.591 0L21.75 12M4.5 9.75v10.125c0 .621.504 1.125 1.125 1.125H9.75v-4.875c0-.621.504-1.125 1.125-1.125h2.25c.621 0 1.125.504 1.125 1.125V21h4.125c.621 0 1.125-.504 1.125-1.125V9.75M8.25 21h8.25"/></svg>
+                    <span>হোম</span>
+                </a>
+            @endif
+            <a href="{{ route('wishlist.index') }}" class="relative flex flex-col items-center gap-0.5 py-2 {{ request()->routeIs('wishlist.*') ? 'brand-text' : '' }}">
+                <span class="relative">
+                    <svg xmlns="http://www.w3.org/2000/svg" class="w-6 h-6" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.8" aria-hidden="true"><path stroke-linecap="round" stroke-linejoin="round" d="M21 8.25c0-2.485-2.099-4.5-4.688-4.5-1.935 0-3.597 1.126-4.312 2.733-.715-1.607-2.377-2.733-4.313-2.733C5.1 3.75 3 5.765 3 8.25c0 7.22 9 12 9 12s9-4.78 9-12z"/></svg>
+                    <span data-wl-count class="absolute -top-1.5 -right-2.5 brand-bg text-white text-[10px] font-bold rounded-full min-w-[1.1rem] h-[1.1rem] px-1 flex items-center justify-center">0</span>
+                </span>
+                <span>পছন্দ</span>
+            </a>
+            <a href="{{ route('cart.index') }}" class="relative flex flex-col items-center gap-0.5 py-2 {{ request()->routeIs('cart.*') ? 'brand-text' : '' }}">
+                <span class="relative">
+                    <svg xmlns="http://www.w3.org/2000/svg" class="w-6 h-6" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.8" aria-hidden="true"><path stroke-linecap="round" stroke-linejoin="round" d="M2.25 3h1.386c.51 0 .955.343 1.087.835l.383 1.437M7.5 14.25a3 3 0 00-3 3h15.75m-12.75-3h11.218c1.121-2.3 1.994-4.705 2.602-7.189.077-.316-.173-.611-.498-.611H5.106M7.5 14.25L5.106 5.272M6 18.75a.75.75 0 11-1.5 0 .75.75 0 011.5 0zm12.75 0a.75.75 0 11-1.5 0 .75.75 0 011.5 0z"/></svg>
+                    <span class="absolute -top-1.5 -right-2.5 brand-bg text-white text-[10px] font-bold rounded-full min-w-[1.1rem] h-[1.1rem] px-1 flex items-center justify-center">{{ collect(session('cart', []))->sum('quantity') }}</span>
+                </span>
+                <span>কার্ট</span>
+            </a>
+        </div>
+    </nav>
+
     <script>
         // Wishlist — localStorage-এ প্রোডাক্ট আইডি জমা থাকে (লগইন লাগে না)
         (function () {
