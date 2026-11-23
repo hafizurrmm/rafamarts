@@ -129,7 +129,7 @@
                     try { $raw = \App\Models\Setting::get('flash_sale_ends_at'); $fsEnd = $raw ? \Carbon\Carbon::parse($raw, 'Asia/Dhaka') : null; } catch (\Throwable $e) {}
                     if ($fsEnd && $fsEnd->isPast()) { $fsEnd = null; }
                 @endphp
-                <div class="flex items-center justify-between gap-3 rounded-xl px-4 py-3 mb-4" style="background:#fdf1e3">
+                <div class="flex items-center justify-between gap-3 rounded-xl px-4 py-3 mb-4" style="background:#e4f3e8">
                     <h2 class="section-heading font-bold flex items-center gap-2 min-w-0">
                         <svg xmlns="http://www.w3.org/2000/svg" class="w-[1em] h-[1em] shrink-0 text-amber-500" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2" aria-hidden="true"><path stroke-linecap="round" stroke-linejoin="round" d="M3.75 13.5l10.5-11.25L12 10.5h8.25L9.75 21.75 12 13.5H3.75z"/></svg>
                         <span>Flash <span class="brand-text">Sale</span></span>
