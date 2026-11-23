@@ -5,6 +5,7 @@ use App\Http\Controllers\CartController;
 use App\Http\Controllers\CheckoutController;
 use App\Http\Controllers\HomeController;
 use App\Http\Controllers\OrderTrackingController;
+use App\Http\Controllers\WishlistController;
 use App\Http\Controllers\PageController;
 use App\Http\Controllers\ProductController;
 use Illuminate\Support\Facades\Route;
@@ -24,6 +25,10 @@ Route::get('/checkout', [CheckoutController::class, 'index'])->name('checkout.in
 Route::post('/checkout', [CheckoutController::class, 'store'])->name('checkout.store');
 Route::post('/checkout/capture', [CheckoutController::class, 'capture'])->middleware('throttle:40,1')->name('checkout.capture');
 Route::get('/checkout/success/{orderNumber}', [CheckoutController::class, 'success'])->name('checkout.success');
+
+// Wishlist (ব্রাউজারে সেভ; সার্ভার শুধু কার্ড HTML দেয়)
+Route::get('/wishlist', [WishlistController::class, 'index'])->name('wishlist.index');
+Route::get('/wishlist/items', [WishlistController::class, 'items'])->middleware('throttle:60,1')->name('wishlist.items');
 
 // অর্ডার ট্র্যাকিং (অর্ডার আইডি + ফোন মিলতে হবে)
 Route::get('/track-order', [OrderTrackingController::class, 'show'])->name('track.show');
@@ -45,5 +50,5 @@ Route::middleware(['auth'])->group(function () {
 // ⚠️ এই রুটটা অবশ্যই ফাইলের একদম শেষে থাকতে হবে — সব নির্দিষ্ট রুটের পরে, নইলে অন্য URL ধরে ফেলবে।
 // regex এর শুরুর অংশ (?!admin$|...) এর কারণে /admin, /cart, /checkout এ এটা কখনো মিলবে না।
 Route::get('/{slug}', [PageController::class, 'show'])
-    ->where('slug', '(?!admin$|cart$|checkout$|product$|login$|livewire$|storage$|up$|track-order$)[a-z0-9]+(?:-[a-z0-9]+)*')
+    ->where('slug', '(?!admin$|cart$|checkout$|product$|login$|livewire$|storage$|up$|track-order$|wishlist$)[a-z0-9]+(?:-[a-z0-9]+)*')
     ->name('pages.show');

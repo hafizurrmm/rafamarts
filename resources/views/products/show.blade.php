@@ -40,7 +40,10 @@
 
         {{-- ডানে বিবরণ: ৭ কলাম --}}
         <div class="md:col-span-7 bg-white rounded-lg shadow-sm p-5">
-            <h1 class="text-2xl font-bold mb-2 leading-snug">{{ $product->name }}</h1>
+            <div class="flex items-start justify-between gap-3">
+                <h1 class="text-2xl font-bold mb-2 leading-snug">{{ $product->name }}</h1>
+                <button type="button" class="wl-btn shrink-0 w-10 h-10 rounded-full border flex items-center justify-center text-gray-500 hover:text-rose-600" data-id="{{ $product->id }}" aria-label="পছন্দের তালিকায় যোগ করুন"><svg xmlns="http://www.w3.org/2000/svg" class="w-6 h-6" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.8" aria-hidden="true"><path stroke-linecap="round" stroke-linejoin="round" d="M21 8.25c0-2.485-2.099-4.5-4.688-4.5-1.935 0-3.597 1.126-4.312 2.733-.715-1.607-2.377-2.733-4.313-2.733C5.1 3.75 3 5.765 3 8.25c0 7.22 9 12 9 12s9-4.78 9-12z"/></svg></button>
+            </div>
 
             <div class="mb-4">
                 <span class="text-2xl text-red-600 font-bold">৳ {{ number_format($product->price, 0) }}</span>
