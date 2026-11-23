@@ -118,6 +118,7 @@ class StoreSettings extends Page
             'section_heading_font_size' => Setting::get('section_heading_font_size', '1.5rem'),
 
             // Grid layout
+            'flash_sale_ends_at' => Setting::get('flash_sale_ends_at'),
             'flash_sale_columns' => Setting::get('flash_sale_columns', 5),
             'all_products_columns' => Setting::get('all_products_columns', 5),
             'all_products_rows' => Setting::get('all_products_rows', 3),
@@ -406,6 +407,11 @@ class StoreSettings extends Page
                             Forms\Components\Section::make('গ্রিড লেআউট (কলাম ও রো)')
                                 ->description('ডেস্কটপে কয়টা কলাম দেখাবে সেটা এখান থেকে ঠিক করুন। মোবাইলে স্বয়ংক্রিয়ভাবে কম কলামে দেখাবে।')
                                 ->schema([
+                                    Forms\Components\DateTimePicker::make('flash_sale_ends_at')
+                                        ->label('Flash Sale শেষ হবে (কাউন্টডাউন)')
+                                        ->seconds(false)
+                                        ->helperText('বাংলাদেশ সময়ে দিন। তারিখ ও সময় দিলে Flash Sale-এর পাশে কাউন্টডাউন দেখাবে। খালি রাখলে কাউন্টডাউন দেখাবে না; সময় পেরিয়ে গেলে নিজে থেকে লুকিয়ে যাবে।'),
+
                                     Forms\Components\TextInput::make('flash_sale_columns')
                                         ->label('Flash Sale — ডেস্কটপে কলাম সংখ্যা')
                                         ->numeric()->minValue(2)->maxValue(8)->default(5),

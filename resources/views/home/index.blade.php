@@ -124,7 +124,30 @@
         {{-- Flash Sale slider --}}
         @if($flashSaleProducts->count())
             <div class="mb-10 relative">
-                <h2 class="section-heading font-bold mb-4">Flash <span class="brand-text">Sale</span></h2>
+                @php
+                    $fsEnd = null;
+                    try { $raw = \App\Models\Setting::get('flash_sale_ends_at'); $fsEnd = $raw ? \Carbon\Carbon::parse($raw, 'Asia/Dhaka') : null; } catch (\Throwable $e) {}
+                    if ($fsEnd && $fsEnd->isPast()) { $fsEnd = null; }
+                @endphp
+                <div class="flex items-center justify-between gap-3 rounded-xl px-4 py-3 mb-4" style="background:#fdf1e3">
+                    <h2 class="section-heading font-bold flex items-center gap-2 min-w-0">
+                        <svg xmlns="http://www.w3.org/2000/svg" class="w-[1em] h-[1em] shrink-0 text-amber-500" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2" aria-hidden="true"><path stroke-linecap="round" stroke-linejoin="round" d="M3.75 13.5l10.5-11.25L12 10.5h8.25L9.75 21.75 12 13.5H3.75z"/></svg>
+                        <span>Flash <span class="brand-text">Sale</span></span>
+                    </h2>
+                    @if($fsEnd)
+                        <div class="flex items-center gap-2 shrink-0" data-fs-countdown="{{ $fsEnd->toIso8601String() }}">
+                            <span class="hidden sm:inline text-sm text-gray-600">Ends in</span>
+                            <div class="flex gap-1.5">
+                                @foreach(['d' => 'D', 'h' => 'H', 'm' => 'M', 's' => 'S'] as $k => $lbl)
+                                    <div class="brand-bg-secondary text-white rounded-md w-9 md:w-11 py-1 text-center leading-none">
+                                        <div class="text-base md:text-lg font-bold tabular-nums" data-fs="{{ $k }}">00</div>
+                                        <div class="text-[9px] opacity-80 mt-0.5">{{ $lbl }}</div>
+                                    </div>
+                                @endforeach
+                            </div>
+                        </div>
+                    @endif
+                </div>
                 <div class="swiper flash-sale-swiper" data-columns="{{ $flashSaleColumns }}">
                     <div class="swiper-wrapper">
                         @foreach($flashSaleProducts as $product)
@@ -207,6 +230,22 @@
                 },
             });
         }
+
+        // Flash Sale countdown
+        document.querySelectorAll('[data-fs-countdown]').forEach(function (el) {
+            const end = new Date(el.dataset.fsCountdown).getTime();
+            const put = (k, v) => { const n = el.querySelector('[data-fs="' + k + '"]'); if (n) n.textContent = String(v).padStart(2, '0'); };
+            function tick() {
+                let diff = Math.floor((end - Date.now()) / 1000);
+                if (diff <= 0) { el.remove(); return false; }
+                put('d', Math.floor(diff / 86400)); diff %= 86400;
+                put('h', Math.floor(diff / 3600)); diff %= 3600;
+                put('m', Math.floor(diff / 60));
+                put('s', diff % 60);
+                return true;
+            }
+            if (tick()) { const t = setInterval(() => { if (!tick()) clearInterval(t); }, 1000); }
+        });
 
         if (document.querySelector('.flash-sale-swiper')) {
             const flashSaleCols = parseInt(document.querySelector('.flash-sale-swiper').dataset.columns || '5', 10);
