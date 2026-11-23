@@ -47,4 +47,28 @@ class Setting extends Model
             static::set($key, $value);
         }
     }
+
+    // হোমপেজের ব্যানারের নিচের "ফিচার স্ট্রিপ" — Settings এ কিছু সেভ না করা থাকলে এই ডিফল্ট দেখায়
+    public const FEATURE_ICONS = [
+        'truck' => 'ট্রাক (ডেলিভারি)',
+        'phone' => 'ফোন (সাপোর্ট)',
+        'card' => 'কার্ড (পেমেন্ট/দাম)',
+        'tag' => 'ট্যাগ (ডিসকাউন্ট)',
+        'shield' => 'শিল্ড (নিরাপত্তা)',
+        'gift' => 'গিফট',
+        'clock' => 'ঘড়ি',
+        'heart' => 'হার্ট',
+    ];
+
+    public static function featureItems(): array
+    {
+        $items = array_values(static::getArray('feature_items'));
+
+        return $items ?: [
+            ['icon' => 'truck', 'title' => 'Cash On Delivery', 'subtitle' => 'Door to Door Delivery'],
+            ['icon' => 'phone', 'title' => 'Online Support 24/7', 'subtitle' => 'Support online 24 hours a day'],
+            ['icon' => 'card', 'title' => 'Best Price Guarantee', 'subtitle' => 'Great Quality, Best Price'],
+            ['icon' => 'tag', 'title' => 'Exclusive Discount', 'subtitle' => 'Order 2 items get free delivery'],
+        ];
+    }
 }

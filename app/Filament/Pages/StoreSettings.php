@@ -43,6 +43,8 @@ class StoreSettings extends Page
             'hotline_number' => Setting::get('hotline_number'),
             'whatsapp_number' => Setting::get('whatsapp_number'),
             'facebook_url' => Setting::get('facebook_url'),
+            'features_enabled' => (bool) Setting::get('features_enabled', true),
+            'feature_items' => Setting::featureItems(),
             'customer_login_enabled' => (bool) Setting::get('customer_login_enabled', true),
             'site_description' => Setting::get('site_description'),
             'product_return_policy' => Setting::get('product_return_policy'),
@@ -180,6 +182,20 @@ class StoreSettings extends Page
                             Forms\Components\TextInput::make('hotline_number')->label('Hotline Number'),
                             Forms\Components\TextInput::make('whatsapp_number')->label('WhatsApp Number')->placeholder('8801XXXXXXXXX')->helperText('দেশের কোডসহ দিন (880...)। 01XXXXXXXXX দিলেও সাইট নিজে থেকে ঠিক করে নেবে।'),
                             Forms\Components\Toggle::make('customer_login_enabled')->label('কাস্টমার সাইন ইন / একাউন্ট চালু')->helperText('বন্ধ করলে হেডারের সাইন ইন আইকন ও /login, /register, /account বন্ধ হবে।')->inline(false),
+                            Forms\Components\Toggle::make('features_enabled')->label('ব্যানারের নিচে ফিচার স্ট্রিপ দেখাবে')->inline(false)->columnSpanFull(),
+                            Forms\Components\Repeater::make('feature_items')
+                                ->label('ফিচার স্ট্রিপ (আইকন + লেখা)')
+                                ->schema([
+                                    Forms\Components\Select::make('icon')->label('আইকন')->options(Setting::FEATURE_ICONS)->default('tag')->required(),
+                                    Forms\Components\TextInput::make('title')->label('টাইটেল')->required()->maxLength(40),
+                                    Forms\Components\TextInput::make('subtitle')->label('ছোট লেখা')->maxLength(60),
+                                ])
+                                ->columns(3)
+                                ->maxItems(4)
+                                ->reorderable()
+                                ->collapsible()
+                                ->itemLabel(fn (array $state) => $state['title'] ?? null)
+                                ->columnSpanFull(),
                             Forms\Components\TextInput::make('facebook_url')->label('Facebook Page URL')->url(),
                             Forms\Components\Textarea::make('site_description')
                                 ->label('সাইট বর্ণনা (SEO / Facebook লিংক প্রিভিউ)')

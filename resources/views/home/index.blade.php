@@ -85,6 +85,21 @@
             </div>
         @endif
 
+        {{-- ব্যানারের নিচের ফিচার স্ট্রিপ (Settings → স্টোর ব্র্যান্ডিং থেকে বদলানো যায়) --}}
+        @if((bool) \App\Models\Setting::get('features_enabled', true))
+            <div class="mb-10 bg-white rounded-xl border border-gray-100 shadow-sm px-4 py-5 grid grid-cols-2 lg:grid-cols-4 gap-x-4 gap-y-5">
+                @foreach(\App\Models\Setting::featureItems() as $f)
+                    <div class="flex items-center gap-3 min-w-0">
+                        @include('home.partials.feature-icon', ['icon' => $f['icon'] ?? 'tag'])
+                        <div class="min-w-0">
+                            <div class="font-bold text-sm md:text-[15px] text-gray-900 leading-tight">{{ $f['title'] ?? '' }}</div>
+                            <div class="text-xs md:text-sm text-gray-500 leading-snug">{{ $f['subtitle'] ?? '' }}</div>
+                        </div>
+                    </div>
+                @endforeach
+            </div>
+        @endif
+
         {{-- Category slider --}}
         @if($categories->count())
             <div class="mb-10">
