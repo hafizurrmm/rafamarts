@@ -401,7 +401,7 @@ class OrderResource extends Resource
                 ->deselectRecordsAfterCompletion(),
 
             Tables\Actions\BulkAction::make('bulk_export')
-                ->label('সিলেক্টেড এক্সপোর্ট (CSV)')
+                ->label('CSV')
                 ->icon('heroicon-o-arrow-down-tray')
                 ->action(function (\Illuminate\Support\Collection $records) {
                     return response()->streamDownload(function () use ($records) {
@@ -419,7 +419,7 @@ class OrderResource extends Resource
                     }, 'orders-' . now()->format('Ymd-His') . '.csv');
                 }),
 
-            Tables\Actions\DeleteBulkAction::make()->label('সিলেক্টেড ডিলিট'),
+            Tables\Actions\DeleteBulkAction::make(),
         ])
         ->checkIfRecordIsSelectableUsing(fn () => true);
     }
