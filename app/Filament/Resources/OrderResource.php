@@ -9,6 +9,7 @@ use App\Models\Order;
 use App\Models\Setting;
 use App\Services\BahokService;
 use App\Services\PathaoService;
+use App\Services\RedXService;
 use App\Services\SteadfastService;
 use Filament\Forms;
 use Filament\Forms\Form;
@@ -192,6 +193,7 @@ class OrderResource extends Resource
                         ->options([
                             'steadfast' => 'Steadfast',
                             'pathao' => 'Pathao',
+                            'redx' => 'RedX',
                             'bahok' => 'Bahok',
                         ])
                         ->placeholder('কোনোটি নয়')
@@ -260,6 +262,7 @@ class OrderResource extends Resource
                     'info' => 'steadfast',
                     'warning' => 'pathao',
                     'success' => 'bahok',
+                    'danger' => 'redx',
                 ])
                 ->formatStateUsing(fn ($state) => $state ? ucfirst($state) : '—'),
             Tables\Columns\TextColumn::make('courier_status')
@@ -282,6 +285,7 @@ class OrderResource extends Resource
                 ->options([
                     'steadfast' => 'Steadfast',
                     'pathao' => 'Pathao',
+                    'redx' => 'RedX',
                     'bahok' => 'Bahok',
                 ]),
         ])
@@ -352,9 +356,10 @@ class OrderResource extends Resource
                         ->options([
                             'steadfast' => 'Steadfast',
                             'pathao' => 'Pathao',
+                            'redx' => 'RedX',
                             'bahok' => 'Bahok',
                         ])
-                        ->default(fn () => collect(['steadfast', 'pathao', 'bahok'])->first(fn ($c) => (bool) Setting::get($c . '_enabled', false)))
+                        ->default(fn () => collect(['steadfast', 'pathao', 'redx', 'bahok'])->first(fn ($c) => (bool) Setting::get($c . '_enabled', false)))
                         ->required(),
                 ])
                 ->action(fn (\Illuminate\Support\Collection $records, array $data) => self::bulkSendToCourier($records, $data['courier']))
@@ -369,6 +374,7 @@ class OrderResource extends Resource
                     foreach ($records->filter(fn (Order $o) => filled($o->courier_name)) as $o) {
                         $service = match ($o->courier_name) {
                             'pathao' => app(PathaoService::class),
+                            'redx' => app(RedXService::class),
                             'bahok' => app(BahokService::class),
                             default => app(SteadfastService::class),
                         };
@@ -423,6 +429,7 @@ class OrderResource extends Resource
     {
         $service = match ($courier) {
             'pathao' => app(PathaoService::class),
+            'redx' => app(RedXService::class),
             'bahok' => app(BahokService::class),
             default => app(SteadfastService::class),
         };

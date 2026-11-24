@@ -54,6 +54,10 @@ class CourierApi extends Page
                 'name' => 'RedX', 'badge' => 'RX', 'color' => '#dc2626',
                 'fields' => [
                     'redx_access_token' => ['API Access Token', 'secret', 'API Access Token', 'full'],
+                    'redx_environment' => ['Environment', 'select', '', 'full', ['sandbox' => 'Sandbox (টেস্ট)', 'live' => 'Live'], 'optional'],
+                    'redx_default_area_name' => ['ডিফল্ট ডেলিভারি এরিয়া (নাম)', 'text', 'যেমন Mirpur 10', 'half', null, 'optional'],
+                    'redx_default_area_id' => ['ডিফল্ট ডেলিভারি এরিয়া (ID)', 'text', 'RedX এরিয়া আইডি', 'half', null, 'optional'],
+                    'redx_pickup_store_id' => ['Pickup Store ID (ঐচ্ছিক)', 'text', 'Store ID', 'full', null, 'optional'],
                 ],
                 'enabled' => 'redx_enabled',
             ],
@@ -86,7 +90,7 @@ class CourierApi extends Page
     {
         foreach (self::couriers() as $c) {
             foreach (array_keys($c['fields']) as $key) {
-                $this->data[$key] = (string) Setting::get($key, $key === 'pathao_environment' ? 'sandbox' : '');
+                $this->data[$key] = (string) Setting::get($key, in_array($key, ['pathao_environment', 'redx_environment'], true) ? 'sandbox' : '');
             }
             $this->data[$c['enabled']] = (bool) Setting::get($c['enabled'], false);
         }
@@ -111,7 +115,7 @@ class CourierApi extends Page
         abort_unless($c, 404);
 
         foreach (array_keys($c['fields']) as $key) {
-            Setting::set($key, $key === 'pathao_environment' ? 'sandbox' : '');
+            Setting::set($key, in_array($key, ['pathao_environment', 'redx_environment'], true) ? 'sandbox' : '');
         }
         Setting::set($c['enabled'], false);
         $this->fillData();
