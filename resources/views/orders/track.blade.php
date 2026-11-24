@@ -9,6 +9,7 @@
         'on_hold' => ['অর্ডার হোল্ডে আছে', 'bg-orange-100 text-orange-800'],
         'completed' => ['ডেলিভারি সম্পন্ন', 'bg-green-100 text-green-800'],
         'cancelled' => ['অর্ডার বাতিল হয়েছে', 'bg-red-100 text-red-800'],
+        'returned' => ['অর্ডার ফেরত এসেছে', 'bg-purple-100 text-purple-800'],
     ];
 @endphp
 
@@ -66,8 +67,8 @@
                 <span class="px-3 py-1 rounded-full text-sm font-semibold {{ $badge }}">{{ $label }}</span>
             </div>
 
-            @if($order->status === 'cancelled')
-                <p class="text-sm text-red-600 mb-4">এই অর্ডারটি বাতিল করা হয়েছে। প্রয়োজনে আমাদের সাথে যোগাযোগ করুন।</p>
+            @if(in_array($order->status, ['cancelled', 'returned'], true))
+                <p class="text-sm text-red-600 mb-4">{{ $order->status === 'returned' ? 'এই অর্ডারটি ফেরত এসেছে।' : 'এই অর্ডারটি বাতিল করা হয়েছে।' }} প্রয়োজনে আমাদের সাথে যোগাযোগ করুন।</p>
             @else
                 <ol class="mb-5">
                     @foreach($steps as $i => $s)

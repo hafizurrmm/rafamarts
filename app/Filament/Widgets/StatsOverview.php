@@ -16,7 +16,7 @@ class StatsOverview extends BaseWidget
         // ক্যাশ অন ডেলিভারি: আজকের সব অর্ডার (বাতিল বাদে) ধরা হয়, শুধু "paid" না —
         // কারণ COD-তে অর্ডার Completed না হওয়া পর্যন্ত paid হয় না, ফলে সংখ্যা সব সময় ০ দেখাত।
         $todaySales = Order::whereDate('created_at', today())
-            ->where('status', '!=', 'cancelled')
+            ->whereNotIn('status', ['cancelled', 'returned'])
             ->sum('total_amount');
 
         $totalOrders = Order::count();

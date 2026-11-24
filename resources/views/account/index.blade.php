@@ -9,6 +9,7 @@
         'on_hold' => ['হোল্ডে', 'bg-orange-100 text-orange-800'],
         'completed' => ['ডেলিভারি সম্পন্ন', 'bg-green-100 text-green-800'],
         'cancelled' => ['বাতিল', 'bg-red-100 text-red-800'],
+        'returned' => ['ফেরত', 'bg-purple-100 text-purple-800'],
     ];
 @endphp
 

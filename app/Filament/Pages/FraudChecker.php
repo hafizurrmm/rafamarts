@@ -52,7 +52,7 @@ class FraudChecker extends Page
         $orders = Order::where('customer_phone', $phone)->get();
         $total = $orders->count();
         $completed = $orders->where('status', 'completed')->count();
-        $cancelled = $orders->where('status', 'cancelled')->count();
+        $cancelled = $orders->whereIn('status', ['cancelled', 'returned'])->count();
         $pending = $total - $completed - $cancelled;
         $finished = $completed + $cancelled; // only finished orders count toward a rate
 

@@ -32,10 +32,11 @@ class TodayReport extends Widget
                 'Processing' => (int) ($byStatus['processing'] ?? 0),
                 'On Hold'    => (int) ($byStatus['on_hold'] ?? 0),
                 'Canceled'   => (int) ($byStatus['cancelled'] ?? 0),
+                'Returned'   => (int) ($byStatus['returned'] ?? 0),
                 'Completed'  => (int) ($byStatus['completed'] ?? 0),
             ],
             // বাতিল বাদে আজকের অর্ডারের মোট টাকা
-            'amount' => (float) (clone $today)->where('status', '!=', 'cancelled')->sum('total_amount'),
+            'amount' => (float) (clone $today)->whereNotIn('status', ['cancelled', 'returned'])->sum('total_amount'),
         ];
     }
 }

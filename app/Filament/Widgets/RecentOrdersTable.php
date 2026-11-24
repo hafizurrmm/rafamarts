@@ -45,7 +45,7 @@ class RecentOrdersTable extends BaseWidget
                         'info' => 'processing',
                         'gray' => 'on_hold',
                         'success' => 'completed',
-                        'danger' => 'cancelled',
+                        'danger' => ['cancelled', 'returned'],
                     ]),
             ])
             ->actions([

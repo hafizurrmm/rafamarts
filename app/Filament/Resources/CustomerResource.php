@@ -40,7 +40,7 @@ class CustomerResource extends Resource
         return Order::query()
             ->selectRaw('MAX(id) as id, customer_phone, MAX(customer_name) as customer_name, MAX(customer_address) as customer_address')
             ->selectRaw('COUNT(*) as orders_count')
-            ->selectRaw("SUM(CASE WHEN status <> 'cancelled' THEN total_amount ELSE 0 END) as lifetime_value")
+            ->selectRaw("SUM(CASE WHEN status NOT IN ('cancelled', 'returned') THEN total_amount ELSE 0 END) as lifetime_value")
             ->selectRaw('MAX(created_at) as last_order_at, MIN(created_at) as first_order_at')
             ->whereNotNull('customer_phone')
             ->groupBy('customer_phone');

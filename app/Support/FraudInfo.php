@@ -21,7 +21,7 @@ class FraudInfo
             $rows = Order::where('customer_phone', $phone)->selectRaw('status, count(*) as c')->groupBy('status')->pluck('c', 'status');
             $total = (int) $rows->sum();
             $completed = (int) ($rows['completed'] ?? 0);
-            $cancelled = (int) ($rows['cancelled'] ?? 0);
+            $cancelled = (int) (($rows['cancelled'] ?? 0) + ($rows['returned'] ?? 0));
             $finished = $completed + $cancelled;
 
             return [

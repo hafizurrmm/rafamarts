@@ -1,6 +1,6 @@
 <x-filament-widgets::widget>
     <style>
-        .os-grid { display: grid; grid-template-columns: repeat(5, minmax(0, 1fr)); gap: 1rem; }
+        .os-grid { display: grid; grid-template-columns: repeat(6, minmax(0, 1fr)); gap: 1rem; }
         @media (max-width: 900px) { .os-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); } }
         .os-card { display: flex; flex-direction: column; gap: .75rem; padding: 1rem 1.1rem; border-radius: .9rem; background: #fff;
                    border: 1px solid rgba(0,0,0,.07); box-shadow: 0 1px 2px rgba(0,0,0,.04); text-decoration: none; transition: box-shadow .15s, transform .15s; }

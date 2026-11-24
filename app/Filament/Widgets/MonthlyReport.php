@@ -28,7 +28,7 @@ class MonthlyReport extends Widget
 
         $total = (int) $byStatus->sum();
         $completed = (int) ($byStatus['completed'] ?? 0);
-        $cancelled = (int) ($byStatus['cancelled'] ?? 0);
+        $cancelled = (int) (($byStatus['cancelled'] ?? 0) + ($byStatus['returned'] ?? 0));
         $finished = $completed + $cancelled;
 
         return [
@@ -38,11 +38,12 @@ class MonthlyReport extends Widget
                 'Pending'    => (int) ($byStatus['pending'] ?? 0),
                 'Processing' => (int) ($byStatus['processing'] ?? 0),
                 'On Hold'    => (int) ($byStatus['on_hold'] ?? 0),
-                'Canceled'   => $cancelled,
+                'Canceled'   => (int) ($byStatus['cancelled'] ?? 0),
+                'Returned'   => (int) ($byStatus['returned'] ?? 0),
                 'Completed'  => $completed,
             ],
             // বাতিল বাদে এ মাসের মোট অর্ডারের টাকা
-            'amount' => (float) (clone $month)->where('status', '!=', 'cancelled')->sum('total_amount'),
+            'amount' => (float) (clone $month)->whereNotIn('status', ['cancelled', 'returned'])->sum('total_amount'),
             // শুধু ডেলিভারি সম্পন্ন অর্ডারের টাকা
             'completedAmount' => (float) (clone $month)->where('status', 'completed')->sum('total_amount'),
             // ডেলিভারি সাকসেস রেট (শুধু শেষ হওয়া অর্ডার: completed ÷ (completed + cancelled))

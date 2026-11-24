@@ -26,6 +26,7 @@ class OrderStatusStats extends Widget
             ['on_hold', 'On Hold', 'heroicon-m-pause-circle', '#d97706', '#fef3c7'],
             ['completed', 'Completed', 'heroicon-m-check-circle', '#059669', '#d9f4e7'],
             ['cancelled', 'Cancelled', 'heroicon-m-x-circle', '#dc2626', '#fde2e2'],
+            ['returned', 'Returned', 'heroicon-m-arrow-uturn-left', '#7c3aed', '#ede4ff'],
         ];
 
         $cards = array_map(fn ($d) => [

@@ -37,6 +37,7 @@ class OrderResource extends Resource
         'on_hold' => 'On Hold',
         'completed' => 'Completed',
         'cancelled' => 'Cancelled',
+        'returned' => 'Returned',
     ];
 
     public const COURIER_STATUS_OPTIONS = [
@@ -108,7 +109,7 @@ class OrderResource extends Resource
                     }
 
                     $completed = $orders->where('status', 'completed')->count();
-                    $cancelled = $orders->where('status', 'cancelled')->count();
+                    $cancelled = $orders->whereIn('status', ['cancelled', 'returned'])->count();
                     $finished = $completed + $cancelled;
                     $rate = $finished > 0 ? (int) round($completed / $finished * 100) : null;
 
@@ -138,6 +139,7 @@ class OrderResource extends Resource
                         'on_hold' => 'On Hold',
                         'completed' => 'Completed',
                         'cancelled' => 'Cancelled',
+                        'returned' => 'Returned',
                     ])
                     ->required(),
 
@@ -285,6 +287,7 @@ class OrderResource extends Resource
                     'on_hold' => 'On Hold',
                     'completed' => 'Completed',
                     'cancelled' => 'Cancelled',
+                    'returned' => 'Returned',
                 ])
                 ->selectablePlaceholder(false)
                 ->afterStateUpdated(fn () => Notification::make()->title('স্ট্যাটাস আপডেট হয়েছে')->success()->send()),
@@ -312,6 +315,7 @@ class OrderResource extends Resource
                     'on_hold' => 'On Hold',
                     'completed' => 'Completed',
                     'cancelled' => 'Cancelled',
+                    'returned' => 'Returned',
                 ]),
             Tables\Filters\SelectFilter::make('courier_name')
                 ->label('Courier')
