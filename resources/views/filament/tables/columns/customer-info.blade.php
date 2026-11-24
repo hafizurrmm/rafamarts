@@ -5,9 +5,6 @@
     <a href="tel:{{ preg_replace('/[^0-9+]/', '', $record->customer_phone) }}"
        onclick="event.stopPropagation()"
        class="font-medium hover:underline" style="color:#7c3aed">{{ $record->customer_phone }}</a>
-    @if($record->customer_address)
-        <div class="order-address mt-0.5 whitespace-normal">{{ $record->customer_address }}</div>
-    @endif
     @if($record->customer_ip)
         {{-- বাংলাদেশের বাইরের IP হলে সতর্কতা (VPN/বিদেশি/ফেক হওয়ার সম্ভাবনা বেশি) --}}
         @if($record->ip_country_code && $record->ip_country_code !== 'BD')
