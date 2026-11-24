@@ -40,6 +40,10 @@ class StoreSettings extends Page
             'banner_button_url' => Setting::get('banner_button_url', '#all-products'),
             'banner_bg_color' => Setting::get('banner_bg_color', '#ffffff'),
             'banner_text_color' => Setting::get('banner_text_color', '#0f2a43'),
+            'banner_height_desktop' => Setting::get('banner_height_desktop', 445),
+            'banner_height_mobile' => Setting::get('banner_height_mobile', 240),
+            'banner_font_desktop' => Setting::get('banner_font_desktop', 4.2),
+            'banner_font_mobile' => Setting::get('banner_font_mobile', 2.3),
             'hotline_number' => Setting::get('hotline_number'),
             'whatsapp_number' => Setting::get('whatsapp_number'),
             'facebook_url' => Setting::get('facebook_url'),
@@ -159,6 +163,10 @@ class StoreSettings extends Page
                                     Forms\Components\TextInput::make('banner_button_url')->label('বাটনের লিংক')->placeholder('#all-products'),
                                     Forms\Components\ColorPicker::make('banner_bg_color')->label('ব্যানার ব্যাকগ্রাউন্ড'),
                                     Forms\Components\ColorPicker::make('banner_text_color')->label('হেডিং/টেক্সটের রং'),
+                                    Forms\Components\TextInput::make('banner_height_desktop')->label('ডেস্কটপে ব্যানারের উচ্চতা (px)')->numeric()->minValue(150)->maxValue(900)->suffix('px')->default(445),
+                                    Forms\Components\TextInput::make('banner_height_mobile')->label('মোবাইলে ব্যানারের উচ্চতা (px)')->numeric()->minValue(120)->maxValue(700)->suffix('px')->default(240),
+                                    Forms\Components\TextInput::make('banner_font_desktop')->label('ডেস্কটপে হেডিংয়ের ফন্ট সাইজ (rem)')->numeric()->step(0.1)->minValue(1)->maxValue(10)->suffix('rem')->default(4.2),
+                                    Forms\Components\TextInput::make('banner_font_mobile')->label('মোবাইলে হেডিংয়ের ফন্ট সাইজ (rem)')->numeric()->step(0.1)->minValue(1)->maxValue(6)->suffix('rem')->default(2.3),
                                 ]),
 
                             Forms\Components\FileUpload::make('banner_images')

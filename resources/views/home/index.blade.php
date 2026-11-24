@@ -50,15 +50,24 @@
                 $bUrl = \App\Models\Setting::get('banner_button_url', '#all-products') ?: '#all-products';
                 $isBn = (bool) preg_match('/\p{Bengali}/u', $bHeading . $bHighlight . $bEyebrow);
                 if (! preg_match('~^(#|/|https?://)~i', $bUrl)) { $bUrl = '#all-products'; }
+                $num = fn ($k, $d, $min, $max) => is_numeric($v = \App\Models\Setting::get($k)) && $v >= $min && $v <= $max ? (float) $v : $d;
+                $hD = $num('banner_height_desktop', 445, 150, 900);
+                $hM = $num('banner_height_mobile', 240, 120, 700);
+                $fD = $num('banner_font_desktop', 4.2, 1, 10);
+                $fM = $num('banner_font_mobile', 2.3, 1, 6);
             @endphp
-            <div class="mb-10 rounded-xl overflow-hidden relative flex items-center min-h-[240px] md:min-h-[445px]" style="background: {{ $bBg }}; color: {{ $bFg }};">
+            <style>
+                .sb-banner{min-height:{{ $hM }}px}.sb-banner h1{font-size:{{ $fM }}rem}
+                @media(min-width:768px){.sb-banner{min-height:{{ $hD }}px}.sb-banner h1{font-size:{{ $fD }}rem}}
+            </style>
+            <div class="sb-banner mb-10 rounded-xl overflow-hidden relative flex items-center" style="background: {{ $bBg }}; color: {{ $bFg }};">
                 {{-- ছবি পুরো ব্যানারের ব্যাকগ্রাউন্ডে; লেখা তার উপরে বাম পাশে --}}
                 @if($bannerImage)
                     <img src="{{ asset('storage/' . $bannerImage) }}" alt="{{ $bHeading ?: 'Banner' }}" class="absolute inset-0 w-full h-full object-cover object-left" fetchpriority="high">
                 @endif
                 <div class="relative z-10 py-5 pr-6 pl-[30px] md:py-12 md:pr-12 md:pl-[93px] w-full md:w-1/2">
                     @if($bEyebrow)<div class="text-xs md:text-sm font-bold {{ $isBn ? '' : 'tracking-[0.2em] uppercase' }} brand-text mb-1">{{ $bEyebrow }}</div>@endif
-                    <h1 class="text-[2.3rem] md:text-[4.2rem] font-extrabold leading-[1] {{ $isBn ? '' : 'tracking-tight' }} mb-2">
+                    <h1 class="font-extrabold leading-[1] {{ $isBn ? '' : 'tracking-tight' }} mb-2">
                         {{ $bHeading }}@if($bHighlight) <span class="brand-text">{{ $bHighlight }}</span>@endif
                     </h1>
                     @if($bSub)<p class="text-sm md:text-base leading-snug opacity-80 mb-4 max-w-xl">{!! nl2br(e($bSub)) !!}</p>@endif
