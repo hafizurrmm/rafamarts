@@ -153,14 +153,14 @@ class StoreSettings extends Page
                             Forms\Components\Section::make('ব্যানারের বাম পাশের লেখা')
                                 ->visible(fn (callable $get) => $get('banner_type') === 'split')
                                 ->columnSpanFull()
-                                ->columns(2)
+                                ->columns(4)
                                 ->schema([
-                                    Forms\Components\TextInput::make('banner_eyebrow')->label('ছোট লেখা (উপরে)')->placeholder('YOUR ONE-STOP ONLINE SHOP'),
-                                    Forms\Components\TextInput::make('banner_button_text')->label('বাটনের লেখা')->placeholder('SHOP NOW')->helperText('খালি রাখলে বাটন দেখাবে না'),
-                                    Forms\Components\TextInput::make('banner_heading')->label('বড় হেডিং')->placeholder('Quality Products for a'),
-                                    Forms\Components\TextInput::make('banner_heading_highlight')->label('হেডিংয়ের রঙিন অংশ (থিম কালার)')->placeholder('Better Life'),
+                                    Forms\Components\TextInput::make('banner_eyebrow')->label('ছোট লেখা (উপরে)')->placeholder('YOUR ONE-STOP ONLINE SHOP')->columnSpan(2),
+                                    Forms\Components\TextInput::make('banner_button_text')->label('বাটনের লেখা')->placeholder('SHOP NOW')->helperText('খালি রাখলে বাটন দেখাবে না')->columnSpan(2),
+                                    Forms\Components\TextInput::make('banner_heading')->label('বড় হেডিং')->placeholder('Quality Products for a')->columnSpan(2),
+                                    Forms\Components\TextInput::make('banner_heading_highlight')->label('হেডিংয়ের রঙিন অংশ (থিম কালার)')->placeholder('Better Life')->columnSpan(2),
                                     Forms\Components\Textarea::make('banner_subtext')->label('ছোট বর্ণনা')->helperText('Enter চাপলে নতুন লাইন হবে')->rows(2)->columnSpanFull(),
-                                    Forms\Components\TextInput::make('banner_button_url')->label('বাটনের লিংক')->placeholder('#all-products'),
+                                    Forms\Components\TextInput::make('banner_button_url')->label('বাটনের লিংক')->placeholder('#all-products')->columnSpan(2),
                                     Forms\Components\ColorPicker::make('banner_bg_color')->label('ব্যানার ব্যাকগ্রাউন্ড'),
                                     Forms\Components\ColorPicker::make('banner_text_color')->label('হেডিং/টেক্সটের রং'),
                                     Forms\Components\TextInput::make('banner_height_desktop')->label('ডেস্কটপে ব্যানারের উচ্চতা (px)')->numeric()->minValue(150)->maxValue(900)->suffix('px')->default(445),
