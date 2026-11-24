@@ -106,13 +106,19 @@ class StoreSettings extends Page
         ]);
     }
 
+    /** এই পেজে কোন কোন ট্যাব দেখাবে (সাবক্লাস পেজগুলো নিজের ট্যাব বেছে নেয়) */
+    protected static function visibleTabs(): array
+    {
+        return ['branding', 'theme'];
+    }
+
     public function form(Form $form): Form
     {
         return $form->schema([
             Forms\Components\Tabs::make('Settings')
-                ->tabs([
+                ->tabs(array_values(array_intersect_key([
 
-                    Forms\Components\Tabs\Tab::make('স্টোর ব্র্যান্ডিং')
+                    'branding' => Forms\Components\Tabs\Tab::make('স্টোর ব্র্যান্ডিং')
                         ->icon('heroicon-o-building-storefront')
                         ->schema([
                             Forms\Components\TextInput::make('site_name')->label('Site Name')->required(),
@@ -191,7 +197,7 @@ class StoreSettings extends Page
                                 ->columnSpanFull(),
                         ])->columns(2),
 
-                    Forms\Components\Tabs\Tab::make('পেমেন্ট গেটওয়ে')
+                    'payment' => Forms\Components\Tabs\Tab::make('পেমেন্ট গেটওয়ে')
                         ->icon('heroicon-o-credit-card')
                         ->schema([
                             Forms\Components\Toggle::make('cod_enabled')->label('Cash on Delivery (COD)')->default(true)->columnSpanFull(),
@@ -226,7 +232,7 @@ class StoreSettings extends Page
                                 ])->columns(3)->columnSpanFull()->collapsed(),
                         ])->columns(2),
 
-                    Forms\Components\Tabs\Tab::make('এআই ও এসএমএস')
+                    'ai_sms' => Forms\Components\Tabs\Tab::make('এআই ও এসএমএস')
                         ->icon('heroicon-o-cpu-chip')
                         ->schema([
                             Forms\Components\Toggle::make('sms_enabled')->label('SMS Campaign চালু করুন'),
@@ -235,7 +241,7 @@ class StoreSettings extends Page
                             Forms\Components\Toggle::make('ai_call_enabled')->label('AI Call চালু করুন'),
                         ])->columns(2),
 
-                    Forms\Components\Tabs\Tab::make('ফেসবুক পিক্সেল ও CAPI')
+                    'facebook' => Forms\Components\Tabs\Tab::make('ফেসবুক পিক্সেল ও CAPI')
                         ->icon('heroicon-o-megaphone')
                         ->schema([
                             Forms\Components\Section::make('Facebook Pixel + Conversions API')
@@ -268,7 +274,7 @@ class StoreSettings extends Page
                                 ])->columns(2),
                         ]),
 
-                    Forms\Components\Tabs\Tab::make('টেলিগ্রাম নোটিফিকেশন')
+                    'telegram' => Forms\Components\Tabs\Tab::make('টেলিগ্রাম নোটিফিকেশন')
                         ->icon('heroicon-o-paper-airplane')
                         ->schema([
                             Forms\Components\Placeholder::make('telegram_info')
@@ -304,7 +310,7 @@ class StoreSettings extends Page
                             ])->columnSpanFull(),
                         ])->columns(2),
 
-                    Forms\Components\Tabs\Tab::make('সিকিউরিটি ও ফ্রড')
+                    'security' => Forms\Components\Tabs\Tab::make('সিকিউরিটি ও ফ্রড')
                         ->icon('heroicon-o-shield-check')
                         ->schema([
                             Forms\Components\Placeholder::make('info')
@@ -318,7 +324,7 @@ class StoreSettings extends Page
                                 ->label('একই ফোন নম্বর থেকে ১ ঘণ্টায় ৩টির বেশি অর্ডার আসলে অটো-ব্লক করবে'),
                         ]),
 
-                    Forms\Components\Tabs\Tab::make('থিম ও টাইপোগ্রাফি')
+                    'theme' => Forms\Components\Tabs\Tab::make('থিম ও টাইপোগ্রাফি')
                         ->icon('heroicon-o-swatch')
                         ->schema([
                             Forms\Components\Section::make('ওয়েবসাইট কালার')->schema([
@@ -376,7 +382,7 @@ class StoreSettings extends Page
                                         ->helperText('কলাম × রো = প্রতি পেজে মোট কতগুলো প্রোডাক্ট দেখাবে (পেজিনেশন)'),
                                 ])->columns(3),
                         ]),
-                ])
+                ], array_flip(static::visibleTabs()))))
                 ->columnSpanFull(),
         ])->statePath('data');
     }

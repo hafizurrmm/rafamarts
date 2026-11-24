@@ -25,7 +25,7 @@ class FraudChecker extends Page
 
     protected static ?string $navigationGroup = 'Settings';
 
-    protected static ?int $navigationSort = 16;
+    protected static ?int $navigationSort = 30;
 
     protected static string $view = 'filament.pages.fraud-checker';
 

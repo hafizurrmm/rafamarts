@@ -20,7 +20,7 @@ class BlacklistResource extends Resource
 
     protected static ?string $navigationGroup = 'Settings';
 
-    protected static ?int $navigationSort = 20;
+    protected static ?int $navigationSort = 31;
 
     public static function form(Form $form): Form
     {
