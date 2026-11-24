@@ -340,28 +340,24 @@ class OrderResource extends Resource
                 })
                 ->deselectRecordsAfterCompletion(),
 
-            Tables\Actions\BulkAction::make('bulk_send_steadfast')
-                ->label('Steadfast এ পাঠান')
+            Tables\Actions\BulkAction::make('bulk_send_courier')
+                ->label('কুরিয়ারে পাঠান')
                 ->icon('heroicon-o-truck')
                 ->color('info')
-                ->requiresConfirmation()
-                ->action(fn (\Illuminate\Support\Collection $records) => self::bulkSendToCourier($records, 'steadfast'))
-                ->deselectRecordsAfterCompletion(),
-
-            Tables\Actions\BulkAction::make('bulk_send_pathao')
-                ->label('Pathao তে পাঠান')
-                ->icon('heroicon-o-paper-airplane')
-                ->color('warning')
-                ->requiresConfirmation()
-                ->action(fn (\Illuminate\Support\Collection $records) => self::bulkSendToCourier($records, 'pathao'))
-                ->deselectRecordsAfterCompletion(),
-
-            Tables\Actions\BulkAction::make('bulk_send_bahok')
-                ->label('Bahok এ পাঠান')
-                ->icon('heroicon-o-truck')
-                ->color('success')
-                ->requiresConfirmation()
-                ->action(fn (\Illuminate\Support\Collection $records) => self::bulkSendToCourier($records, 'bahok'))
+                ->modalHeading('কোন কুরিয়ারে পাঠাবেন?')
+                ->modalSubmitActionLabel('পাঠান')
+                ->form([
+                    Forms\Components\Select::make('courier')
+                        ->label('কুরিয়ার সিলেক্ট করুন')
+                        ->options([
+                            'steadfast' => 'Steadfast',
+                            'pathao' => 'Pathao',
+                            'bahok' => 'Bahok',
+                        ])
+                        ->default(fn () => collect(['steadfast', 'pathao', 'bahok'])->first(fn ($c) => (bool) Setting::get($c . '_enabled', false)))
+                        ->required(),
+                ])
+                ->action(fn (\Illuminate\Support\Collection $records, array $data) => self::bulkSendToCourier($records, $data['courier']))
                 ->deselectRecordsAfterCompletion(),
 
             Tables\Actions\BulkAction::make('bulk_check_status')
