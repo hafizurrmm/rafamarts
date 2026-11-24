@@ -46,7 +46,7 @@ class SteadfastService
     public function createOrder(Order $order): array
     {
         if (!$this->isConfigured()) {
-            return ['success' => false, 'message' => 'Steadfast API credentials সেট করা হয়নি। Settings > Steadfast API তে গিয়ে যোগ করুন।'];
+            return ['success' => false, 'message' => 'Steadfast API credentials সেট করা হয়নি। Settings > কুরিয়ার API তে গিয়ে যোগ করুন।'];
         }
 
         $response = $this->client()->post('/create_order', [
@@ -117,7 +117,7 @@ class SteadfastService
     public function checkFraud(string $phone): array
     {
         if (!$this->isConfigured()) {
-            return ['success' => false, 'message' => 'Steadfast API credentials সেট করা হয়নি। Store Settings > কুরিয়ার ও শিপিং এ গিয়ে যোগ করুন।'];
+            return ['success' => false, 'message' => 'Steadfast API credentials সেট করা হয়নি। Settings > কুরিয়ার API তে গিয়ে যোগ করুন।'];
         }
 
         $phone = preg_replace('/\D/', '', $phone) ?? '';

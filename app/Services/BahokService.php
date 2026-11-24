@@ -43,7 +43,7 @@ class BahokService
     public function createOrder(Order $order): array
     {
         if (!$this->isConfigured()) {
-            return ['success' => false, 'message' => 'Bahok API টোকেন সেট করা নেই অথবা Bahok বন্ধ (OFF) আছে। Settings এ গিয়ে চালু করুন।'];
+            return ['success' => false, 'message' => 'Bahok API টোকেন সেট করা নেই অথবা Bahok বন্ধ (OFF) আছে। Settings > কুরিয়ার API তে গিয়ে চালু করুন।'];
         }
 
         $response = $this->client()->post('/orders', [

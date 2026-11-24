@@ -27,12 +27,23 @@
                 </div>
 
                 <div class="cr-fields">
-                    @foreach($c['fields'] as $key => [$flabel, $type, $placeholder, $width])
+                    @foreach($c['fields'] as $key => $f)
+                        @php [$flabel, $type, $placeholder, $width] = $f; @endphp
                         <div class="{{ $width === 'full' ? 'full' : '' }}">
                             <label>{{ $flabel }}</label>
-                            <x-filament::input.wrapper>
-                                <x-filament::input :type="$type === 'secret' ? 'password' : 'text'" :placeholder="$placeholder" wire:model="data.{{ $key }}" autocomplete="off" />
-                            </x-filament::input.wrapper>
+                            @if($type === 'select')
+                                <x-filament::input.wrapper>
+                                    <x-filament::input.select wire:model="data.{{ $key }}">
+                                        @foreach($f[4] as $val => $text)
+                                            <option value="{{ $val }}">{{ $text }}</option>
+                                        @endforeach
+                                    </x-filament::input.select>
+                                </x-filament::input.wrapper>
+                            @else
+                                <x-filament::input.wrapper>
+                                    <x-filament::input :type="$type === 'secret' ? 'password' : 'text'" :placeholder="$placeholder" wire:model="data.{{ $key }}" autocomplete="off" />
+                                </x-filament::input.wrapper>
+                            @endif
                         </div>
                     @endforeach
                 </div>

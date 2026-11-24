@@ -55,25 +55,6 @@ class StoreSettings extends Page
             'fb_access_token' => Setting::get('fb_access_token'),
             'fb_test_event_code' => Setting::get('fb_test_event_code'),
 
-            // Courier & Shipping
-            'steadfast_enabled' => (bool) Setting::get('steadfast_enabled', false),
-            'steadfast_api_key' => Setting::get('steadfast_api_key'),
-            'steadfast_secret_key' => Setting::get('steadfast_secret_key'),
-
-            'pathao_enabled' => (bool) Setting::get('pathao_enabled', false),
-            'pathao_environment' => Setting::get('pathao_environment', 'sandbox'),
-            'pathao_client_id' => Setting::get('pathao_client_id'),
-            'pathao_client_secret' => Setting::get('pathao_client_secret'),
-            'pathao_username' => Setting::get('pathao_username'),
-            'pathao_password' => Setting::get('pathao_password'),
-            'pathao_store_id' => Setting::get('pathao_store_id'),
-            'pathao_default_city_id' => Setting::get('pathao_default_city_id'),
-            'pathao_default_zone_id' => Setting::get('pathao_default_zone_id'),
-            'pathao_default_area_id' => Setting::get('pathao_default_area_id'),
-
-            'bahok_enabled' => (bool) Setting::get('bahok_enabled', false),
-            'bahok_api_token' => Setting::get('bahok_api_token'),
-
             // Payment Gateway (COD only for now — placeholders for future SSLCommerz/Stripe)
             'cod_enabled' => (bool) Setting::get('cod_enabled', true),
             'sslcommerz_enabled' => (bool) Setting::get('sslcommerz_enabled', false),
@@ -209,37 +190,6 @@ class StoreSettings extends Page
                                 ->toolbarButtons(['h2', 'h3', 'bold', 'italic', 'bulletList', 'orderedList', 'link', 'undo', 'redo'])
                                 ->columnSpanFull(),
                         ])->columns(2),
-
-                    Forms\Components\Tabs\Tab::make('কুরিয়ার ও শিপিং')
-                        ->icon('heroicon-o-truck')
-                        ->schema([
-                            Forms\Components\Section::make('Steadfast Courier API')->schema([
-                                Forms\Components\Toggle::make('steadfast_enabled')->label('Status (ON/OFF)')->inline(false),
-                                Forms\Components\TextInput::make('steadfast_api_key')->label('API Key'),
-                                Forms\Components\TextInput::make('steadfast_secret_key')->label('Secret Key')->password()->revealable(),
-                            ])->columns(3),
-
-                            Forms\Components\Section::make('Pathao Courier API')->schema([
-                                Forms\Components\Toggle::make('pathao_enabled')->label('Status (ON/OFF)')->inline(false),
-                                Forms\Components\Select::make('pathao_environment')
-                                    ->options(['sandbox' => 'Sandbox', 'live' => 'Live'])->default('sandbox'),
-                                Forms\Components\TextInput::make('pathao_client_id')->label('Client ID'),
-                                Forms\Components\TextInput::make('pathao_client_secret')->label('Client Secret')->password()->revealable(),
-                                Forms\Components\TextInput::make('pathao_username')->label('Username (Email)'),
-                                Forms\Components\TextInput::make('pathao_password')->label('Password')->password()->revealable(),
-                                Forms\Components\TextInput::make('pathao_store_id')->label('Store ID'),
-                                Forms\Components\TextInput::make('pathao_default_city_id')->label('Default City ID')->numeric(),
-                                Forms\Components\TextInput::make('pathao_default_zone_id')->label('Default Zone ID')->numeric(),
-                                Forms\Components\TextInput::make('pathao_default_area_id')->label('Default Area ID')->numeric(),
-                            ])->columns(3),
-
-                            Forms\Components\Section::make('Bahok Courier API')
-                                ->description('Bahok এর নির্দিষ্ট এন্ডপয়েন্ট/ফিল্ড নাম আপনার merchant panel এর ডকুমেন্টেশন দেখে যাচাই করে নিন।')
-                                ->schema([
-                                    Forms\Components\Toggle::make('bahok_enabled')->label('Status (ON/OFF)')->inline(false),
-                                    Forms\Components\TextInput::make('bahok_api_token')->label('API Token')->password()->revealable(),
-                                ])->columns(2),
-                        ]),
 
                     Forms\Components\Tabs\Tab::make('পেমেন্ট গেটওয়ে')
                         ->icon('heroicon-o-credit-card')

@@ -81,7 +81,7 @@ class FraudChecker extends Page
                 $this->steadfastError = $result['message'];
             }
         } else {
-            $this->steadfastError = 'Steadfast চালু/কনফিগার করা নেই — শুধু নিজের স্টোরের হিস্ট্রি দেখানো হচ্ছে। Store Settings > কুরিয়ার ও শিপিং এ গিয়ে Steadfast চালু করলে নেটওয়ার্ক-ওয়াইড ফ্রড স্কোরও দেখা যাবে।';
+            $this->steadfastError = 'Steadfast চালু/কনফিগার করা নেই — শুধু নিজের স্টোরের হিস্ট্রি দেখানো হচ্ছে। Settings > কুরিয়ার API তে গিয়ে Steadfast চালু করলে নেটওয়ার্ক-ওয়াইড ফ্রড স্কোরও দেখা যাবে।';
         }
     }
 }

@@ -43,6 +43,10 @@ class CourierApi extends Page
                     'pathao_username' => ['Username (Email)', 'text', 'name@example.com', 'half'],
                     'pathao_password' => ['Password', 'secret', 'Password', 'half'],
                     'pathao_store_id' => ['Store ID', 'text', 'Store ID', 'full'],
+                    'pathao_environment' => ['Environment', 'select', '', 'full', ['sandbox' => 'Sandbox (টেস্ট)', 'live' => 'Live'], 'optional'],
+                    'pathao_default_city_id' => ['Default City ID', 'text', 'যেমন 1', 'half', null, 'optional'],
+                    'pathao_default_zone_id' => ['Default Zone ID', 'text', 'যেমন 52', 'half', null, 'optional'],
+                    'pathao_default_area_id' => ['Default Area ID', 'text', 'যেমন 1030', 'full', null, 'optional'],
                 ],
                 'enabled' => 'pathao_enabled',
             ],
@@ -52,6 +56,13 @@ class CourierApi extends Page
                     'redx_access_token' => ['API Access Token', 'secret', 'API Access Token', 'full'],
                 ],
                 'enabled' => 'redx_enabled',
+            ],
+            'bahok' => [
+                'name' => 'Bahok', 'badge' => 'BK', 'color' => '#0d9488',
+                'fields' => [
+                    'bahok_api_token' => ['API Token', 'secret', 'API Token', 'full'],
+                ],
+                'enabled' => 'bahok_enabled',
             ],
             'carrybee' => [
                 'name' => 'Carrybee', 'badge' => 'CB', 'color' => '#f59e0b',
@@ -75,7 +86,7 @@ class CourierApi extends Page
     {
         foreach (self::couriers() as $c) {
             foreach (array_keys($c['fields']) as $key) {
-                $this->data[$key] = (string) Setting::get($key, '');
+                $this->data[$key] = (string) Setting::get($key, $key === 'pathao_environment' ? 'sandbox' : '');
             }
             $this->data[$c['enabled']] = (bool) Setting::get($c['enabled'], false);
         }
@@ -100,7 +111,7 @@ class CourierApi extends Page
         abort_unless($c, 404);
 
         foreach (array_keys($c['fields']) as $key) {
-            Setting::set($key, '');
+            Setting::set($key, $key === 'pathao_environment' ? 'sandbox' : '');
         }
         Setting::set($c['enabled'], false);
         $this->fillData();
@@ -112,7 +123,7 @@ class CourierApi extends Page
     public function statusFor(string $courier): array
     {
         $c = self::couriers()[$courier];
-        $filled = collect(array_keys($c['fields']))->every(fn ($k) => filled(Setting::get($k)));
+        $filled = collect($c['fields'])->reject(fn ($f) => ($f[5] ?? null) === 'optional')->keys()->every(fn ($k) => filled(Setting::get($k)));
 
         if ($filled && Setting::get($c['enabled'])) {
             return ['চালু আছে', '#047857', '#d1fae5'];

@@ -68,7 +68,7 @@ class PathaoService
     public function createOrder(Order $order, array $overrides = []): array
     {
         if (!$this->isConfigured()) {
-            return ['success' => false, 'message' => 'Pathao API credentials সেট করা হয়নি। Settings > Pathao API তে গিয়ে যোগ করুন।'];
+            return ['success' => false, 'message' => 'Pathao API credentials সেট করা হয়নি। Settings > কুরিয়ার API তে গিয়ে যোগ করুন।'];
         }
 
         $payload = array_merge([
