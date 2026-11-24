@@ -11,6 +11,7 @@ use App\Services\BahokService;
 use App\Services\PathaoService;
 use App\Services\RedXService;
 use App\Services\SteadfastService;
+use App\Support\FraudInfo;
 use Filament\Forms;
 use Filament\Forms\Form;
 use Filament\Notifications\Notification;
@@ -232,6 +233,38 @@ class OrderResource extends Resource
                 ->label('Customer')
                 ->view('filament.tables.columns.customer-info')
                 ->searchable(['customer_name', 'customer_phone', 'customer_address', 'customer_ip', 'payment_trx_id']),
+            Tables\Columns\TextColumn::make('courier_rate')
+                ->label('Courier Rate')
+                ->state(function (Order $record) {
+                    $rate = FraudInfo::local($record->customer_phone)['success_rate'];
+
+                    return $rate === null ? 'New' : $rate . '%';
+                })
+                ->badge()
+                ->color(function (Order $record) {
+                    $rate = FraudInfo::local($record->customer_phone)['success_rate'];
+
+                    return $rate === null ? 'gray' : ($rate >= 80 ? 'success' : ($rate >= 60 ? 'warning' : 'danger'));
+                })
+                ->description('Details')
+                ->tooltip('ফ্রড চেক দেখতে ক্লিক করুন')
+                ->action(
+                    Tables\Actions\Action::make('fraud_details')
+                        ->modalHeading(fn (Order $record) => 'কাস্টমার যাচাই — ' . $record->customer_phone)
+                        ->modalContent(function (Order $record) {
+                            [$steadfastData, $steadfastError] = FraudInfo::steadfast($record->customer_phone);
+
+                            return view('filament.modals.fraud-details', [
+                                'localStats' => FraudInfo::local($record->customer_phone),
+                                'blacklistEntry' => FraudInfo::blacklist($record->customer_phone),
+                                'steadfastData' => $steadfastData,
+                                'steadfastError' => $steadfastError,
+                            ]);
+                        })
+                        ->modalWidth('4xl')
+                        ->modalSubmitAction(false)
+                        ->modalCancelActionLabel('বন্ধ করুন')
+                ),
             Tables\Columns\TextColumn::make('total_amount')->money('BDT')->sortable(),
             Tables\Columns\TextColumn::make('payment_method')
                 ->label('Payment')
@@ -304,8 +337,34 @@ class OrderResource extends Resource
                     Notification::make()->title('পেমেন্ট যাচাই হয়েছে')->success()->send();
                 }),
 
-            Tables\Actions\EditAction::make(),
-            Tables\Actions\DeleteAction::make(),
+            Tables\Actions\Action::make('block_customer')
+                ->icon('heroicon-o-no-symbol')
+                ->iconButton()
+                ->color('warning')
+                ->tooltip(fn (Order $record) => Blacklist::isBlocked((string) $record->customer_phone) ? 'ব্লক করা আছে — আনব্লক করুন' : 'কাস্টমার ব্লক করুন')
+                ->requiresConfirmation()
+                ->modalHeading(fn (Order $record) => Blacklist::isBlocked((string) $record->customer_phone) ? 'কাস্টমার আনব্লক করবেন?' : 'কাস্টমার ব্লক করবেন?')
+                ->modalDescription(fn (Order $record) => $record->customer_phone . ' — ব্লক করলে এই নম্বর ব্ল্যাকলিস্টে যাবে।')
+                ->action(function (Order $record) {
+                    $phone = (string) $record->customer_phone;
+                    $entry = Blacklist::where('phone_number', $phone)->first();
+
+                    if ($entry && $entry->is_active) {
+                        $entry->update(['is_active' => false]);
+                        Notification::make()->title('আনব্লক করা হয়েছে')->success()->send();
+
+                        return;
+                    }
+
+                    Blacklist::updateOrCreate(
+                        ['phone_number' => $phone],
+                        ['name' => $record->customer_name, 'reason' => 'অর্ডার লিস্ট থেকে ব্লক ('. $record->order_number .')', 'is_active' => true]
+                    );
+                    Notification::make()->title('কাস্টমার ব্লক করা হয়েছে')->warning()->send();
+                }),
+
+            Tables\Actions\EditAction::make()->label('')->iconButton()->tooltip('Edit'),
+            Tables\Actions\DeleteAction::make()->label('')->iconButton()->tooltip('Delete'),
         ])
         ->bulkActions([
             // অর্ডার সিলেক্ট করলে উপরে এই অ্যাকশনগুলো আসে
@@ -419,7 +478,7 @@ class OrderResource extends Resource
                     }, 'orders-' . now()->format('Ymd-His') . '.csv');
                 }),
 
-            Tables\Actions\DeleteBulkAction::make(),
+            Tables\Actions\DeleteBulkAction::make()->label('')->iconButton()->tooltip('Delete selected'),
         ])
         ->checkIfRecordIsSelectableUsing(fn () => true);
     }
