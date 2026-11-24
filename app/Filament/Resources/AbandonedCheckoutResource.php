@@ -21,7 +21,7 @@ class AbandonedCheckoutResource extends Resource
 
     protected static ?string $navigationIcon = 'heroicon-o-shopping-bag';
 
-    protected static ?string $navigationLabel = 'Abandoned Cart';
+    protected static ?string $navigationLabel = 'অসম্পূর্ণ কার্ট';
 
     protected static ?string $modelLabel = 'অসম্পূর্ণ চেকআউট';
 

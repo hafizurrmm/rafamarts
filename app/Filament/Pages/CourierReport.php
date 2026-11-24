@@ -9,7 +9,7 @@ class CourierReport extends Page
 {
     protected static ?string $navigationIcon = 'heroicon-o-truck';
 
-    protected static ?string $navigationLabel = 'Courier Report';
+    protected static ?string $navigationLabel = 'কুরিয়ার রিপোর্ট';
 
     protected static ?string $navigationGroup = 'Report';
 

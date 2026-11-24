@@ -9,7 +9,7 @@ class UserReport extends Page
 {
     protected static ?string $navigationIcon = 'heroicon-o-users';
 
-    protected static ?string $navigationLabel = 'User Report';
+    protected static ?string $navigationLabel = 'ইউজার রিপোর্ট';
 
     protected static ?string $navigationGroup = 'Report';
 

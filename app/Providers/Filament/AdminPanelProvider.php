@@ -41,13 +41,13 @@ class AdminPanelProvider extends PanelProvider
                 'primary' => Color::Emerald,
             ])
             ->navigationGroups([
-                NavigationGroup::make('Ecommerce'),
-                NavigationGroup::make('Website'),
-                NavigationGroup::make('Settings'),
-                NavigationGroup::make('Report'),
+                NavigationGroup::make('Ecommerce')->label('ই-কমার্স'),
+                NavigationGroup::make('Website')->label('ওয়েবসাইট'),
+                NavigationGroup::make('Settings')->label('সেটিংস'),
+                NavigationGroup::make('Report')->label('রিপোর্ট'),
             ])
             ->navigationItems([
-                NavigationItem::make('Storefront')
+                NavigationItem::make('স্টোরফ্রন্ট')
                     ->icon('heroicon-o-building-storefront')
                     ->group('Ecommerce')
                     ->sort(1)
@@ -59,7 +59,7 @@ class AdminPanelProvider extends PanelProvider
             ->discoverResources(in: app_path('Filament/Resources'), for: 'App\\Filament\\Resources')
             ->discoverPages(in: app_path('Filament/Pages'), for: 'App\\Filament\\Pages')
             ->pages([
-                Pages\Dashboard::class,
+                \App\Filament\Pages\Dashboard::class,
             ])
             ->discoverWidgets(in: app_path('Filament/Widgets'), for: 'App\\Filament\\Widgets')
             ->widgets([

@@ -16,7 +16,7 @@ class BlacklistResource extends Resource
 
     protected static ?string $navigationIcon = 'heroicon-o-shield-exclamation';
 
-    protected static ?string $navigationLabel = 'Blacklist';
+    protected static ?string $navigationLabel = 'ব্ল্যাকলিস্ট';
 
     protected static ?string $navigationGroup = 'Settings';
 

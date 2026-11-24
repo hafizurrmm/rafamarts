@@ -12,7 +12,7 @@ class StoreSettings extends Page
 {
     protected static ?string $navigationIcon = 'heroicon-o-cog-6-tooth';
 
-    protected static ?string $navigationLabel = 'স্টোর সেটিংস (Store Settings)';
+    protected static ?string $navigationLabel = 'স্টোর সেটিংস';
 
     protected static ?string $navigationGroup = 'Settings';
 

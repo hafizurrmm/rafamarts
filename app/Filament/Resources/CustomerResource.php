@@ -20,7 +20,7 @@ class CustomerResource extends Resource
 
     protected static ?string $navigationIcon = 'heroicon-o-users';
 
-    protected static ?string $navigationLabel = 'Customers';
+    protected static ?string $navigationLabel = 'কাস্টমার';
 
     protected static ?string $modelLabel = 'কাস্টমার';
 

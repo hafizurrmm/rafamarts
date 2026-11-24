@@ -12,7 +12,7 @@ class DeliveredOrderResource extends OrderResource
 {
     protected static ?string $navigationIcon = 'heroicon-o-truck';
 
-    protected static ?string $navigationLabel = 'Delivered';
+    protected static ?string $navigationLabel = 'ডেলিভারি সম্পন্ন';
 
     protected static ?string $navigationGroup = 'Ecommerce';
 

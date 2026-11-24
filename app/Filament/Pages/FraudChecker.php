@@ -21,7 +21,7 @@ class FraudChecker extends Page
 {
     protected static ?string $navigationIcon = 'heroicon-o-shield-exclamation';
 
-    protected static ?string $navigationLabel = 'Fraud Checker';
+    protected static ?string $navigationLabel = 'ফ্রড চেকার';
 
     protected static ?string $navigationGroup = 'Settings';
 

@@ -9,7 +9,7 @@ class ProductReport extends Page
 {
     protected static ?string $navigationIcon = 'heroicon-o-shopping-bag';
 
-    protected static ?string $navigationLabel = 'Product';
+    protected static ?string $navigationLabel = 'প্রোডাক্ট রিপোর্ট';
 
     protected static ?string $navigationGroup = 'Report';
 

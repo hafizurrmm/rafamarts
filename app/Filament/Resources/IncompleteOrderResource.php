@@ -15,7 +15,7 @@ class IncompleteOrderResource extends OrderResource
 {
     protected static ?string $navigationIcon = 'heroicon-o-inbox-stack';
 
-    protected static ?string $navigationLabel = 'Pending Orders';
+    protected static ?string $navigationLabel = 'পেন্ডিং অর্ডার';
 
     protected static ?string $navigationGroup = 'Ecommerce';
 
