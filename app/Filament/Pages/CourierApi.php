@@ -35,6 +35,13 @@ class CourierApi extends Page
                 ],
                 'enabled' => 'steadfast_enabled',
             ],
+            'bahok' => [
+                'name' => 'Bahok', 'badge' => 'BK', 'color' => '#0d9488',
+                'fields' => [
+                    'bahok_api_token' => ['API Token', 'secret', 'API Token', 'full'],
+                ],
+                'enabled' => 'bahok_enabled',
+            ],
             'redx' => [
                 'name' => 'RedX', 'badge' => 'RX', 'color' => '#dc2626',
                 'fields' => [
@@ -45,13 +52,6 @@ class CourierApi extends Page
                     'redx_pickup_store_id' => ['Pickup Store ID (ঐচ্ছিক)', 'text', 'Store ID', 'full', null, 'optional'],
                 ],
                 'enabled' => 'redx_enabled',
-            ],
-            'bahok' => [
-                'name' => 'Bahok', 'badge' => 'BK', 'color' => '#0d9488',
-                'fields' => [
-                    'bahok_api_token' => ['API Token', 'secret', 'API Token', 'full'],
-                ],
-                'enabled' => 'bahok_enabled',
             ],
             'carrybee' => [
                 'name' => 'Carrybee', 'badge' => 'CB', 'color' => '#f59e0b',
