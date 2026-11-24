@@ -342,9 +342,10 @@ class OrderResource extends Resource
                 }),
 
             Tables\Actions\Action::make('block_customer')
-                ->icon('heroicon-o-no-symbol')
+                // ব্লক না থাকলে লাল "ব্লক" আইকন; ব্লক থাকলে সবুজ "আনব্লক" (খোলা তালা) আইকন
+                ->icon(fn (Order $record) => Blacklist::isBlocked((string) $record->customer_phone) ? 'heroicon-o-lock-open' : 'heroicon-o-no-symbol')
                 ->iconButton()
-                ->color('warning')
+                ->color(fn (Order $record) => Blacklist::isBlocked((string) $record->customer_phone) ? 'success' : 'danger')
                 ->tooltip(fn (Order $record) => Blacklist::isBlocked((string) $record->customer_phone) ? 'ব্লক করা আছে — আনব্লক করুন' : 'কাস্টমার ব্লক করুন')
                 ->requiresConfirmation()
                 ->modalHeading(fn (Order $record) => Blacklist::isBlocked((string) $record->customer_phone) ? 'কাস্টমার আনব্লক করবেন?' : 'কাস্টমার ব্লক করবেন?')
