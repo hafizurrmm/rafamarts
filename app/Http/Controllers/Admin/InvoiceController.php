@@ -55,4 +55,17 @@ class InvoiceController extends Controller
 
         return $pdf->stream("pos-invoice-{$order->order_number}.pdf");
     }
+
+    // সিলেক্ট করা একাধিক অর্ডারের POS রিসিট এক PDF-এ
+    public function posBulk(Request $request)
+    {
+        $ids = array_filter(explode(',', (string) $request->query('ids')));
+        $orders = Order::with('items')->whereIn('id', $ids)->get();
+        abort_if($orders->isEmpty(), 404);
+
+        $pdf = Pdf::loadView('admin.invoices.pos', ['orders' => $orders, 'forPdf' => true])
+            ->setPaper([0, 0, 226.77, 800], 'portrait');
+
+        return $pdf->stream('pos-invoices.pdf');
+    }
 }

@@ -230,9 +230,6 @@ class OrderResource extends Resource
                 ->label('Customer')
                 ->view('filament.tables.columns.customer-info')
                 ->searchable(['customer_name', 'customer_phone', 'customer_address', 'customer_ip', 'payment_trx_id']),
-            Tables\Columns\ViewColumn::make('order_items')
-                ->label('Products')
-                ->view('filament.tables.columns.order-items'),
             Tables\Columns\TextColumn::make('total_amount')->money('BDT')->sortable(),
             Tables\Columns\TextColumn::make('payment_method')
                 ->label('Payment')
@@ -303,86 +300,6 @@ class OrderResource extends Resource
                     Notification::make()->title('পেমেন্ট যাচাই হয়েছে')->success()->send();
                 }),
 
-            Tables\Actions\Action::make('send_steadfast')
-                ->label('Steadfast এ পাঠান')
-                ->icon('heroicon-o-truck')
-                ->color('info')
-                ->visible(fn (Order $record) => blank($record->consignment_id))
-                ->requiresConfirmation()
-                ->action(function (Order $record) {
-                    $result = app(SteadfastService::class)->createOrder($record);
-
-                    Notification::make()
-                        ->title($result['message'])
-                        ->color($result['success'] ? 'success' : 'danger')
-                        ->send();
-                }),
-
-            Tables\Actions\Action::make('send_pathao')
-                ->label('Pathao তে পাঠান')
-                ->icon('heroicon-o-paper-airplane')
-                ->color('warning')
-                ->visible(fn (Order $record) => blank($record->courier_order_id))
-                ->requiresConfirmation()
-                ->action(function (Order $record) {
-                    $result = app(PathaoService::class)->createOrder($record);
-
-                    Notification::make()
-                        ->title($result['message'])
-                        ->color($result['success'] ? 'success' : 'danger')
-                        ->send();
-                }),
-
-            Tables\Actions\Action::make('send_bahok')
-                ->label('Bahok এ পাঠান')
-                ->icon('heroicon-o-truck')
-                ->color('success')
-                ->visible(fn (Order $record) => blank($record->courier_order_id))
-                ->requiresConfirmation()
-                ->action(function (Order $record) {
-                    $result = app(BahokService::class)->createOrder($record);
-
-                    Notification::make()
-                        ->title($result['message'])
-                        ->color($result['success'] ? 'success' : 'danger')
-                        ->send();
-                }),
-
-            Tables\Actions\Action::make('check_status')
-                ->label('স্ট্যাটাস চেক করুন')
-                ->icon('heroicon-o-arrow-path')
-                ->color('gray')
-                ->visible(fn (Order $record) => filled($record->courier_name))
-                ->action(function (Order $record) {
-                    $service = match ($record->courier_name) {
-                        'steadfast' => app(SteadfastService::class),
-                        'pathao' => app(PathaoService::class),
-                        'bahok' => app(BahokService::class),
-                        default => app(SteadfastService::class),
-                    };
-
-                    $result = $service->checkStatus($record);
-
-                    Notification::make()
-                        ->title('বর্তমান স্ট্যাটাস: ' . ($result['status'] ?? 'পাওয়া যায়নি'))
-                        ->color($result['success'] ? 'success' : 'danger')
-                        ->send();
-                }),
-
-            Tables\Actions\Action::make('view_invoice')
-                ->label('Invoice Print')
-                ->icon('heroicon-o-document-text')
-                ->color('gray')
-                ->url(fn (Order $record) => route('admin.orders.invoice.view', $record))
-                ->openUrlInNewTab(),
-
-            Tables\Actions\Action::make('pos_invoice')
-                ->label('POS Invoice Print')
-                ->icon('heroicon-o-printer')
-                ->color('gray')
-                ->url(fn (Order $record) => route('admin.orders.invoice.pos', $record))
-                ->openUrlInNewTab(),
-
             Tables\Actions\EditAction::make(),
             Tables\Actions\DeleteAction::make(),
         ])
@@ -425,21 +342,60 @@ class OrderResource extends Resource
 
             Tables\Actions\BulkAction::make('bulk_send_steadfast')
                 ->label('Steadfast এ পাঠান')
-                ->icon('heroicon-o-paper-airplane')
+                ->icon('heroicon-o-truck')
+                ->color('info')
                 ->requiresConfirmation()
-                ->action(function ($records) {
-                    $service = app(SteadfastService::class);
-                    foreach ($records as $record) {
-                        if (blank($record->consignment_id)) {
-                            $service->createOrder($record);
-                        }
+                ->action(fn (\Illuminate\Support\Collection $records) => self::bulkSendToCourier($records, 'steadfast'))
+                ->deselectRecordsAfterCompletion(),
+
+            Tables\Actions\BulkAction::make('bulk_send_pathao')
+                ->label('Pathao তে পাঠান')
+                ->icon('heroicon-o-paper-airplane')
+                ->color('warning')
+                ->requiresConfirmation()
+                ->action(fn (\Illuminate\Support\Collection $records) => self::bulkSendToCourier($records, 'pathao'))
+                ->deselectRecordsAfterCompletion(),
+
+            Tables\Actions\BulkAction::make('bulk_send_bahok')
+                ->label('Bahok এ পাঠান')
+                ->icon('heroicon-o-truck')
+                ->color('success')
+                ->requiresConfirmation()
+                ->action(fn (\Illuminate\Support\Collection $records) => self::bulkSendToCourier($records, 'bahok'))
+                ->deselectRecordsAfterCompletion(),
+
+            Tables\Actions\BulkAction::make('bulk_check_status')
+                ->label('কুরিয়ার স্ট্যাটাস চেক')
+                ->icon('heroicon-o-arrow-path')
+                ->color('gray')
+                ->action(function (\Illuminate\Support\Collection $records) {
+                    $done = 0;
+                    foreach ($records->filter(fn (Order $o) => filled($o->courier_name)) as $o) {
+                        $service = match ($o->courier_name) {
+                            'pathao' => app(PathaoService::class),
+                            'bahok' => app(BahokService::class),
+                            default => app(SteadfastService::class),
+                        };
+                        $service->checkStatus($o);
+                        $done++;
                     }
 
-                    Notification::make()
-                        ->title('সিলেক্ট করা অর্ডারগুলো Steadfast এ পাঠানো হয়েছে।')
-                        ->success()
-                        ->send();
+                    Notification::make()->title($done . 'টি অর্ডারের কুরিয়ার স্ট্যাটাস আপডেট করা হয়েছে')->success()->send();
                 })
+                ->deselectRecordsAfterCompletion(),
+
+            Tables\Actions\BulkAction::make('bulk_invoice')
+                ->label('Invoice Print')
+                ->icon('heroicon-o-document-text')
+                ->color('gray')
+                ->action(fn (\Illuminate\Support\Collection $records) => redirect()->route('admin.orders.invoices', ['ids' => $records->pluck('id')->implode(',')]))
+                ->deselectRecordsAfterCompletion(),
+
+            Tables\Actions\BulkAction::make('bulk_pos_invoice')
+                ->label('POS Invoice Print')
+                ->icon('heroicon-o-printer')
+                ->color('gray')
+                ->action(fn (\Illuminate\Support\Collection $records) => redirect()->route('admin.orders.invoices.pos', ['ids' => $records->pluck('id')->implode(',')]))
                 ->deselectRecordsAfterCompletion(),
 
             Tables\Actions\BulkAction::make('bulk_export')
@@ -464,6 +420,44 @@ class OrderResource extends Resource
             Tables\Actions\DeleteBulkAction::make()->label('সিলেক্টেড ডিলিট'),
         ])
         ->checkIfRecordIsSelectableUsing(fn () => true);
+    }
+
+    /** সিলেক্ট করা অর্ডারগুলো কুরিয়ারে পাঠায়; আগেই পাঠানো থাকলে বাদ দেয় */
+    protected static function bulkSendToCourier(\Illuminate\Support\Collection $records, string $courier): void
+    {
+        $service = match ($courier) {
+            'pathao' => app(PathaoService::class),
+            'bahok' => app(BahokService::class),
+            default => app(SteadfastService::class),
+        };
+
+        $ok = 0;
+        $skipped = 0;
+        $failed = [];
+
+        foreach ($records as $order) {
+            if (filled($order->consignment_id) || filled($order->courier_order_id)) {
+                $skipped++;
+                continue;
+            }
+
+            $result = $service->createOrder($order);
+            if ($result['success']) {
+                $ok++;
+            } else {
+                $failed[] = $order->order_number . ': ' . ($result['message'] ?? 'ব্যর্থ');
+            }
+        }
+
+        $n = Notification::make()
+            ->title(ucfirst($courier) . " এ {$ok}টি পাঠানো হয়েছে" . ($skipped ? ", {$skipped}টি আগেই পাঠানো ছিল" : '') . ($failed ? ', ' . count($failed) . 'টি ব্যর্থ' : ''))
+            ->color($failed ? ($ok ? 'warning' : 'danger') : 'success');
+
+        if ($failed) {
+            $n->body(implode("\n", array_slice($failed, 0, 5)));
+        }
+
+        $n->send();
     }
 
     public static function getRelations(): array

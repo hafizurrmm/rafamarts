@@ -50,6 +50,7 @@ Route::post('/track-order', [OrderTrackingController::class, 'lookup'])->middlew
 // this is reasonably safe, but you may want to tighten this further (e.g. a dedicated admin middleware).
 Route::middleware(['auth', \App\Http\Middleware\AdminOnly::class])->group(function () {
     Route::get('/admin/orders/invoices', [InvoiceController::class, 'index'])->name('admin.orders.invoices');
+    Route::get('/admin/orders/invoices/pos', [InvoiceController::class, 'posBulk'])->name('admin.orders.invoices.pos');
     Route::get('/admin/orders/{order}/invoice', [InvoiceController::class, 'view'])->name('admin.orders.invoice.view');
     Route::get('/admin/orders/{order}/invoice/download', [InvoiceController::class, 'download'])->name('admin.orders.invoice.download');
     Route::get('/admin/orders/{order}/invoice/pos', [InvoiceController::class, 'posInvoice'])->name('admin.orders.invoice.pos');
