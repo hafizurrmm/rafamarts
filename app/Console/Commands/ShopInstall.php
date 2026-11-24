@@ -28,8 +28,54 @@ class ShopInstall extends Command
 
     protected $description = 'নতুন ক্লায়েন্টের জন্য ডাটাবেস, অ্যাডমিন, ডিফল্ট সেটিংস ও ড্রাফট পেজ সেটআপ করে';
 
+    /** সেটআপের আগে সার্ভারের শর্ত যাচাই — ফেল করলে পরিষ্কার বাংলা বার্তায় থামে */
+    protected function preflight(): bool
+    {
+        $problems = [];
+
+        if (version_compare(PHP_VERSION, '8.4.1', '<')) {
+            $problems[] = 'PHP 8.4.1 বা তার বেশি লাগবে (এখন ' . PHP_VERSION . ')। cPanel → MultiPHP Manager থেকে ভার্সন বদলান।';
+        }
+
+        $missing = array_filter(
+            ['mbstring', 'intl', 'gd', 'zip', 'bcmath', 'pdo_mysql', 'fileinfo', 'dom', 'curl', 'xml'],
+            fn ($ext) => ! extension_loaded($ext)
+        );
+        if ($missing) {
+            $problems[] = 'PHP এক্সটেনশন চালু নেই: ' . implode(', ', $missing) . ' (cPanel → Select PHP Version → Extensions)।';
+        }
+
+        foreach ([storage_path(), storage_path('logs'), base_path('bootstrap/cache')] as $dir) {
+            if (! is_dir($dir) || ! is_writable($dir)) {
+                $problems[] = "ফোল্ডার লেখার অনুমতি নেই: {$dir} (775 দিন)।";
+            }
+        }
+
+        if (! file_exists(base_path('.env'))) {
+            $problems[] = '.env ফাইল নেই — .env.example কপি করে .env বানিয়ে DB তথ্য দিন।';
+        }
+
+        try {
+            \DB::connection()->getPdo();
+        } catch (\Throwable $e) {
+            $problems[] = 'ডাটাবেসে সংযোগ হয়নি — .env এর DB_DATABASE / DB_USERNAME / DB_PASSWORD ঠিক আছে কি না দেখুন।';
+        }
+
+        foreach ($problems as $p) {
+            $this->error('✗ ' . $p);
+        }
+
+        return ! $problems;
+    }
+
     public function handle(): int
     {
+        if (! $this->preflight()) {
+            $this->error('উপরের সমস্যাগুলো ঠিক করে আবার চালান।');
+
+            return self::FAILURE;
+        }
+
         $email = $this->option('email') ?: $this->ask('অ্যাডমিনের ইমেইল');
 
         if (! filter_var($email, FILTER_VALIDATE_EMAIL)) {
