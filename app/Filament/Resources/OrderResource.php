@@ -25,9 +25,9 @@ class OrderResource extends Resource
 
     protected static ?string $navigationLabel = 'Order';
 
-    protected static ?string $navigationGroup = null;
+    protected static ?string $navigationGroup = 'Ecommerce';
 
-    protected static ?int $navigationSort = 30;
+    protected static ?int $navigationSort = 2;
 
     public const STATUS_OPTIONS = [
         'pending' => 'Pending',

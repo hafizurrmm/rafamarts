@@ -26,7 +26,9 @@ class CustomerResource extends Resource
 
     protected static ?string $pluralModelLabel = 'কাস্টমার';
 
-    protected static ?int $navigationSort = 31;
+    protected static ?string $navigationGroup = 'Ecommerce';
+
+    protected static ?int $navigationSort = 6;
 
     public static function canCreate(): bool
     {

@@ -14,9 +14,9 @@ class DeliveredOrderResource extends OrderResource
 
     protected static ?string $navigationLabel = 'Delivered';
 
-    protected static ?string $navigationGroup = null;
+    protected static ?string $navigationGroup = 'Ecommerce';
 
-    protected static ?int $navigationSort = 50;
+    protected static ?int $navigationSort = 8;
 
     protected static ?string $slug = 'delivered-orders';
 

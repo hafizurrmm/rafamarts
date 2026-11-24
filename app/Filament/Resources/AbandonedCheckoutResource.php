@@ -27,9 +27,9 @@ class AbandonedCheckoutResource extends Resource
 
     protected static ?string $pluralModelLabel = 'অসম্পূর্ণ চেকআউট';
 
-    protected static ?string $navigationGroup = null;
+    protected static ?string $navigationGroup = 'Ecommerce';
 
-    protected static ?int $navigationSort = 21;
+    protected static ?int $navigationSort = 7;
 
     public static function canCreate(): bool
     {

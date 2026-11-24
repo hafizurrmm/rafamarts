@@ -9,6 +9,8 @@ use Filament\Http\Middleware\DispatchServingFilamentEvent;
 use Filament\Pages;
 use Filament\Panel;
 use Filament\PanelProvider;
+use Filament\Navigation\NavigationGroup;
+use Filament\Navigation\NavigationItem;
 use Filament\Support\Colors\Color;
 use Filament\Support\Enums\MaxWidth;
 use Filament\View\PanelsRenderHook;
@@ -37,6 +39,19 @@ class AdminPanelProvider extends PanelProvider
             ->databaseNotificationsPolling('10s')
             ->colors([
                 'primary' => Color::Emerald,
+            ])
+            ->navigationGroups([
+                NavigationGroup::make('Ecommerce'),
+                NavigationGroup::make('Website'),
+                NavigationGroup::make('Settings'),
+                NavigationGroup::make('Report'),
+            ])
+            ->navigationItems([
+                NavigationItem::make('Storefront')
+                    ->icon('heroicon-o-building-storefront')
+                    ->group('Ecommerce')
+                    ->sort(1)
+                    ->url('/', shouldOpenInNewTab: true),
             ])
             ->maxContentWidth(MaxWidth::Full)
             ->sidebarCollapsibleOnDesktop()

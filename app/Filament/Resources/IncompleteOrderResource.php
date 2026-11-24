@@ -17,9 +17,9 @@ class IncompleteOrderResource extends OrderResource
 
     protected static ?string $navigationLabel = 'Pending Orders';
 
-    protected static ?string $navigationGroup = null;
+    protected static ?string $navigationGroup = 'Ecommerce';
 
-    protected static ?int $navigationSort = 20;
+    protected static ?int $navigationSort = 3;
 
     protected static ?string $slug = 'incomplete-orders';
 
