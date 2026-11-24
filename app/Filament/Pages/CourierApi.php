@@ -35,21 +35,6 @@ class CourierApi extends Page
                 ],
                 'enabled' => 'steadfast_enabled',
             ],
-            'pathao' => [
-                'name' => 'Pathao Courier', 'badge' => 'PT', 'color' => '#e11d48',
-                'fields' => [
-                    'pathao_client_id' => ['Client ID', 'text', 'Client ID', 'half'],
-                    'pathao_client_secret' => ['Client Secret', 'secret', 'Client Secret', 'half'],
-                    'pathao_username' => ['Username (Email)', 'text', 'name@example.com', 'half'],
-                    'pathao_password' => ['Password', 'secret', 'Password', 'half'],
-                    'pathao_store_id' => ['Store ID', 'text', 'Store ID', 'full'],
-                    'pathao_environment' => ['Environment', 'select', '', 'full', ['sandbox' => 'Sandbox (টেস্ট)', 'live' => 'Live'], 'optional'],
-                    'pathao_default_city_id' => ['Default City ID', 'text', 'যেমন 1', 'half', null, 'optional'],
-                    'pathao_default_zone_id' => ['Default Zone ID', 'text', 'যেমন 52', 'half', null, 'optional'],
-                    'pathao_default_area_id' => ['Default Area ID', 'text', 'যেমন 1030', 'full', null, 'optional'],
-                ],
-                'enabled' => 'pathao_enabled',
-            ],
             'redx' => [
                 'name' => 'RedX', 'badge' => 'RX', 'color' => '#dc2626',
                 'fields' => [
@@ -77,6 +62,21 @@ class CourierApi extends Page
                     'carrybee_store_id' => ['Store ID', 'text', 'Store ID', 'half'],
                 ],
                 'enabled' => 'carrybee_enabled',
+            ],
+            'pathao' => [
+                'name' => 'Pathao Courier', 'badge' => 'PT', 'color' => '#e11d48',
+                'fields' => [
+                    'pathao_client_id' => ['Client ID', 'text', 'Client ID', 'half'],
+                    'pathao_client_secret' => ['Client Secret', 'secret', 'Client Secret', 'half'],
+                    'pathao_username' => ['Username (Email)', 'text', 'name@example.com', 'half'],
+                    'pathao_password' => ['Password', 'secret', 'Password', 'half'],
+                    'pathao_store_id' => ['Store ID', 'text', 'Store ID', 'full'],
+                    'pathao_environment' => ['Environment', 'select', '', 'full', ['sandbox' => 'Sandbox (টেস্ট)', 'live' => 'Live'], 'optional'],
+                    'pathao_default_city_id' => ['Default City ID', 'text', 'যেমন 1', 'half', null, 'optional'],
+                    'pathao_default_zone_id' => ['Default Zone ID', 'text', 'যেমন 52', 'half', null, 'optional'],
+                    'pathao_default_area_id' => ['Default Area ID', 'text', 'যেমন 1030', 'full', null, 'optional'],
+                ],
+                'enabled' => 'pathao_enabled',
             ],
         ];
     }
