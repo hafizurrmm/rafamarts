@@ -14,7 +14,7 @@ class StoreSettings extends Page
 
     protected static ?string $navigationLabel = 'স্টোর সেটিংস';
 
-    protected static ?string $navigationGroup = 'Settings';
+    protected static ?string $navigationGroup = 'সেটিংস';
 
     protected static ?int $navigationSort = 10;
 

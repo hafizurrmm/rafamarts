@@ -25,7 +25,7 @@ class OrderResource extends Resource
 
     protected static ?string $navigationLabel = 'অর্ডার';
 
-    protected static ?string $navigationGroup = 'Ecommerce';
+    protected static ?string $navigationGroup = 'ই-কমার্স';
 
     protected static ?int $navigationSort = 2;
 

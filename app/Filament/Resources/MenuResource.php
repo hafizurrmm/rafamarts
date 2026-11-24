@@ -20,7 +20,7 @@ class MenuResource extends Resource
 
     protected static ?string $navigationLabel = 'মেনু';
 
-    protected static ?string $navigationGroup = 'Website';
+    protected static ?string $navigationGroup = 'ওয়েবসাইট';
 
     protected static ?int $navigationSort = 21;
 

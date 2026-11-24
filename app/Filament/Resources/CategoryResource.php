@@ -18,7 +18,7 @@ class CategoryResource extends Resource
 
     protected static ?string $navigationLabel = 'প্রোডাক্ট ক্যাটাগরি';
 
-    protected static ?string $navigationGroup = 'Ecommerce';
+    protected static ?string $navigationGroup = 'ই-কমার্স';
 
     protected static ?int $navigationSort = 5;
 

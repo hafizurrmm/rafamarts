@@ -23,7 +23,7 @@ class FraudChecker extends Page
 
     protected static ?string $navigationLabel = 'ফ্রড চেকার';
 
-    protected static ?string $navigationGroup = 'Settings';
+    protected static ?string $navigationGroup = 'সেটিংস';
 
     protected static ?int $navigationSort = 30;
 

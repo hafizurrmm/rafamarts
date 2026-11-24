@@ -21,7 +21,7 @@ class PageResource extends Resource
 
     protected static ?string $navigationLabel = 'পেজ';
 
-    protected static ?string $navigationGroup = 'Website';
+    protected static ?string $navigationGroup = 'ওয়েবসাইট';
 
     protected static ?int $navigationSort = 20;
 

@@ -11,7 +11,7 @@ class UserReport extends Page
 
     protected static ?string $navigationLabel = 'ইউজার রিপোর্ট';
 
-    protected static ?string $navigationGroup = 'Report';
+    protected static ?string $navigationGroup = 'রিপোর্ট';
 
     protected static ?int $navigationSort = 30;
 

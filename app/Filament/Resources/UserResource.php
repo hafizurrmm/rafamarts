@@ -19,7 +19,7 @@ class UserResource extends Resource
 
     protected static ?string $navigationLabel = 'ইউজার';
 
-    protected static ?string $navigationGroup = 'Ecommerce';
+    protected static ?string $navigationGroup = 'ই-কমার্স';
 
     protected static ?int $navigationSort = 9;
 

@@ -11,7 +11,7 @@ class ProductReport extends Page
 
     protected static ?string $navigationLabel = 'প্রোডাক্ট রিপোর্ট';
 
-    protected static ?string $navigationGroup = 'Report';
+    protected static ?string $navigationGroup = 'রিপোর্ট';
 
     protected static ?int $navigationSort = 20;
 

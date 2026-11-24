@@ -15,7 +15,7 @@ class CourierApi extends Page
 
     protected static ?string $title = 'কুরিয়ার API';
 
-    protected static ?string $navigationGroup = 'Settings';
+    protected static ?string $navigationGroup = 'সেটিংস';
 
     protected static ?int $navigationSort = 15;
 

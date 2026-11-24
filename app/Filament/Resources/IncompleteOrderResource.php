@@ -17,7 +17,7 @@ class IncompleteOrderResource extends OrderResource
 
     protected static ?string $navigationLabel = 'পেন্ডিং অর্ডার';
 
-    protected static ?string $navigationGroup = 'Ecommerce';
+    protected static ?string $navigationGroup = 'ই-কমার্স';
 
     protected static ?int $navigationSort = 3;
 

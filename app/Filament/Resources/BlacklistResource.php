@@ -18,7 +18,7 @@ class BlacklistResource extends Resource
 
     protected static ?string $navigationLabel = 'ব্ল্যাকলিস্ট';
 
-    protected static ?string $navigationGroup = 'Settings';
+    protected static ?string $navigationGroup = 'সেটিংস';
 
     protected static ?int $navigationSort = 31;
 

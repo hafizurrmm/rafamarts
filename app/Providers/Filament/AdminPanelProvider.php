@@ -41,15 +41,15 @@ class AdminPanelProvider extends PanelProvider
                 'primary' => Color::Emerald,
             ])
             ->navigationGroups([
-                NavigationGroup::make('Ecommerce')->label('ই-কমার্স'),
-                NavigationGroup::make('Website')->label('ওয়েবসাইট'),
-                NavigationGroup::make('Settings')->label('সেটিংস'),
-                NavigationGroup::make('Report')->label('রিপোর্ট'),
+                NavigationGroup::make('ই-কমার্স'),
+                NavigationGroup::make('ওয়েবসাইট'),
+                NavigationGroup::make('সেটিংস'),
+                NavigationGroup::make('রিপোর্ট'),
             ])
             ->navigationItems([
                 NavigationItem::make('স্টোরফ্রন্ট')
                     ->icon('heroicon-o-building-storefront')
-                    ->group('Ecommerce')
+                    ->group('ই-কমার্স')
                     ->sort(1)
                     ->url('/', shouldOpenInNewTab: true),
             ])

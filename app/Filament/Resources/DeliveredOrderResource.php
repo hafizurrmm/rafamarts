@@ -14,7 +14,7 @@ class DeliveredOrderResource extends OrderResource
 
     protected static ?string $navigationLabel = 'ডেলিভারি সম্পন্ন';
 
-    protected static ?string $navigationGroup = 'Ecommerce';
+    protected static ?string $navigationGroup = 'ই-কমার্স';
 
     protected static ?int $navigationSort = 8;
 

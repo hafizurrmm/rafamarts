@@ -11,7 +11,7 @@ class CourierReport extends Page
 
     protected static ?string $navigationLabel = 'কুরিয়ার রিপোর্ট';
 
-    protected static ?string $navigationGroup = 'Report';
+    protected static ?string $navigationGroup = 'রিপোর্ট';
 
     protected static ?int $navigationSort = 10;
 
