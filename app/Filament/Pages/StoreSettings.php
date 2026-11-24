@@ -134,7 +134,7 @@ class StoreSettings extends Page
                                 ->options([
                                     'static' => 'স্ট্যাটিক (একটাই ছবি)',
                                     'slider' => 'স্লাইড (একাধিক ছবি ঘুরে ঘুরে দেখাবে)',
-                                    'split' => 'বাম পাশে আসল টেক্সট + ডান পাশে ছবি',
+                                    'split' => 'Static Banner',
                                 ])
                                 ->default('static')
                                 ->live()
