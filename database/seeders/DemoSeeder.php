@@ -12,7 +12,7 @@ class DemoSeeder extends Seeder
 {
     public function run(): void
     {
-        // ⚠️ এই সিডার admin@shopbd.com / password নামে দুর্বল অ্যাডমিন বানায় — শুধু লোকাল/ডেমোর জন্য।
+        // ⚠️ এই সিডার admin@nexmart.com / password নামে দুর্বল অ্যাডমিন বানায় — শুধু লোকাল/ডেমোর জন্য।
         // ক্লায়েন্টের লাইভ সাইটে ভুলে চালালে ঠেকাতে প্রোডাকশনে বন্ধ। ইনস্টলের জন্য `php artisan shop:install` ব্যবহার করুন।
         if (app()->isProduction()) {
             $this->command?->error('DemoSeeder প্রোডাকশনে চলবে না। php artisan shop:install ব্যবহার করুন।');
@@ -22,7 +22,7 @@ class DemoSeeder extends Seeder
 
         // Admin user for Filament login
         User::updateOrCreate(
-            ['email' => 'admin@shopbd.com'],
+            ['email' => 'admin@nexmart.com'],
             [
                 'name' => 'Admin',
                 'password' => Hash::make('password'),

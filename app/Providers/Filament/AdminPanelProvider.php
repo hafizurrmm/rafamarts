@@ -32,6 +32,13 @@ class AdminPanelProvider extends PanelProvider
     {
         return $panel
             ->default()
+            ->brandName(function () {
+                try {
+                    return \App\Models\Setting::get('site_name') ?: config('shop.name');
+                } catch (\Throwable $e) {
+                    return config('shop.name');
+                }
+            })
             ->id('admin')
             ->path('admin')
             ->login()

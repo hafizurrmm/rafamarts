@@ -28,7 +28,7 @@
 
     @forelse($orders as $order)
         <div class="invoice">
-            <h2>{{ \App\Models\Setting::get('site_name', 'ShopBD') }} — Invoice</h2>
+            <h2>{{ \App\Models\Setting::get('site_name', config('shop.name')) }} — Invoice</h2>
             <p>Order Number: <strong>{{ $order->order_number }}</strong> | Date: {{ $order->created_at->format('d M Y') }}</p>
 
             <p>

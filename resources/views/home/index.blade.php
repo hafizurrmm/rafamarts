@@ -1,6 +1,6 @@
 @extends('layouts.app')
 
-@section('title', \App\Models\Setting::get('site_name', 'ShopBD') . ' - Shop More, Live Better')
+@section('title', \App\Models\Setting::get('site_name', config('shop.name')) . ' - ' . config('shop.tagline'))
 
 @section('content')
 
@@ -79,8 +79,8 @@
         @else
             <div class="brand-bg-secondary rounded-xl text-white p-8 md:p-12 mb-10 flex flex-col md:flex-row items-center justify-between gap-6">
                 <div>
-                    <h1 class="text-3xl md:text-5xl font-extrabold mb-2">{{ \App\Models\Setting::get('site_name', 'ShopBD') }}</h1>
-                    <p class="text-lg md:text-xl text-gray-200 mb-4">— Shop More, Live Better —</p>
+                    <h1 class="text-3xl md:text-5xl font-extrabold mb-2">{{ \App\Models\Setting::get('site_name', config('shop.name')) }}</h1>
+                    <p class="text-lg md:text-xl text-gray-200 mb-4">— {{ config('shop.tagline') }} —</p>
                     <div class="flex flex-wrap gap-4 text-sm">
                         <span>✅ Trusted Quality</span>
                         <span>🚚 Fast Delivery</span>

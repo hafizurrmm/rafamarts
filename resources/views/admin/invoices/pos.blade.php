@@ -34,7 +34,7 @@
     @foreach($orders as $order)
         <div class="receipt">
             <div class="center">
-                <h2>{{ \App\Models\Setting::get('site_name', 'ShopBD') }}</h2>
+                <h2>{{ \App\Models\Setting::get('site_name', config('shop.name')) }}</h2>
                 @if(\App\Models\Setting::get('hotline_number'))
                     <div class="muted">Hotline: {{ \App\Models\Setting::get('hotline_number') }}</div>
                 @endif

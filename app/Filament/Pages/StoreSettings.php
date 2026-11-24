@@ -26,7 +26,7 @@ class StoreSettings extends Page
     {
         $this->form->fill([
             // Store Branding
-            'site_name' => Setting::get('site_name', 'ShopBD'),
+            'site_name' => Setting::get('site_name', config('shop.name')),
             'site_logo' => Setting::get('site_logo'),
             'site_favicon' => Setting::get('site_favicon'),
             'banner_type' => Setting::get('banner_type', 'static'),

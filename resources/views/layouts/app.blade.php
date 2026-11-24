@@ -3,20 +3,20 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>@yield('title', \App\Models\Setting::get('site_name', 'ShopBD') . ' - Shop More, Live Better')</title>
+    <title>@yield('title', \App\Models\Setting::get('site_name', config('shop.name')) . ' - ' . config('shop.tagline'))</title>
 
     {{-- SEO / social preview tags — these feed the title, description and image Facebook
          (and Google) show when a product link is shared or clicked from an ad, which
          affects click-through and perceived relevance/quality as much as the ad itself. --}}
     @php
-        $metaDescription = trim($__env->yieldContent('meta_description')) ?: \App\Models\Setting::get('site_description', 'Shop More, Live Better — ' . \App\Models\Setting::get('site_name', 'ShopBD') . ' থেকে সেরা দামে কেনাকাটা করুন।');
+        $metaDescription = trim($__env->yieldContent('meta_description')) ?: \App\Models\Setting::get('site_description', 'Shop More, Live Better — ' . \App\Models\Setting::get('site_name', config('shop.name')) . ' থেকে সেরা দামে কেনাকাটা করুন।');
         $metaImage = trim($__env->yieldContent('meta_image')) ?: null;
         $siteLogoForMeta = \App\Models\Setting::get('site_logo');
         $ogImage = $metaImage ?: ($siteLogoForMeta ? asset('storage/' . $siteLogoForMeta) : null);
     @endphp
     <meta name="description" content="{{ $metaDescription }}">
     <meta property="og:type" content="website">
-    <meta property="og:title" content="@yield('title', \App\Models\Setting::get('site_name', 'ShopBD'))">
+    <meta property="og:title" content="@yield('title', \App\Models\Setting::get('site_name', config('shop.name')))">
     <meta property="og:description" content="{{ $metaDescription }}">
     <meta property="og:url" content="{{ url()->current() }}">
     @if($ogImage)
@@ -101,7 +101,7 @@
 <body class="site-body text-gray-800">
 
     @php
-        $siteName = \App\Models\Setting::get('site_name', 'ShopBD');
+        $siteName = \App\Models\Setting::get('site_name', config('shop.name'));
         $siteLogo = \App\Models\Setting::get('site_logo');
         $hotline = \App\Models\Setting::get('hotline_number');
         $whatsapp = \App\Models\Setting::get('whatsapp_number');

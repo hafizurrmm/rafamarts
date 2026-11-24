@@ -1,6 +1,6 @@
 @extends('layouts.app')
 
-@section('title', ($page->meta_title ?: $page->title) . ' - ' . \App\Models\Setting::get('site_name', 'ShopBD'))
+@section('title', ($page->meta_title ?: $page->title) . ' - ' . \App\Models\Setting::get('site_name', config('shop.name')))
 @section('meta_description', $page->meta_description)
 @section('meta_image', \App\Support\PageBlocks::img($page->og_image))
 
