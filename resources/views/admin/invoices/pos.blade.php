@@ -68,7 +68,7 @@
                 <tr class="grand"><td>Total</td><td style="text-align:right">Tk {{ number_format($order->total_amount, 0) }}</td></tr>
             </table>
             <hr>
-            <p class="center muted">ধন্যবাদ! আবার অর্ডার করুন।</p>
+            <p class="center muted">Thank you! Please order again.</p>
         </div>
     @endforeach
 </body>
