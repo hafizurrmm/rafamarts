@@ -16,4 +16,13 @@
     /* কন্টেন্ট একটু হালকা ব্যাকগ্রাউন্ড, কার্ড/টেবিল পরিষ্কার সাদা */
     html:not(.dark) .fi-main-ctn { background: #f4f7f5; }
     .fi-section, .fi-ta-ctn, .fi-wi-stats-overview-stat { border-radius: .9rem; }
+    /* মোবাইল: বাল্ক অ্যাকশন বার চওড়া হয়ে পুরো পেজ বাঁ-ডানে টানা যেত — র‍্যাপ করে আটকানো হলো */
+    @media (max-width: 1023px) {
+        .fi-main-ctn, .fi-main, .fi-page, .fi-ta, .fi-ta-ctn { max-width: 100%; min-width: 0; }
+        .fi-main-ctn { overflow-x: clip; }
+        .fi-ta-header-toolbar, .fi-ta-header-toolbar > div, .fi-ta-selection-indicator,
+        .fi-ta-selection-indicator > div, .fi-ta-actions { flex-wrap: wrap; row-gap: .5rem; }
+        .fi-ta-header-toolbar .fi-btn, .fi-ta-selection-indicator .fi-btn { flex: 1 1 auto; justify-content: center; }
+        .fi-ta-content { overflow-x: auto; }
+    }
 </style>
