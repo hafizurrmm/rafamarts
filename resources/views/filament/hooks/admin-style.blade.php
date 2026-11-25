@@ -23,6 +23,7 @@
         .fi-ta-header-toolbar { flex-wrap: wrap !important; row-gap: .5rem; }
         .fi-ta-header-toolbar > div:first-of-type { flex: 1 1 100% !important; min-width: 0 !important; max-width: 100%; flex-wrap: wrap; }
         .fi-ta-header-toolbar .fi-ta-actions { flex-wrap: wrap !important; flex-shrink: 1 !important; min-width: 0; max-width: 100%; row-gap: .5rem; }
+        .fi-ta-header-toolbar .fi-ta-actions { justify-content: flex-start !important; }
         .fi-ta-header-toolbar .fi-ta-actions .fi-btn { flex: 0 1 auto; }
         .fi-ta-header-toolbar > div:last-of-type { margin-inline-start: 0; flex: 1 1 100%; }
         .fi-ta-content { overflow-x: auto; }
