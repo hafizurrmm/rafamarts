@@ -48,6 +48,7 @@ class StoreSettings extends Page
             'whatsapp_number' => Setting::get('whatsapp_number'),
             'facebook_url' => Setting::get('facebook_url'),
             'features_enabled' => (bool) Setting::get('features_enabled', true),
+            'admin_theme' => \App\Support\Ui::adminTheme(),
             'ui_wishlist' => \App\Support\Ui::on('wishlist'),
             'ui_cart' => \App\Support\Ui::on('cart'),
             'ui_track' => \App\Support\Ui::on('track'),
@@ -130,6 +131,18 @@ class StoreSettings extends Page
                     'general' => Forms\Components\Tabs\Tab::make('সাধারণ সেটিংস')
                         ->icon('heroicon-o-adjustments-horizontal')
                         ->schema([
+                            Forms\Components\Section::make('অ্যাডমিন প্যানেলের থিম')
+                                ->description('শুধু অ্যাডমিন প্যানেলের রং ও সাইডবারের ডিজাইন বদলায়; কাস্টমারের সাইটে প্রভাব পড়ে না। সেভ করার পর পেজ রিফ্রেশ করুন।')
+                                ->schema([
+                                    Forms\Components\Radio::make('admin_theme')
+                                        ->label('থিম')
+                                        ->options([
+                                            'ocean' => 'Ocean — নীল-টিল গ্র্যাডিয়েন্ট সাইডবার, কমলা অ্যাকসেন্ট (ডিফল্ট)',
+                                            'emerald' => 'Emerald — গাঢ় সবুজ সাইডবার',
+                                        ])
+                                        ->default('ocean')
+                                        ->inline(false),
+                                ]),
                             Forms\Components\Section::make('সাইটের কোন অংশ দেখাবে / লুকাবে')
                                 ->description('বন্ধ করলে ওই অংশ কাস্টমারের সাইট থেকে সম্পূর্ণ লুকিয়ে যাবে (হেডার, মোবাইল মেনু ও সংশ্লিষ্ট পেজসহ)।')
                                 ->columns(2)

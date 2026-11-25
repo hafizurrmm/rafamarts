@@ -45,7 +45,7 @@ class AdminPanelProvider extends PanelProvider
             ->databaseNotifications()
             ->databaseNotificationsPolling('10s')
             ->colors([
-                'primary' => Color::Emerald,
+                'primary' => \App\Support\Ui::adminTheme() === 'emerald' ? Color::Emerald : Color::Sky,
             ])
             ->navigationGroups([
                 NavigationGroup::make('ই-কমার্স'),
