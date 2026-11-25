@@ -64,5 +64,5 @@ Route::middleware(['auth', \App\Http\Middleware\SubscriptionGuard::class, \App\H
 // ⚠️ এই রুটটা অবশ্যই ফাইলের একদম শেষে থাকতে হবে — সব নির্দিষ্ট রুটের পরে, নইলে অন্য URL ধরে ফেলবে।
 // regex এর শুরুর অংশ (?!admin$|...) এর কারণে /admin, /cart, /checkout এ এটা কখনো মিলবে না।
 Route::get('/{slug}', [PageController::class, 'show'])
-    ->where('slug', '(?!admin$|cart$|checkout$|product$|login$|livewire$|storage$|up$|track-order$|wishlist$|register$|account$|logout$)[a-z0-9]+(?:-[a-z0-9]+)*')
+    ->where('slug', '(?!admin$|cart$|checkout$|product$|login$|livewire$|storage$|up$|track-order$|wishlist$|register$|account$|logout$|install$|subscription-expired$)[a-z0-9]+(?:-[a-z0-9]+)*')
     ->name('pages.show');
