@@ -10,11 +10,13 @@ class OrderTrackingController extends Controller
 {
     public function show(Request $request)
     {
+        abort_unless(\App\Support\Ui::on('track'), 404);
         return view('orders.track', ['order' => null, 'searched' => false, 'steps' => []]);
     }
 
     public function lookup(Request $request)
     {
+        abort_unless(\App\Support\Ui::on('track'), 404);
         $data = $request->validate([
             'order_id' => ['required', 'string', 'max:30'],
             'phone' => ['required', 'string', 'max:25'],

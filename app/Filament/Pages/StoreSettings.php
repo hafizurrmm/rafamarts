@@ -48,6 +48,11 @@ class StoreSettings extends Page
             'whatsapp_number' => Setting::get('whatsapp_number'),
             'facebook_url' => Setting::get('facebook_url'),
             'features_enabled' => (bool) Setting::get('features_enabled', true),
+            'ui_wishlist' => \App\Support\Ui::on('wishlist'),
+            'ui_cart' => \App\Support\Ui::on('cart'),
+            'ui_track' => \App\Support\Ui::on('track'),
+            'ui_categories' => \App\Support\Ui::on('categories'),
+            'ui_flash_sale' => \App\Support\Ui::on('flash_sale'),
             'feature_items' => Setting::featureItems(),
             'customer_login_enabled' => (bool) Setting::get('customer_login_enabled', true),
             'site_description' => Setting::get('site_description'),
@@ -113,7 +118,7 @@ class StoreSettings extends Page
     /** এই পেজে কোন কোন ট্যাব দেখাবে (সাবক্লাস পেজগুলো নিজের ট্যাব বেছে নেয়) */
     protected static function visibleTabs(): array
     {
-        return ['branding', 'theme'];
+        return ['general', 'branding', 'theme'];
     }
 
     public function form(Form $form): Form
@@ -121,6 +126,23 @@ class StoreSettings extends Page
         return $form->schema([
             Forms\Components\Tabs::make('Settings')
                 ->tabs(array_values(array_intersect_key([
+
+                    'general' => Forms\Components\Tabs\Tab::make('সাধারণ সেটিংস')
+                        ->icon('heroicon-o-adjustments-horizontal')
+                        ->schema([
+                            Forms\Components\Section::make('সাইটের কোন অংশ দেখাবে / লুকাবে')
+                                ->description('বন্ধ করলে ওই অংশ কাস্টমারের সাইট থেকে সম্পূর্ণ লুকিয়ে যাবে (হেডার, মোবাইল মেনু ও সংশ্লিষ্ট পেজসহ)।')
+                                ->columns(2)
+                                ->schema([
+                                    Forms\Components\Toggle::make('ui_wishlist')->label('পছন্দের তালিকা (Favorite)')->helperText('হেডার ও মোবাইল মেনুর আইকন, প্রোডাক্টের হার্ট বাটন এবং পছন্দের পেজ।')->inline(false),
+                                    Forms\Components\Toggle::make('ui_cart')->label('কার্ট আইকন')->helperText('শুধু হেডার ও মোবাইল মেনুর কার্ট আইকন লুকাবে; অর্ডার ও চেকআউট চালু থাকবে।')->inline(false),
+                                    Forms\Components\Toggle::make('customer_login_enabled')->label('সাইন ইন / কাস্টমার একাউন্ট')->helperText('বন্ধ করলে সাইন ইন আইকন এবং /login, /register, /account বন্ধ হবে।')->inline(false),
+                                    Forms\Components\Toggle::make('ui_track')->label('অর্ডার ট্র্যাকিং')->helperText('মোবাইল মেনু, ফুটার ও অন্যান্য লিংকসহ /track-order পেজ।')->inline(false),
+                                    Forms\Components\Toggle::make('ui_categories')->label('ব্যানারের নিচের ক্যাটাগরি স্লাইডার')->inline(false),
+                                    Forms\Components\Toggle::make('features_enabled')->label('ব্যানারের নিচের ফিচার স্ট্রিপ')->helperText('লেখা ও আইকন বদলাতে স্টোর ব্র্যান্ডিং ট্যাব দেখুন।')->inline(false),
+                                    Forms\Components\Toggle::make('ui_flash_sale')->label('ফ্ল্যাশ সেল সেকশন')->inline(false),
+                                ]),
+                        ]),
 
                     'branding' => Forms\Components\Tabs\Tab::make('স্টোর ব্র্যান্ডিং')
                         ->icon('heroicon-o-building-storefront')
@@ -177,8 +199,6 @@ class StoreSettings extends Page
 
                             Forms\Components\TextInput::make('hotline_number')->label('Hotline Number'),
                             Forms\Components\TextInput::make('whatsapp_number')->label('WhatsApp Number')->placeholder('8801XXXXXXXXX')->helperText('দেশের কোডসহ দিন (880...)। 01XXXXXXXXX দিলেও সাইট নিজে থেকে ঠিক করে নেবে।'),
-                            Forms\Components\Toggle::make('customer_login_enabled')->label('কাস্টমার সাইন ইন / একাউন্ট চালু')->helperText('বন্ধ করলে হেডারের সাইন ইন আইকন ও /login, /register, /account বন্ধ হবে।')->inline(false),
-                            Forms\Components\Toggle::make('features_enabled')->label('ব্যানারের নিচে ফিচার স্ট্রিপ দেখাবে')->inline(false)->columnSpanFull(),
                             Forms\Components\Repeater::make('feature_items')
                                 ->label('ফিচার স্ট্রিপ (আইকন + লেখা)')
                                 ->schema([

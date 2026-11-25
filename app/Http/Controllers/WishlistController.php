@@ -10,12 +10,14 @@ class WishlistController extends Controller
 {
     public function index()
     {
+        abort_unless(\App\Support\Ui::on('wishlist'), 404);
         return view('wishlist.index');
     }
 
     /** ?ids=1,2,3 → প্রোডাক্ট কার্ডের HTML (সর্বোচ্চ ৫০টি) */
     public function items(Request $request)
     {
+        abort_unless(\App\Support\Ui::on('wishlist'), 404);
         $ids = collect(explode(',', (string) $request->query('ids')))
             ->map(fn ($v) => (int) $v)->filter()->unique()->take(50)->values();
 
@@ -32,6 +34,7 @@ class WishlistController extends Controller
      */
     public function sync(Request $request)
     {
+        abort_unless(\App\Support\Ui::on('wishlist'), 404);
         $user = $request->user();
         abort_unless($user && $user->role === 'customer', 403);
 

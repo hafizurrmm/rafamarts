@@ -188,6 +188,7 @@
                         <svg xmlns="http://www.w3.org/2000/svg" class="w-8 h-8" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.8" aria-hidden="true"><path stroke-linecap="round" stroke-linejoin="round" d="M15.75 6a3.75 3.75 0 11-7.5 0 3.75 3.75 0 017.5 0zM4.5 20.118a7.5 7.5 0 0115 0A17.933 17.933 0 0112 21.75c-2.676 0-5.216-.584-7.5-1.632z"/></svg>
                     </a>
                 @endif
+                @if(\App\Support\Ui::on('wishlist'))
                 {{-- পছন্দের তালিকা (Wishlist) — ব্রাউজারে সেভ থাকে --}}
                 <a href="{{ route('wishlist.index') }}" class="hidden md:flex items-center hover:opacity-80" title="পছন্দের তালিকা" aria-label="পছন্দের তালিকা">
                     <span class="relative brand-text">
@@ -195,6 +196,8 @@
                         <span data-wl-count class="absolute -top-2 -right-3 brand-bg text-white text-[11px] font-bold rounded-full min-w-[1.25rem] h-5 px-1 flex items-center justify-center">0</span>
                     </span>
                 </a>
+                @endif
+                @if(\App\Support\Ui::on('cart'))
                 {{-- কার্ট: সবুজ কার্ট আইকন + গোল ব্যাজ, নিচে লেখা --}}
                 <a href="{{ route('cart.index') }}" class="hidden md:flex items-center hover:opacity-80" title="কার্ট" aria-label="কার্ট">
                     <span class="relative">
@@ -206,6 +209,7 @@
                         </span>
                     </span>
                 </a>
+                @endif
             </div>
         </div>
 
@@ -337,7 +341,9 @@
                     @endforeach
                 </nav>
             @endif
-            <div><a href="{{ route('track.show') }}" class="hover:text-white">📦 অর্ডার ট্র্যাক করুন</a></div>
+            @if(\App\Support\Ui::on('track'))
+                <div><a href="{{ route('track.show') }}" class="hover:text-white">📦 অর্ডার ট্র্যাক করুন</a></div>
+            @endif
             @if($facebookUrl)
                 <div><a href="{{ $facebookUrl }}" target="_blank" class="hover:text-white">📘 Facebook Page</a></div>
             @endif
@@ -374,16 +380,17 @@
     </script>
     {{-- মোবাইল বটম নেভিগেশন: হোম · ট্র্যাক · সাইন ইন · পছন্দ · কার্ট --}}
     <nav class="md:hidden fixed bottom-0 inset-x-0 z-40 bg-white border-t shadow-[0_-2px_8px_rgba(0,0,0,0.06)]" aria-label="দ্রুত মেনু">
-        @php $bnCols = \App\Http\Controllers\CustomerAuthController::enabled() ? 'grid-cols-5' : 'grid-cols-4'; @endphp
-        <div class="grid {{ $bnCols }} text-[11px] font-semibold text-gray-600">
+        <div class="grid text-[11px] font-semibold text-gray-600" style="grid-template-columns: repeat({{ \App\Support\Ui::bottomNavCount() }}, minmax(0, 1fr))">
             <a href="{{ route('home') }}" class="flex flex-col items-center gap-0.5 py-2 {{ request()->routeIs('home') && ! request()->query() ? 'brand-text' : '' }}">
                 <svg xmlns="http://www.w3.org/2000/svg" class="w-6 h-6" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.8" aria-hidden="true"><path stroke-linecap="round" stroke-linejoin="round" d="M2.25 12l8.954-8.955a1.126 1.126 0 011.591 0L21.75 12M4.5 9.75v10.125c0 .621.504 1.125 1.125 1.125H9.75v-4.875c0-.621.504-1.125 1.125-1.125h2.25c.621 0 1.125.504 1.125 1.125V21h4.125c.621 0 1.125-.504 1.125-1.125V9.75M8.25 21h8.25"/></svg>
                 <span>হোম</span>
             </a>
+            @if(\App\Support\Ui::on('track'))
             <a href="{{ route('track.show') }}" class="flex flex-col items-center gap-0.5 py-2 {{ request()->routeIs('track.*') ? 'brand-text' : '' }}">
                 <svg xmlns="http://www.w3.org/2000/svg" class="w-6 h-6" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.8" aria-hidden="true"><path stroke-linecap="round" stroke-linejoin="round" d="M20.25 7.5l-.625 10.632a2.25 2.25 0 01-2.247 2.118H6.622a2.25 2.25 0 01-2.247-2.118L3.75 7.5M10 11.25h4M3.375 7.5h17.25c.621 0 1.125-.504 1.125-1.125v-1.5c0-.621-.504-1.125-1.125-1.125H3.375c-.621 0-1.125.504-1.125 1.125v1.5c0 .621.504 1.125 1.125 1.125z"/></svg>
                 <span>অর্ডার ট্র্যাক</span>
             </a>
+            @endif
             @if(\App\Http\Controllers\CustomerAuthController::enabled())
                 @php $bnUser = auth()->user(); @endphp
                 <a href="{{ $bnUser ? ($bnUser->role === 'admin' ? url('/admin') : route('account.index')) : route('login') }}" class="flex flex-col items-center gap-0.5 py-2 {{ request()->routeIs('login', 'register', 'account.*') ? 'brand-text' : '' }}">
@@ -391,6 +398,7 @@
                     <span>{{ $bnUser ? 'একাউন্ট' : 'সাইন ইন' }}</span>
                 </a>
             @endif
+            @if(\App\Support\Ui::on('wishlist'))
             <a href="{{ route('wishlist.index') }}" class="relative flex flex-col items-center gap-0.5 py-2 {{ request()->routeIs('wishlist.*') ? 'brand-text' : '' }}">
                 <span class="relative">
                     <svg xmlns="http://www.w3.org/2000/svg" class="w-6 h-6" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.8" aria-hidden="true"><path stroke-linecap="round" stroke-linejoin="round" d="M21 8.25c0-2.485-2.099-4.5-4.688-4.5-1.935 0-3.597 1.126-4.312 2.733-.715-1.607-2.377-2.733-4.313-2.733C5.1 3.75 3 5.765 3 8.25c0 7.22 9 12 9 12s9-4.78 9-12z"/></svg>
@@ -398,6 +406,8 @@
                 </span>
                 <span>পছন্দ</span>
             </a>
+            @endif
+            @if(\App\Support\Ui::on('cart'))
             <a href="{{ route('cart.index') }}" class="relative flex flex-col items-center gap-0.5 py-2 {{ request()->routeIs('cart.*') ? 'brand-text' : '' }}">
                 <span class="relative">
                     <svg xmlns="http://www.w3.org/2000/svg" class="w-6 h-6" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.8" aria-hidden="true"><path stroke-linecap="round" stroke-linejoin="round" d="M2.25 3h1.386c.51 0 .955.343 1.087.835l.383 1.437M7.5 14.25a3 3 0 00-3 3h15.75m-12.75-3h11.218c1.121-2.3 1.994-4.705 2.602-7.189.077-.316-.173-.611-.498-.611H5.106M7.5 14.25L5.106 5.272M6 18.75a.75.75 0 11-1.5 0 .75.75 0 011.5 0zm12.75 0a.75.75 0 11-1.5 0 .75.75 0 011.5 0z"/></svg>
@@ -405,9 +415,11 @@
                 </span>
                 <span>কার্ট</span>
             </a>
+            @endif
         </div>
     </nav>
 
+    @if(\App\Support\Ui::on('wishlist'))
     <script>
         // Wishlist — localStorage-এ প্রোডাক্ট আইডি জমা থাকে (লগইন লাগে না)
         (function () {
@@ -446,6 +458,7 @@
             window.addEventListener('pageshow', paint);
         })();
     </script>
+    @endif
     @stack('scripts')
 </body>
 </html>

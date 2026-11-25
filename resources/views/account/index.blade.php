@@ -71,7 +71,7 @@
                 </div>
                 <div class="flex items-center justify-between mt-2 pt-2 border-t text-sm">
                     <span class="font-bold">মোট ৳ {{ number_format($order->total_amount, 0) }}</span>
-                    <a href="{{ route('track.show') }}" class="brand-text font-semibold">📦 ট্র্যাক করুন</a>
+                    @if(\App\Support\Ui::on('track'))<a href="{{ route('track.show') }}" class="brand-text font-semibold">📦 ট্র্যাক করুন</a>@endif
                 </div>
             </div>
         @empty

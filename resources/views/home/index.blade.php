@@ -110,7 +110,7 @@
         @endif
 
         {{-- Category slider --}}
-        @if($categories->count())
+        @if(\App\Support\Ui::on('categories') && $categories->count())
             <div class="mb-10">
                 <div class="swiper category-swiper">
                     <div class="swiper-wrapper">
@@ -131,7 +131,7 @@
         @endif
 
         {{-- Flash Sale slider --}}
-        @if($flashSaleProducts->count())
+        @if(\App\Support\Ui::on('flash_sale') && $flashSaleProducts->count())
             <div class="mb-10 relative">
                 @php
                     $fsEnd = null;
