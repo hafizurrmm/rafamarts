@@ -72,3 +72,25 @@ SUPPORT_PHONE=01XXXXXXXXX            # নবায়নের জন্য আ
 - গ্রেসও শেষ হলে **শুধু অ্যাডমিন প্যানেল ও ইনভয়েস** বন্ধ হয়ে "নবায়ন করুন" পেজ দেখায়। **কাস্টমারদের দোকান চালু থাকে।**
 - **নবায়ন:** টাকা পেলে `.env` এর তারিখ বাড়ান (মাসিক +১ মাস, বার্ষিক +১ বছর), তারপর `php artisan optimize:clear` অথবা cPanel থেকে `bootstrap/cache/config.php` মুছে দিন। (ক্লায়েন্টের আগের বকেয়া মেয়াদ থেকেই বাড়ান, পেমেন্টের দিন থেকে নয়।)
 - মূল্য: মাসিক ৫০০ টাকা, বার্ষিক ৪,০০০ টাকা, ডোমেইন ফ্রি।
+
+## সব ক্লায়েন্ট সাইটে একসাথে আপডেট (`deploy/update-clients.php`)
+আপনার নিজের সাইটে cPanel Git → Deploy HEAD Commit করার পর এই স্ক্রিপ্ট চালালে একই কোড সব ক্লায়েন্ট সাইটে কপি হয়, প্রতিটিতে `migrate --force` ও `optimize:clear` চলে। ক্লায়েন্টের `.env`, `storage`, `vendor`, `public_html/index.php`, `.htaccess` ছোঁয়া হয় না। একটা সাইটে সমস্যা হলে বাকিগুলোর আপডেট থামে না।
+
+**১) তালিকা বানান** (রিপোর বাইরে, cPanel File Manager এ `/home/USER/nexmart-clients.txt`; গিটে দেবেন না):
+```
+# নাম | অ্যাপ ফোল্ডার | public_html ফোল্ডার | PHP পাথ (ঐচ্ছিক)
+rahim | /home/USER/public_html/rahim_app | /home/USER/public_html/rahim | /usr/local/bin/ea-php85
+karim | /home/USER/public_html/karim_app | /home/USER/public_html/karim
+```
+**২) আগে ড্রাই-রান** (কিছু বদলায় না, শুধু দেখায়):
+```
+/usr/local/bin/ea-php85 /home/USER/repositories/REPO/deploy/update-clients.php --dry-run
+```
+**৩) আসল আপডেট:** একই কমান্ড `--dry-run` ছাড়া। SSH না থাকলে cPanel → Cron Jobs এ একবারের জন্য (`* * * * *`) বসিয়ে ২-৩ মিনিট পর জব মুছে দিন, ফলাফল `/home/USER/nexmart-update.log` এ।
+একটা সাইটে চালাতে: `--only=rahim`।
+
+**মনে রাখুন**
+- নতুন ফিচার প্রথমে **টেস্ট সাবডোমেইনে** চালিয়ে দেখুন, তারপর ক্লায়েন্টদের সাইটে দিন।
+- আপডেটের আগে ডাটাবেস ব্যাকআপ নিন (cPanel → Backup বা phpMyAdmin Export)।
+- লাইব্রেরি (`composer.lock`) বদলালে স্ক্রিপ্ট সতর্কতা দেয়; তখন নতুন `shop-release.zip` দিয়ে `vendor` আপডেট করতে হবে (স্ক্রিপ্ট `vendor` কপি করে না)।
+- মুছে ফেলা ফাইল ক্লায়েন্টের সাইট থেকে মুছে না (শুধু নতুন/বদলানো ফাইল কপি হয়)।
