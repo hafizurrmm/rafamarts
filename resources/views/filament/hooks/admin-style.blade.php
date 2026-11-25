@@ -18,14 +18,18 @@
     html:not(.dark) .fi-main-ctn { background: #f4f7f5; }
 @else
     /* Ocean থিম: ভাসমান গ্র্যাডিয়েন্ট সাইডবার (নীল-টিল), কমলা অ্যাকসেন্ট, হালকা নীলচে ব্যাকগ্রাউন্ড */
-    html:not(.dark) .fi-sidebar { background: linear-gradient(180deg, #0aa6bd 0%, #0a7fc4 52%, #0a56b0 100%); border-right: 0; }
+    html:not(.dark) .fi-sidebar { background: linear-gradient(180deg, #0894ab 0%, #0a74b8 52%, #0a4fa6 100%); border-right: 0; }
     html:not(.dark) .fi-sidebar-header { background: transparent; box-shadow: none; border-bottom: 1px solid rgba(255,255,255,.18); }
     html:not(.dark) .fi-sidebar-header a, html:not(.dark) .fi-sidebar-header div { color: #fff; }
     html:not(.dark) .fi-sidebar-group-label,
-    html:not(.dark) .fi-sidebar-group-button svg { color: rgba(255,255,255,.68); }
+    html:not(.dark) .fi-sidebar-group-button svg,
+    html:not(.dark) .fi-sidebar-header button,
+    html:not(.dark) .fi-sidebar-header svg { color: #fff !important; opacity: 1; }
+    html:not(.dark) .fi-sidebar-group-label { font-weight: 700; }
     html:not(.dark) .fi-sidebar-item-button,
     html:not(.dark) .fi-sidebar-item-button .fi-sidebar-item-label,
-    html:not(.dark) .fi-sidebar-item-button .fi-sidebar-item-icon { color: #eaf6ff !important; }
+    html:not(.dark) .fi-sidebar-item-button .fi-sidebar-item-icon { color: #fff !important; }
+    html:not(.dark) .fi-sidebar-item-button .fi-sidebar-item-label { font-weight: 500; text-shadow: 0 1px 2px rgba(0,0,0,.18); }
     html:not(.dark) .fi-sidebar-item-button:hover { background: rgba(255,255,255,.14); }
     html:not(.dark) .fi-sidebar-item.fi-active > .fi-sidebar-item-button { background: rgba(255,255,255,.22); box-shadow: inset 3px 0 0 #ff9f1c; }
     html:not(.dark) .fi-sidebar-item.fi-active > .fi-sidebar-item-button .fi-sidebar-item-label,
