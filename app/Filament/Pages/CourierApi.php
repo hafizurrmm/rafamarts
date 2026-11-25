@@ -88,12 +88,44 @@ class CourierApi extends Page
 
     protected function fillData(): void
     {
+        $this->data['courier_auto_sync'] = \App\Services\CourierSync::enabled();
+        $this->data['courier_sync_update_order'] = \App\Services\CourierSync::updatesOrderStatus();
         foreach (self::couriers() as $c) {
             foreach (array_keys($c['fields']) as $key) {
                 $this->data[$key] = (string) Setting::get($key, in_array($key, ['pathao_environment', 'redx_environment'], true) ? 'sandbox' : '');
             }
             $this->data[$c['enabled']] = (bool) Setting::get($c['enabled'], false);
         }
+    }
+
+    public function saveSync(): void
+    {
+        Setting::set('courier_auto_sync', (bool) ($this->data['courier_auto_sync'] ?? false));
+        Setting::set('courier_sync_update_order', (bool) ($this->data['courier_sync_update_order'] ?? false));
+
+        Notification::make()->title('অটো-সিঙ্ক সেটিংস সেভ হয়েছে')->success()->send();
+    }
+
+    public function syncNow(): void
+    {
+        $s = app(\App\Services\CourierSync::class)->run(50);
+
+        Notification::make()
+            ->title('সিঙ্ক শেষ')
+            ->body("চেক {$s['checked']}টি, স্ট্যাটাস বদলেছে {$s['changed']}টি, Completed {$s['completed']}টি, Returned {$s['returned']}টি" . ($s['errors'] ? ", ত্রুটি {$s['errors']}টি" : ''))
+            ->success()
+            ->send();
+    }
+
+    /** সর্বশেষ কখন সিঙ্ক হয়েছে (Cron চলছে কি না বোঝার জন্য) */
+    public function lastSync(): array
+    {
+        $at = (int) Setting::get('courier_last_sync_at', 0);
+
+        return [
+            'text' => (string) Setting::get('courier_last_sync', ''),
+            'stale' => $at === 0 || now()->timestamp - $at > 3600,
+        ];
     }
 
     public function save(string $courier): void

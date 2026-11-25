@@ -19,7 +19,7 @@ class Order extends Model
         'delivery_zone', 'status', 'payment_status', 'payment_method',
         'payment_trx_id', 'payment_sender_number', 'payment_verified',
         'courier_name', 'consignment_id', 'tracking_code',
-        'courier_order_id', 'courier_status', 'courier_response',
+        'courier_order_id', 'courier_status', 'courier_response', 'courier_synced_at',
     ];
 
     protected $casts = [
@@ -28,6 +28,7 @@ class Order extends Model
         'discount' => 'decimal:2',
         'total_amount' => 'decimal:2',
         'payment_verified' => 'boolean',
+        'courier_synced_at' => 'datetime',
     ];
 
     public const PAYMENT_LABELS = [

@@ -14,6 +14,39 @@
         .cr-actions { display: flex; gap: .6rem; margin-top: 1rem; }
     </style>
 
+    @php $ls = $this->lastSync(); @endphp
+    <div class="cr-card" style="margin-bottom:1.25rem">
+        <div class="cr-head">
+            <div class="cr-logo" style="background:#0f766e">↻</div>
+            <div>
+                <div class="cr-name">কুরিয়ার স্ট্যাটাস অটো-সিঙ্ক</div>
+                <span class="cr-badge" style="color:{{ $ls['stale'] ? '#b45309' : '#047857' }};background:{{ $ls['stale'] ? '#fef3c7' : '#d1fae5' }}">
+                    {{ $ls['text'] ? 'শেষ সিঙ্ক: ' . $ls['text'] : 'এখনো সিঙ্ক হয়নি' }}
+                </span>
+            </div>
+        </div>
+        <div style="display:grid;gap:.6rem">
+            <label style="display:flex;align-items:center;gap:.6rem;font-weight:600;font-size:.9rem">
+                <x-filament::input.checkbox wire:model="data.courier_auto_sync" />
+                <span>প্রতি ১৫ মিনিটে চলমান অর্ডারের কুরিয়ার স্ট্যাটাস নিজে থেকে আপডেট করুন</span>
+            </label>
+            <label style="display:flex;align-items:center;gap:.6rem;font-weight:600;font-size:.9rem">
+                <x-filament::input.checkbox wire:model="data.courier_sync_update_order" />
+                <span>কুরিয়ার Delivered হলে অর্ডার Completed, Returned হলে অর্ডার Returned করুন</span>
+            </label>
+        </div>
+        <div class="cr-actions">
+            <x-filament::button color="success" icon="heroicon-o-bookmark-square" wire:click="saveSync">Save</x-filament::button>
+            <x-filament::button color="gray" icon="heroicon-o-arrow-path" wire:click="syncNow" wire:loading.attr="disabled" wire:target="syncNow">এখনই সিঙ্ক করুন</x-filament::button>
+        </div>
+        <details style="margin-top:.9rem;font-size:.82rem">
+            <summary style="cursor:pointer;font-weight:600">স্বয়ংক্রিয়ভাবে চালাতে একবার Cron সেট করুন (cPanel → Cron Jobs)</summary>
+            <p style="margin:.5rem 0">সময়: প্রতি মিনিট (<code>* * * * *</code>), কমান্ড:</p>
+            <code style="display:block;padding:.5rem .7rem;background:rgba(0,0,0,.05);border-radius:.5rem;word-break:break-all">/usr/local/bin/ea-php{{ PHP_MAJOR_VERSION }}{{ PHP_MINOR_VERSION }} {{ base_path('artisan') }} schedule:run &gt;&gt; /dev/null 2&gt;&amp;1</code>
+            <p style="margin:.5rem 0 0;opacity:.75">শুধু শেষ ৪৫ দিনের Pending/Processing/On Hold অর্ডার চেক হয়, প্রতি রানে সর্বোচ্চ ৫০টি। উপরের "শেষ সিঙ্ক" হলুদ থাকলে Cron চলছে না।</p>
+        </details>
+    </div>
+
     <div class="cr-grid">
         @foreach(\App\Filament\Pages\CourierApi::couriers() as $id => $c)
             @php [$label, $fg, $bg] = $this->statusFor($id); @endphp

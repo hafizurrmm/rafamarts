@@ -50,6 +50,13 @@ php artisan shop:install --site-name="..." --email=... --phone=...
 ```
 (বাকি ফাইল সাজানো উপরের ৫ নম্বর ধাপের মতো।)
 
+## কুরিয়ার স্ট্যাটাস অটো-সিঙ্কের Cron (প্রতি সাইটে একবার)
+cPanel → Cron Jobs → সময় `* * * * *` → কমান্ড (PHP পাথ ও ফোল্ডার নিজের মতো):
+```
+/usr/local/bin/ea-php84 /home/USER/public_html/APP_DIR/artisan schedule:run >> /dev/null 2>&1
+```
+এটা চললে প্রতি ১৫ মিনিটে চলমান অর্ডারের কুরিয়ার স্ট্যাটাস নিজে আপডেট হয় (Delivered → Completed, Returned → Returned)। অ্যাডমিনের Courier API পেজের উপরে "শেষ সিঙ্ক" দেখে বোঝা যায় Cron চলছে কি না; সেখান থেকে অটো-সিঙ্ক বন্ধও করা যায়।
+
 ## চালু করার আগে চেকলিস্ট
 - `https://ডোমেইন/APP_DIR/.env` খুললে **403/404** আসতে হবে (ফাইলের লেখা দেখা গেলে এখনই বন্ধ করুন)।
 - `APP_DEBUG=false`, `APP_ENV=production`।
