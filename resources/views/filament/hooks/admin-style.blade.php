@@ -13,7 +13,6 @@
     html:not(.dark) .fi-sidebar-item.fi-active > .fi-sidebar-item-button { background: rgba(255,255,255,.16); }
     html:not(.dark) .fi-sidebar-item.fi-active > .fi-sidebar-item-button .fi-sidebar-item-label,
     html:not(.dark) .fi-sidebar-item.fi-active > .fi-sidebar-item-button .fi-sidebar-item-icon { color: #fff !important; font-weight: 600; }
-    html:not(.dark) .fi-sidebar-nav::-webkit-scrollbar-thumb { background: rgba(255,255,255,.25); }
     /* কন্টেন্ট একটু হালকা ব্যাকগ্রাউন্ড, কার্ড/টেবিল পরিষ্কার সাদা */
     html:not(.dark) .fi-main-ctn { background: #f4f7f5; }
 @else
@@ -34,12 +33,18 @@
     html:not(.dark) .fi-sidebar-item.fi-active > .fi-sidebar-item-button { background: rgba(255,255,255,.22); box-shadow: inset 3px 0 0 #ff9f1c; }
     html:not(.dark) .fi-sidebar-item.fi-active > .fi-sidebar-item-button .fi-sidebar-item-label,
     html:not(.dark) .fi-sidebar-item.fi-active > .fi-sidebar-item-button .fi-sidebar-item-icon { color: #fff !important; font-weight: 700; }
-    html:not(.dark) .fi-sidebar-nav::-webkit-scrollbar-thumb { background: rgba(255,255,255,.35); }
     html:not(.dark) .fi-main-ctn { background: #eef2f8; }
     @media (min-width: 1024px) {
         html:not(.dark) .fi-sidebar { inset-block: .75rem; inset-inline-start: .75rem; height: calc(100vh - 1.5rem); border-radius: 1.25rem; overflow: hidden; box-shadow: 0 10px 30px rgba(10, 86, 176, .28); }
     }
 @endif
+    /* সাইডবারের আধুনিক, পাতলা স্ক্রলবার (ডিফল্ট ধূসর বার ও তীরচিহ্ন বাদ) */
+    .fi-sidebar, .fi-sidebar-nav { scrollbar-width: thin; scrollbar-color: rgba(255,255,255,.38) transparent; }
+    .fi-sidebar::-webkit-scrollbar, .fi-sidebar-nav::-webkit-scrollbar { width: 6px; height: 6px; background: transparent; }
+    .fi-sidebar::-webkit-scrollbar-track, .fi-sidebar-nav::-webkit-scrollbar-track { background: transparent; margin: 8px 0; }
+    .fi-sidebar::-webkit-scrollbar-thumb, .fi-sidebar-nav::-webkit-scrollbar-thumb { background: rgba(255,255,255,.34); border-radius: 999px; border: 0; }
+    .fi-sidebar::-webkit-scrollbar-thumb:hover, .fi-sidebar-nav::-webkit-scrollbar-thumb:hover { background: rgba(255,255,255,.62); }
+    .fi-sidebar::-webkit-scrollbar-button, .fi-sidebar-nav::-webkit-scrollbar-button { display: none; width: 0; height: 0; }
     .fi-section, .fi-ta-ctn, .fi-wi-stats-overview-stat { border-radius: .9rem; }
     /* মোবাইল: বাল্ক অ্যাকশন বাটনগুলো Filament এ shrink-0 থাকায় এক লাইনে চওড়া হয়ে পেজ টানত — এখন র‍্যাপ হয়ে নিচের লাইনে নামবে */
     @media (max-width: 1023px) {
