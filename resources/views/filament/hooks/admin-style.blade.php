@@ -16,7 +16,7 @@
     /* কন্টেন্ট একটু হালকা ব্যাকগ্রাউন্ড, কার্ড/টেবিল পরিষ্কার সাদা */
     html:not(.dark) .fi-main-ctn { background: #f4f7f5; }
 @else
-    /* Ocean থিম: ভাসমান গ্র্যাডিয়েন্ট সাইডবার (নীল-টিল), কমলা অ্যাকসেন্ট, হালকা নীলচে ব্যাকগ্রাউন্ড */
+    /* Ocean থিম: গ্র্যাডিয়েন্ট সাইডবার (পুরো উচ্চতা, ধার ঘেঁষে — সাদা ফাঁক নেই) (নীল-টিল), কমলা অ্যাকসেন্ট, হালকা নীলচে ব্যাকগ্রাউন্ড */
     html:not(.dark) .fi-sidebar { background: linear-gradient(180deg, #0894ab 0%, #0a74b8 52%, #0a4fa6 100%); border-right: 0; }
     html:not(.dark) .fi-sidebar-header { background: transparent; box-shadow: none; border-bottom: 1px solid rgba(255,255,255,.18); }
     html:not(.dark) .fi-sidebar-header a, html:not(.dark) .fi-sidebar-header div { color: #fff; }
@@ -34,9 +34,6 @@
     html:not(.dark) .fi-sidebar-item.fi-active > .fi-sidebar-item-button .fi-sidebar-item-label,
     html:not(.dark) .fi-sidebar-item.fi-active > .fi-sidebar-item-button .fi-sidebar-item-icon { color: #fff !important; font-weight: 700; }
     html:not(.dark) .fi-main-ctn { background: #eef2f8; }
-    @media (min-width: 1024px) {
-        html:not(.dark) .fi-sidebar { inset-block: .75rem; inset-inline-start: .75rem; height: calc(100vh - 1.5rem); border-radius: 1.25rem; overflow: hidden; box-shadow: 0 10px 30px rgba(10, 86, 176, .28); }
-    }
 @endif
     /* সাইডবারের আধুনিক, পাতলা স্ক্রলবার (ডিফল্ট ধূসর বার ও তীরচিহ্ন বাদ) */
     .fi-sidebar, .fi-sidebar-nav { scrollbar-width: thin; scrollbar-color: rgba(255,255,255,.38) transparent; }
