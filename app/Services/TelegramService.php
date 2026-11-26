@@ -99,4 +99,69 @@ class TelegramService
             return [false, 'Telegram এ পৌঁছানো যায়নি: ' . $e->getMessage()];
         }
     }
+
+    /** টোকেন ঠিক কিনা দেখে বটের username ফেরত দেয়। [username|null, errorMessage|null] */
+    public static function botUsername(?string $token): array
+    {
+        $token = trim((string) $token);
+        if ($token === '') {
+            return [null, 'আগে Bot Token বসান।'];
+        }
+
+        try {
+            $res = Http::timeout(8)->get("https://api.telegram.org/bot{$token}/getMe");
+            if ($res->successful() && $res->json('result.username')) {
+                return [$res->json('result.username'), null];
+            }
+
+            return [null, 'Bot Token ঠিক নয়: ' . ($res->json('description') ?? 'অজানা এরর')];
+        } catch (\Throwable $e) {
+            return [null, 'Telegram এ পৌঁছানো যায়নি: ' . $e->getMessage()];
+        }
+    }
+
+    /**
+     * "/start কোড" মেসেজ পাঠানো চ্যাট খুঁজে তার Chat ID ফেরত দেয়।
+     * [chatId|null, errorMessage|null, chatTitle|null]
+     */
+    public static function detectChat(?string $token, string $code): array
+    {
+        $token = trim((string) $token);
+        if ($token === '' || $code === '') {
+            return [null, 'আগে "১. বট খুলুন" বাটন চাপুন।', null];
+        }
+
+        try {
+            // ওয়েবহুক সেট থাকলে getUpdates কাজ করে না — তাই আগে সরিয়ে নিই
+            Http::timeout(8)->post("https://api.telegram.org/bot{$token}/deleteWebhook");
+
+            $res = Http::timeout(10)->post("https://api.telegram.org/bot{$token}/getUpdates", [
+                'limit' => 100,
+                'allowed_updates' => ['message'],
+            ]);
+
+            if (! $res->successful()) {
+                return [null, $res->json('description') ?? 'Telegram এরর দিয়েছে।', null];
+            }
+
+            $found = null;
+            foreach (array_reverse((array) $res->json('result', [])) as $u) {
+                $text = trim((string) data_get($u, 'message.text'));
+                if ($text === "/start {$code}") {
+                    $found = data_get($u, 'message.chat');
+                    break;
+                }
+            }
+
+            if (! $found) {
+                return [null, 'এখনো Telegram এ Start চাপা হয়নি। বট খুলে Start চেপে আবার চেষ্টা করুন।', null];
+            }
+
+            $title = trim((string) (data_get($found, 'title') ?: data_get($found, 'first_name') . ' ' . data_get($found, 'last_name')));
+
+            return [(string) data_get($found, 'id'), null, $title];
+        } catch (\Throwable $e) {
+            return [null, 'Telegram এ পৌঁছানো যায়নি: ' . $e->getMessage(), null];
+        }
+    }
 }

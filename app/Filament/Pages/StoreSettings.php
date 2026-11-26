@@ -101,6 +101,7 @@ class StoreSettings extends Page
             'telegram_enabled' => (bool) Setting::get('telegram_enabled', false),
             'telegram_bot_token' => Setting::get('telegram_bot_token'),
             'telegram_chat_id' => Setting::get('telegram_chat_id'),
+            'telegram_connect_code' => Setting::get('telegram_connect_code'),
 
             // Security & Fraud
             'fraud_alert_high_return' => (bool) Setting::get('fraud_alert_high_return', true),
@@ -368,6 +369,71 @@ class StoreSettings extends Page
                             Forms\Components\TextInput::make('telegram_chat_id')
                                 ->label('Chat ID')
                                 ->helperText('গ্রুপ হলে আইডি -100... দিয়ে শুরু হয়।'),
+
+                            Forms\Components\Hidden::make('telegram_connect_code'),
+
+                            Forms\Components\Section::make('⚡ অটো কানেক্ট (Chat ID খুঁজতে হবে না)')
+                                ->description('১) উপরে Bot Token বসান  ২) "১. বট খুলুন" চাপুন → Telegram এ Start চাপুন  ৩) ফিরে এসে "২. কানেক্ট সম্পন্ন করুন" চাপুন। Chat ID নিজে বসে যাবে।')
+                                ->schema([
+                                    Forms\Components\Actions::make([
+                                        Forms\Components\Actions\Action::make('telegram_open')
+                                            ->label('১. বট খুলুন')
+                                            ->icon('heroicon-o-arrow-top-right-on-square')
+                                            ->color('info')
+                                            ->action(function (\Filament\Forms\Set $set) {
+                                                [$user, $err] = \App\Services\TelegramService::botUsername($this->data['telegram_bot_token'] ?? null);
+                                                if (! $user) {
+                                                    Notification::make()->title($err)->danger()->send();
+
+                                                    return;
+                                                }
+                                                $code = \Illuminate\Support\Str::lower(\Illuminate\Support\Str::random(12));
+                                                $set('telegram_connect_code', $code);
+                                                \App\Models\Setting::set('telegram_connect_code', $code);
+
+                                                Notification::make()
+                                                    ->title('বট পাওয়া গেছে: @' . $user)
+                                                    ->body('নিচের বাটনে Telegram খুলে Start চাপুন, তারপর "২. কানেক্ট সম্পন্ন করুন" চাপুন।')
+                                                    ->success()
+                                                    ->persistent()
+                                                    ->actions([
+                                                        \Filament\Notifications\Actions\Action::make('open')
+                                                            ->label('Telegram এ খুলুন')
+                                                            ->button()
+                                                            ->url("https://t.me/{$user}?start={$code}", shouldOpenInNewTab: true)
+                                                            ->close(),
+                                                    ])
+                                                    ->send();
+                                            }),
+
+                                        Forms\Components\Actions\Action::make('telegram_finish')
+                                            ->label('২. কানেক্ট সম্পন্ন করুন')
+                                            ->icon('heroicon-o-check-circle')
+                                            ->color('success')
+                                            ->action(function (\Filament\Forms\Set $set) {
+                                                $token = $this->data['telegram_bot_token'] ?? null;
+                                                $code = (string) ($this->data['telegram_connect_code'] ?? '');
+                                                [$chatId, $err, $title] = \App\Services\TelegramService::detectChat($token, $code);
+
+                                                if (! $chatId) {
+                                                    Notification::make()->title($err)->warning()->send();
+
+                                                    return;
+                                                }
+
+                                                $set('telegram_chat_id', $chatId);
+                                                $set('telegram_enabled', true);
+                                                \App\Models\Setting::set('telegram_bot_token', $token);
+                                                \App\Models\Setting::set('telegram_chat_id', $chatId);
+                                                \App\Models\Setting::set('telegram_enabled', true);
+                                                \App\Models\Setting::set('telegram_connect_code', '');
+                                                $set('telegram_connect_code', '');
+
+                                                [, $msg] = \App\Services\TelegramService::sendTest($token, $chatId);
+                                                Notification::make()->title('✅ কানেক্ট হয়েছে' . ($title ? ": {$title}" : ''))->body($msg)->success()->send();
+                                            }),
+                                    ]),
+                                ])->columnSpanFull()->compact(),
 
                             Forms\Components\Actions::make([
                                 Forms\Components\Actions\Action::make('telegram_test')
