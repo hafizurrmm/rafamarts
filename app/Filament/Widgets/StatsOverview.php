@@ -13,9 +13,9 @@ class StatsOverview extends BaseWidget
 
     protected function getStats(): array
     {
-        // ক্যাশ অন ডেলিভারি: আজকের সব অর্ডার (বাতিল বাদে) ধরা হয়, শুধু "paid" না —
+        // ক্যাশ অন ডেলিভারি: এই মাসের সব অর্ডার (বাতিল/রিটার্ন বাদে) ধরা হয়, শুধু "paid" না —
         // কারণ COD-তে অর্ডার Completed না হওয়া পর্যন্ত paid হয় না, ফলে সংখ্যা সব সময় ০ দেখাত।
-        $todaySales = Order::whereDate('created_at', today())
+        $todaySales = Order::whereBetween('created_at', [now()->startOfMonth(), now()->endOfMonth()])
             ->whereNotIn('status', ['cancelled', 'returned'])
             ->sum('total_amount');
 
@@ -33,8 +33,8 @@ class StatsOverview extends BaseWidget
         $stockoutCount = Product::where('is_active', true)->where('stock', '<=', 0)->count();
 
         return [
-            Stat::make('আজকের মোট বিক্রি', '৳ ' . number_format($todaySales, 0))
-                ->description('বাতিল বাদে আজকের অর্ডার')
+            Stat::make('এই মাসের মোট বিক্রি', '৳ ' . number_format($todaySales, 0))
+                ->description('বাতিল ও রিটার্ন বাদে, ' . now()->format('F Y'))
                 ->descriptionIcon('heroicon-m-banknotes')
                 ->color('success'),
 
