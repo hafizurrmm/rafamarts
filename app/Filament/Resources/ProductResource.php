@@ -106,6 +106,12 @@ class ProductResource extends Resource
                     ->prefix('৳')
                     ->required(),
 
+                Forms\Components\TextInput::make('cost_price')
+                    ->label('ক্রয়মূল্য (Cost)')
+                    ->numeric()
+                    ->prefix('৳')
+                    ->helperText('শুধু আপনি দেখবেন — ড্যাশবোর্ডের লাভের হিসাবে লাগে।'),
+
                 Forms\Components\TextInput::make('compare_price')
                     ->numeric()
                     ->prefix('৳')

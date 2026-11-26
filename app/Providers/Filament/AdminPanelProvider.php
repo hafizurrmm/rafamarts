@@ -75,6 +75,8 @@ class AdminPanelProvider extends PanelProvider
                 \App\Filament\Widgets\MonthKpis::class,
                 \App\Filament\Widgets\OrderStatusStats::class,
                 StatsOverview::class,
+                \App\Filament\Widgets\TopProducts::class,
+                \App\Filament\Widgets\CategoryRevenue::class,
                 RecentOrdersTable::class,
                 SalesChart::class,
                 QuickActions::class,

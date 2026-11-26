@@ -4,6 +4,7 @@ namespace App\Support;
 
 use App\Models\Order;
 use Carbon\Carbon;
+use Illuminate\Support\Facades\DB;
 
 /** ড্যাশবোর্ডের বিক্রির হিসাব — বাতিল ও রিটার্ন বাদে */
 class SalesStats
@@ -67,5 +68,57 @@ class SalesStats
         }
 
         return $out;
+    }
+
+    private static function items(Carbon $from, Carbon $to)
+    {
+        return DB::table('order_items as oi')
+            ->join('orders as o', 'o.id', '=', 'oi.order_id')
+            ->leftJoin('products as p', 'p.id', '=', 'oi.product_id')
+            ->whereNotIn('o.status', ['cancelled', 'returned'])
+            ->whereBetween('o.created_at', [$from, $to]);
+    }
+
+    /**
+     * লাভের হিসাব: মোট লাভ = Σ (বিক্রয়মূল্য − ক্রয়মূল্য) × পরিমাণ; নেট লাভ = মোট লাভ − খরচ।
+     * ক্রয়মূল্য আইটেমে সেভ থাকলে সেটা, না থাকলে প্রোডাক্টের বর্তমান ক্রয়মূল্য।
+     * @return array{gross: float, expenses: float, net: float, missing: int, items: int}
+     */
+    public static function profit(Carbon $from, Carbon $to): array
+    {
+        $row = self::items($from, $to)->selectRaw(
+            'COALESCE(SUM((oi.price - COALESCE(oi.cost_price, p.cost_price, 0)) * oi.quantity),0) as gross,
+             COUNT(*) as items,
+             SUM(CASE WHEN COALESCE(oi.cost_price, p.cost_price) IS NULL THEN 1 ELSE 0 END) as missing'
+        )->first();
+
+        $exp = (float) \App\Models\Expense::whereBetween('spent_on', [$from->toDateString(), $to->toDateString()])->sum('amount');
+        $gross = (float) ($row->gross ?? 0);
+
+        return ['gross' => $gross, 'expenses' => $exp, 'net' => $gross - $exp, 'missing' => (int) ($row->missing ?? 0), 'items' => (int) ($row->items ?? 0)];
+    }
+
+    /** সেরা N প্রোডাক্ট (বিক্রি হওয়া ইউনিট অনুযায়ী) */
+    public static function topProducts(int $n = 5): array
+    {
+        return DB::table('order_items as oi')
+            ->join('orders as o', 'o.id', '=', 'oi.order_id')
+            ->whereNotIn('o.status', ['cancelled', 'returned'])
+            ->groupBy('oi.product_name')
+            ->selectRaw('oi.product_name as name, SUM(oi.quantity) as units, SUM(oi.line_total) as revenue')
+            ->orderByDesc('units')->limit($n)->get()->all();
+    }
+
+    /** ক্যাটাগরি অনুযায়ী আয় */
+    public static function byCategory(int $n = 6): array
+    {
+        return DB::table('order_items as oi')
+            ->join('orders as o', 'o.id', '=', 'oi.order_id')
+            ->leftJoin('products as p', 'p.id', '=', 'oi.product_id')
+            ->leftJoin('categories as c', 'c.id', '=', 'p.category_id')
+            ->whereNotIn('o.status', ['cancelled', 'returned'])
+            ->groupBy('c.name')
+            ->selectRaw('c.name as name, SUM(oi.line_total) as revenue')
+            ->orderByDesc('revenue')->limit($n)->get()->all();
     }
 }

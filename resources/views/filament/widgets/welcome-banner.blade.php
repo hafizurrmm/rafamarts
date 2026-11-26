@@ -17,6 +17,7 @@
         <div style="display:flex;gap:36px;flex-wrap:wrap;margin-top:20px">
             <div><div style="font-size:11px;letter-spacing:.06em;opacity:.8">আজকের বিক্রি</div><div style="font-size:24px;font-weight:700">{{ $todaySales }}</div></div>
             <div><div style="font-size:11px;letter-spacing:.06em;opacity:.8">আজকের অর্ডার</div><div style="font-size:24px;font-weight:700">{{ $todayOrders }}</div></div>
+            <div><div style="font-size:11px;letter-spacing:.06em;opacity:.8">আজকের নেট লাভ</div><div style="font-size:24px;font-weight:700">{{ $todayProfit }}</div></div>
             <div><div style="font-size:11px;letter-spacing:.06em;opacity:.8">কনফার্মের অপেক্ষায়</div><div style="font-size:24px;font-weight:700">{{ $pending }}</div></div>
         </div>
     </div>
