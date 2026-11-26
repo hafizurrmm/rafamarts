@@ -33,9 +33,71 @@
     <div class="grid md:grid-cols-12 gap-6 md:gap-8 items-start">
         {{-- বামে ছবি: ৫ কলাম --}}
         <div class="md:col-span-5">
-            <div class="bg-white border rounded-lg p-2 shadow-sm">
-                <img src="{{ $product->image_url }}" alt="{{ $product->name }}" class="w-full rounded-lg object-cover" fetchpriority="high">
+            @php
+                $imgs = $product->all_image_urls;
+                $video = trim((string) $product->video_url);
+                $ytId = null;
+                if ($video !== '' && preg_match('~(?:youtu\.be/|youtube\.com/(?:watch\?v=|embed/|shorts/))([\w-]{11})~', $video, $m)) {
+                    $ytId = $m[1];
+                }
+            @endphp
+            <div class="bg-white border rounded-lg p-2 shadow-sm" id="pgal">
+                <div class="relative">
+                    <img id="pgal-main" src="{{ $imgs[0] }}" alt="{{ $product->name }}" class="w-full rounded-lg object-cover aspect-square bg-gray-50" fetchpriority="high">
+                    @if(count($imgs) > 1)
+                        <button type="button" id="pgal-prev" aria-label="আগের ছবি" class="absolute left-2 top-1/2 -translate-y-1/2 w-9 h-9 rounded-full bg-white/90 shadow border flex items-center justify-center text-gray-700 hover:bg-white">‹</button>
+                        <button type="button" id="pgal-next" aria-label="পরের ছবি" class="absolute right-2 top-1/2 -translate-y-1/2 w-9 h-9 rounded-full bg-white/90 shadow border flex items-center justify-center text-gray-700 hover:bg-white">›</button>
+                    @endif
+                </div>
+                @if(count($imgs) > 1 || $ytId)
+                    <div class="flex gap-2 mt-2 overflow-x-auto pb-1" id="pgal-thumbs">
+                        @foreach($imgs as $i => $u)
+                            <button type="button" data-src="{{ $u }}" data-i="{{ $i }}"
+                                    class="pgal-t shrink-0 w-16 h-16 rounded border-2 overflow-hidden bg-gray-50 {{ $i === 0 ? 'border-[var(--brand-primary)]' : 'border-gray-200' }}">
+                                <img src="{{ $u }}" alt="" class="w-full h-full object-cover" loading="lazy">
+                            </button>
+                        @endforeach
+                        @if($ytId)
+                            <a href="{{ $video }}" target="_blank" rel="noopener"
+                               class="shrink-0 w-16 h-16 rounded border-2 border-gray-200 overflow-hidden relative bg-black">
+                                <img src="https://img.youtube.com/vi/{{ $ytId }}/mqdefault.jpg" alt="ভিডিও" class="w-full h-full object-cover opacity-80" loading="lazy">
+                                <span class="absolute inset-0 flex items-center justify-center text-white text-xl">▶</span>
+                            </a>
+                        @endif
+                    </div>
+                @endif
+                @if($video !== '' && ! $ytId)
+                    <a href="{{ $video }}" target="_blank" rel="noopener" class="inline-block mt-2 text-sm brand-text underline">▶ ভিডিও দেখুন</a>
+                @endif
             </div>
+            @if(count($imgs) > 1)
+            <script>
+            (function () {
+                var main = document.getElementById('pgal-main');
+                var thumbs = Array.prototype.slice.call(document.querySelectorAll('.pgal-t'));
+                var cur = 0;
+                function show(i) {
+                    cur = (i + thumbs.length) % thumbs.length;
+                    main.src = thumbs[cur].getAttribute('data-src');
+                    thumbs.forEach(function (t, k) {
+                        t.classList.toggle('border-[var(--brand-primary)]', k === cur);
+                        t.classList.toggle('border-gray-200', k !== cur);
+                    });
+                }
+                thumbs.forEach(function (t, k) { t.addEventListener('click', function () { show(k); }); });
+                document.getElementById('pgal-prev').addEventListener('click', function () { show(cur - 1); });
+                document.getElementById('pgal-next').addEventListener('click', function () { show(cur + 1); });
+                var x0 = null;
+                main.addEventListener('touchstart', function (e) { x0 = e.touches[0].clientX; }, {passive: true});
+                main.addEventListener('touchend', function (e) {
+                    if (x0 === null) return;
+                    var dx = e.changedTouches[0].clientX - x0;
+                    if (Math.abs(dx) > 40) show(cur + (dx < 0 ? 1 : -1));
+                    x0 = null;
+                });
+            })();
+            </script>
+            @endif
         </div>
 
         {{-- ডানে বিবরণ: ৭ কলাম --}}

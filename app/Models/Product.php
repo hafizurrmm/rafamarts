@@ -13,7 +13,7 @@ class Product extends Model
     use HasFactory;
 
     protected $fillable = [
-        'category_id', 'name', 'slug', 'description', 'image',
+        'category_id', 'name', 'slug', 'description', 'image', 'gallery', 'video_url',
         'price', 'compare_price', 'stock', 'sku',
         'is_flash_sale', 'is_active',
     ];
@@ -21,6 +21,7 @@ class Product extends Model
     protected $casts = [
         'price' => 'decimal:2',
         'compare_price' => 'decimal:2',
+        'gallery' => 'array',
         'is_flash_sale' => 'boolean',
         'is_active' => 'boolean',
     ];
@@ -59,5 +60,18 @@ class Product extends Model
         return $this->image
             ? asset('storage/' . $this->image)
             : asset('images/placeholder-product.png');
+    }
+
+    /** প্রোডাক্ট পেজের সব ছবির URL: মূল ছবি + গ্যালারি (ডুপ্লিকেট বাদ) */
+    public function getAllImageUrlsAttribute(): array
+    {
+        $paths = array_values(array_unique(array_filter(array_merge(
+            [$this->image],
+            (array) ($this->gallery ?? [])
+        ))));
+
+        return $paths
+            ? array_map(fn ($p) => asset('storage/' . $p), $paths)
+            : [asset('images/placeholder-product.png')];
     }
 }

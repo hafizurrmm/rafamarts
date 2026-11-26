@@ -62,11 +62,43 @@ class ProductResource extends Resource
                     ->fileAttachmentsDirectory('product-descriptions')
                     ->columnSpanFull(),
 
-                Forms\Components\FileUpload::make('image')
-                    ->image()
-                    ->directory('products')
-                    ->imageEditor(),
             ])->columns(2),
+
+            Forms\Components\Section::make('Media')
+                ->description('মূল ছবি প্রোডাক্ট কার্ডে দেখায়; গ্যালারির ছবিগুলো প্রোডাক্ট পেজে নিচে থাম্বনেইল হিসেবে দেখায়।')
+                ->schema([
+                    Forms\Components\FileUpload::make('image')
+                        ->label('মূল ছবি')
+                        ->image()
+                        ->disk('public')
+                        ->directory('products')
+                        ->visibility('public')
+                        ->imageEditor()
+                        ->maxSize(4096)
+                        ->helperText('PNG, JPG বা WebP, সর্বোচ্চ ৪ MB।')
+                        ->hintAction(static::libraryAction('image', false)),
+
+                    Forms\Components\FileUpload::make('gallery')
+                        ->label('গ্যালারি')
+                        ->image()
+                        ->multiple()
+                        ->reorderable()
+                        ->appendFiles()
+                        ->panelLayout('grid')
+                        ->disk('public')
+                        ->directory('products')
+                        ->visibility('public')
+                        ->maxFiles(10)
+                        ->maxSize(4096)
+                        ->helperText('একাধিক ছবি দিন, টেনে সাজানো যাবে। সর্বোচ্চ ১০টি, প্রতিটি ৪ MB পর্যন্ত।')
+                        ->hintAction(static::libraryAction('gallery', true)),
+
+                    Forms\Components\TextInput::make('video_url')
+                        ->label('Video URL (ঐচ্ছিক)')
+                        ->url()
+                        ->placeholder('https://www.youtube.com/watch?v=...')
+                        ->columnSpanFull(),
+                ])->columns(2),
 
             Forms\Components\Section::make('Pricing & Stock')->schema([
                 Forms\Components\TextInput::make('price')
@@ -136,5 +168,47 @@ class ProductResource extends Resource
             'create' => Pages\CreateProduct::route('/create'),
             'edit' => Pages\EditProduct::route('/{record}/edit'),
         ];
+    }
+
+    /** মিডিয়া লাইব্রেরি থেকে আগে আপলোড করা ছবি বাছাইয়ের অ্যাকশন */
+    protected static function libraryAction(string $field, bool $multiple): Forms\Components\Actions\Action
+    {
+        return Forms\Components\Actions\Action::make('pick_' . $field)
+            ->label('লাইব্রেরি থেকে বাছুন')
+            ->icon('heroicon-o-photo')
+            ->modalHeading('মিডিয়া লাইব্রেরি')
+            ->modalWidth('5xl')
+            ->modalSubmitActionLabel('বাছাই করুন')
+            ->form([
+                $multiple
+                    ? Forms\Components\CheckboxList::make('picked')->label('')->options(fn () => static::libraryOptions())->allowHtml()->columns(5)->gridDirection('row')
+                    : Forms\Components\Radio::make('picked')->label('')->options(fn () => static::libraryOptions())->allowHtml()->columns(5),
+            ])
+            ->action(function (array $data, Forms\Set $set, Forms\Get $get) use ($field, $multiple) {
+                $picked = $data['picked'] ?? null;
+                if (! $picked) {
+                    return;
+                }
+                if ($multiple) {
+                    $cur = array_values((array) ($get($field) ?? []));
+                    $set($field, array_values(array_unique(array_merge($cur, (array) $picked))));
+                } else {
+                    $set($field, [(string) $picked]);
+                }
+            });
+    }
+
+    /** media/ ফোল্ডারের সর্বশেষ ৬০টি ছবি (থাম্বনেইলসহ) */
+    protected static function libraryOptions(): array
+    {
+        $disk = \Illuminate\Support\Facades\Storage::disk('public');
+        $files = collect($disk->files('media'))
+            ->filter(fn ($f) => preg_match('/\.(jpe?g|png|webp|gif)$/i', $f))
+            ->sortByDesc(fn ($f) => $disk->lastModified($f))
+            ->take(60);
+
+        return $files->mapWithKeys(fn ($f) => [
+            $f => '<img src="' . e(asset('storage/' . $f)) . '" style="width:100%;height:90px;object-fit:cover;border-radius:6px" loading="lazy">',
+        ])->all();
     }
 }
