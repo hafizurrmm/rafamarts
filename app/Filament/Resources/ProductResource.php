@@ -39,10 +39,21 @@ class ProductResource extends Resource
                     ->unique(ignoreRecord: true),
 
                 Forms\Components\Select::make('category_id')
-                    ->label('Category')
-                    ->options(Category::pluck('name', 'id'))
+                    ->label('Category (ঐচ্ছিক)')
+                    ->helperText('ক্যাটাগরি না থাকলেও প্রোডাক্ট পোস্ট করা যাবে। চাইলে এখান থেকেই নতুন ক্যাটাগরি বানাতে পারেন।')
+                    ->options(fn () => Category::orderBy('name')->pluck('name', 'id'))
                     ->searchable()
-                    ->required(),
+                    ->placeholder('— ক্যাটাগরি ছাড়া —')
+                    ->createOptionForm([
+                        Forms\Components\TextInput::make('name')->label('ক্যাটাগরির নাম')->required()->maxLength(255),
+                    ])
+                    ->createOptionUsing(function (array $data) {
+                        $slug = \Illuminate\Support\Str::slug($data['name']) ?: 'category';
+                        $base = $slug; $i = 2;
+                        while (Category::where('slug', $slug)->exists()) { $slug = $base . '-' . $i++; }
+
+                        return Category::create(['name' => $data['name'], 'slug' => $slug, 'is_active' => true])->getKey();
+                    }),
 
                 Forms\Components\RichEditor::make('description')
                     ->label('বিস্তারিত বর্ণনা')

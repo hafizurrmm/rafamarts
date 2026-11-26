@@ -14,7 +14,9 @@ class ProductController extends Controller
     {
         $product = Product::where('slug', $slug)->where('is_active', true)->firstOrFail();
 
-        $related = Product::where('category_id', $product->category_id)
+        // ক্যাটাগরি থাকলে একই ক্যাটাগরির প্রোডাক্ট; না থাকলে সর্বশেষ প্রোডাক্ট দেখাবে
+        $related = Product::query()
+            ->when($product->category_id, fn ($q, $cat) => $q->where('category_id', $cat), fn ($q) => $q->latest())
             ->where('id', '!=', $product->id)
             ->where('is_active', true)
             ->take(4)
