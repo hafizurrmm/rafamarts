@@ -55,4 +55,9 @@
         .fi-ta-header-toolbar > div:last-of-type { margin-inline-start: 0; flex: 1 1 100%; }
         .fi-ta-content { overflow-x: auto; }
     }
+
+    /* ড্যাশবোর্ডের স্ট্যাট কার্ড: এক সারিতে ৫টি (ছোট স্ক্রিনে ২টি/১টি) */
+    .fi-wi-stats-overview-stats-ctn { display: grid !important; grid-template-columns: repeat(5, minmax(0, 1fr)) !important; gap: 1rem !important; }
+    @media (max-width: 1100px) { .fi-wi-stats-overview-stats-ctn { grid-template-columns: repeat(2, minmax(0, 1fr)) !important; } }
+    @media (max-width: 520px) { .fi-wi-stats-overview-stats-ctn { grid-template-columns: 1fr !important; } }
 </style>
