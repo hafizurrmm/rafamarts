@@ -3,7 +3,7 @@
         <div style="display:flex;justify-content:space-between;gap:16px;flex-wrap:wrap;align-items:flex-start">
             <div style="min-width:0">
                 <span style="display:inline-block;background:rgba(255,255,255,.16);border-radius:999px;padding:3px 12px;font-size:12px;font-weight:600">● লাইভ · {{ $date }}</span>
-                <h2 style="font-size:26px;font-weight:700;margin:12px 0 6px;line-height:1.25">{{ $greeting }}, {{ $name }}</h2>
+                <h2 style="font-size:26px;font-weight:700;margin:12px 0 6px;line-height:1.25">{{ $greeting }}, {{ $name }} 👋</h2>
                 <p style="opacity:.92;font-size:14px;line-height:1.6;max-width:640px">
                     {{ $shop }} আজ <b>{{ $todayOrders }}টি</b> অর্ডার পেয়েছে@if($pct !== null) — এই মাসের বিক্রি গত মাসের একই সময়ের চেয়ে <b>{{ abs($pct) }}% {{ $pct >= 0 ? 'বেশি' : 'কম' }}</b>@endif।
                     @if($pending > 0) <b>{{ $pending }}টি</b> অর্ডার কনফার্মের অপেক্ষায়।@endif

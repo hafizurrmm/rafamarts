@@ -19,13 +19,16 @@ class WelcomeBanner extends Widget
         $today = SalesStats::today();
         $month = SalesStats::month();
         $prev = SalesStats::lastMonthSamePeriod();
-        $hour = (int) now()->format('G');
+        $dhaka = now('Asia/Dhaka');
+        $bn = fn (string $v) => strtr($v, ['0' => '০', '1' => '১', '2' => '২', '3' => '৩', '4' => '৪', '5' => '৫', '6' => '৬', '7' => '৭', '8' => '৮', '9' => '৯']);
+        $days = ['রবিবার', 'সোমবার', 'মঙ্গলবার', 'বুধবার', 'বৃহস্পতিবার', 'শুক্রবার', 'শনিবার'];
+        $months = ['', 'জানুয়ারি', 'ফেব্রুয়ারি', 'মার্চ', 'এপ্রিল', 'মে', 'জুন', 'জুলাই', 'আগস্ট', 'সেপ্টেম্বর', 'অক্টোবর', 'নভেম্বর', 'ডিসেম্বর'];
 
         return [
-            'greeting' => $hour < 12 ? 'শুভ সকাল' : ($hour < 17 ? 'শুভ দুপুর' : ($hour < 20 ? 'শুভ সন্ধ্যা' : 'শুভ রাত্রি')),
+            'greeting' => 'স্বাগতম',
             'name' => auth()->user()?->name,
             'shop' => \App\Models\Setting::get('site_name') ?: config('shop.name'),
-            'date' => now()->translatedFormat('l, d F Y'),
+            'date' => $days[(int) $dhaka->format('w')] . ', ' . $bn($dhaka->format('j')) . ' ' . $months[(int) $dhaka->format('n')] . ' ' . $bn($dhaka->format('Y')),
             'todayOrders' => $today['orders'],
             'todaySales' => SalesStats::taka($today['revenue']),
             'pending' => Order::where('status', 'pending')->count(),
