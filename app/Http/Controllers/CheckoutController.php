@@ -260,6 +260,9 @@ class CheckoutController extends Controller
         // store() প্রতি অর্ডারে একবারই চলে, তাই একটা অর্ডারে একটাই মেসেজ যাবে।
         dispatch(fn () => TelegramService::notifyNewOrder($order))->afterResponse();
 
+        // 📩📞 কাস্টমারকে কনফার্মেশন SMS / কল (সেটিংসে চালু ও API দেওয়া থাকলে)
+        dispatch(fn () => \App\Services\OrderAlertService::notifyNewOrder($order))->afterResponse();
+
         // Purchase — the single most important event for Facebook's ad algorithm:
         // it's what "Conversions" campaigns optimize toward, so accurate value +
         // strong matching data (hashed phone) here directly lowers cost-per-sale.

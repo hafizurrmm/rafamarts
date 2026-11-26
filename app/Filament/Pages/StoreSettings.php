@@ -87,6 +87,15 @@ class StoreSettings extends Page
             'sms_api_key' => Setting::get('sms_api_key'),
             'sms_sender_id' => Setting::get('sms_sender_id'),
             'ai_call_enabled' => (bool) Setting::get('ai_call_enabled', false),
+            'sms_api_url' => Setting::get('sms_api_url'),
+            'sms_method' => Setting::get('sms_method'),
+            'sms_body' => Setting::get('sms_body'),
+            'sms_message' => Setting::get('sms_message'),
+            'call_api_url' => Setting::get('call_api_url'),
+            'call_api_key' => Setting::get('call_api_key'),
+            'call_caller_id' => Setting::get('call_caller_id'),
+            'call_method' => Setting::get('call_method'),
+            'call_body' => Setting::get('call_body'),
 
             // Telegram order notification
             'telegram_enabled' => (bool) Setting::get('telegram_enabled', false),
@@ -276,10 +285,35 @@ class StoreSettings extends Page
                     'ai_sms' => Forms\Components\Tabs\Tab::make('এআই ও এসএমএস')
                         ->icon('heroicon-o-cpu-chip')
                         ->schema([
-                            Forms\Components\Toggle::make('sms_enabled')->label('SMS Campaign চালু করুন'),
-                            Forms\Components\TextInput::make('sms_api_key')->label('SMS Gateway API Key')->password()->revealable(),
-                            Forms\Components\TextInput::make('sms_sender_id')->label('Sender ID'),
-                            Forms\Components\Toggle::make('ai_call_enabled')->label('AI Call চালু করুন'),
+                            Forms\Components\Section::make('📩 অর্ডার কনফার্মেশন SMS')
+                                ->description('অর্ডার হলেই কাস্টমারের ফোনে SMS যাবে। যেকোনো SMS প্রোভাইডারের API দিয়ে কাজ করে — প্রোভাইডারের ডকুমেন্টেশন থেকে API URL বসান। সুইচ অন + API URL দিলেই চালু হবে।')
+                                ->schema([
+                                    Forms\Components\Toggle::make('sms_enabled')->label('SMS চালু করুন')->columnSpanFull(),
+                                    Forms\Components\TextInput::make('sms_api_key')->label('API Key')->password()->revealable(),
+                                    Forms\Components\TextInput::make('sms_sender_id')->label('Sender ID'),
+                                    Forms\Components\TextInput::make('sms_api_url')->label('API URL')->columnSpanFull()
+                                        ->placeholder('https://প্রোভাইডার.com/api?api_key={api_key}&senderid={sender_id}&number={phone}&message={message}')
+                                        ->helperText('ব্যবহার করা যায়: {api_key} {sender_id} {phone} {message} {name} {order_number} {total}'),
+                                    Forms\Components\Select::make('sms_method')->label('Method')->options(['GET' => 'GET', 'POST' => 'POST'])->default('GET')->native(false),
+                                    Forms\Components\Textarea::make('sms_body')->label('POST বডি (শুধু POST হলে)')->rows(2)
+                                        ->placeholder('api_key={api_key}&senderid={sender_id}&number={phone}&message={message}  অথবা JSON  {"to":"{phone}","text":"{message}"}'),
+                                    Forms\Components\Textarea::make('sms_message')->label('SMS এর লেখা')->rows(2)->columnSpanFull()
+                                        ->placeholder('আপনার অর্ডার {order_number} গ্রহণ করা হয়েছে। মোট ৳{total}। ধন্যবাদ।'),
+                                ])->columns(2)->columnSpanFull(),
+
+                            Forms\Components\Section::make('📞 অর্ডার কনফার্মেশন কল (AI/IVR)')
+                                ->description('অর্ডার হলে কাস্টমারের নম্বরে অটো কল ট্রিগার হবে। এর জন্য একটা Voice/IVR কল সার্ভিস লাগবে — তাদের "কল ট্রিগার" API এর URL বসান। সুইচ অন + API URL দিলেই চালু হবে।')
+                                ->schema([
+                                    Forms\Components\Toggle::make('ai_call_enabled')->label('AI Call চালু করুন')->columnSpanFull(),
+                                    Forms\Components\TextInput::make('call_api_key')->label('API Key / Token')->password()->revealable(),
+                                    Forms\Components\TextInput::make('call_caller_id')->label('Caller ID / নম্বর'),
+                                    Forms\Components\TextInput::make('call_api_url')->label('API URL')->columnSpanFull()
+                                        ->placeholder('https://প্রোভাইডার.com/api/call?key={api_key}&to={phone}&caller={sender_id}')
+                                        ->helperText('ব্যবহার করা যায়: {api_key} {sender_id} (=Caller ID) {phone} {name} {order_number} {total}'),
+                                    Forms\Components\Select::make('call_method')->label('Method')->options(['GET' => 'GET', 'POST' => 'POST'])->default('GET')->native(false),
+                                    Forms\Components\Textarea::make('call_body')->label('POST বডি (শুধু POST হলে)')->rows(2)
+                                        ->placeholder('{"to":"{phone}","caller_id":"{sender_id}","order":"{order_number}"}'),
+                                ])->columns(2)->columnSpanFull(),
                         ])->columns(2),
 
                     'facebook' => Forms\Components\Tabs\Tab::make('ফেসবুক পিক্সেল ও CAPI')
