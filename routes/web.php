@@ -3,6 +3,7 @@
 use App\Http\Controllers\Admin\InvoiceController;
 use App\Http\Controllers\CartController;
 use App\Http\Controllers\CheckoutController;
+use App\Http\Controllers\LandingPageController;
 use App\Http\Controllers\CustomerAuthController;
 use App\Http\Controllers\HomeController;
 use App\Http\Controllers\OrderTrackingController;
@@ -25,6 +26,8 @@ Route::delete('/cart/remove/{productId}', [CartController::class, 'remove'])->na
 Route::get('/checkout', [CheckoutController::class, 'index'])->name('checkout.index');
 Route::post('/checkout', [CheckoutController::class, 'store'])->name('checkout.store');
 Route::post('/checkout/capture', [CheckoutController::class, 'capture'])->middleware('throttle:40,1')->name('checkout.capture');
+Route::get('/lp/{slug}', [LandingPageController::class, 'show'])->name('landing.show');
+Route::post('/lp/{slug}/order', [LandingPageController::class, 'order'])->middleware('throttle:10,1')->name('landing.order');
 Route::get('/checkout/success/{orderNumber}', [CheckoutController::class, 'success'])->name('checkout.success');
 
 // কাস্টমার একাউন্ট (ফোন + পাসওয়ার্ড)
