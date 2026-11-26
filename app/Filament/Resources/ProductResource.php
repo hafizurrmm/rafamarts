@@ -180,9 +180,8 @@ class ProductResource extends Resource
             ->modalWidth('5xl')
             ->modalSubmitActionLabel('বাছাই করুন')
             ->form([
-                $multiple
-                    ? Forms\Components\CheckboxList::make('picked')->label('')->options(fn () => static::libraryOptions())->allowHtml()->columns(5)->gridDirection('row')
-                    : Forms\Components\Radio::make('picked')->label('')->options(fn () => static::libraryOptions())->allowHtml()->columns(5),
+                Forms\Components\CheckboxList::make('picked')->label('')->options(fn () => static::libraryOptions())->allowHtml()->columns(5)->gridDirection('row')
+                    ->helperText($multiple ? 'এক বা একাধিক ছবিতে টিক দিন।' : 'একটি ছবিতে টিক দিন (একাধিক দিলে প্রথমটি নেওয়া হবে)।'),
             ])
             ->action(function (array $data, Forms\Set $set, Forms\Get $get) use ($field, $multiple) {
                 $picked = $data['picked'] ?? null;
@@ -193,7 +192,7 @@ class ProductResource extends Resource
                     $cur = array_values((array) ($get($field) ?? []));
                     $set($field, array_values(array_unique(array_merge($cur, (array) $picked))));
                 } else {
-                    $set($field, [(string) $picked]);
+                    $set($field, [(string) (is_array($picked) ? reset($picked) : $picked)]);
                 }
             });
     }
