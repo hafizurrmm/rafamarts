@@ -11,6 +11,8 @@ class OrderStatusStats extends Widget
 {
     protected static bool $isDiscovered = false; // ড্যাশবোর্ডে নয়, শুধু অর্ডার পেজে
 
+    protected static ?int $sort = -7;
+
     protected static string $view = 'filament.widgets.order-status-stats';
 
     protected int | string | array $columnSpan = 'full';

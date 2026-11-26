@@ -71,6 +71,9 @@ class AdminPanelProvider extends PanelProvider
             ])
             ->discoverWidgets(in: app_path('Filament/Widgets'), for: 'App\\Filament\\Widgets')
             ->widgets([
+                \App\Filament\Widgets\WelcomeBanner::class,
+                \App\Filament\Widgets\MonthKpis::class,
+                \App\Filament\Widgets\OrderStatusStats::class,
                 StatsOverview::class,
                 RecentOrdersTable::class,
                 SalesChart::class,

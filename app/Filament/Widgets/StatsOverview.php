@@ -9,16 +9,15 @@ use Filament\Widgets\StatsOverviewWidget\Stat;
 
 class StatsOverview extends BaseWidget
 {
-    protected static ?int $sort = 1;
+    protected static ?int $sort = -6;
+
+    protected function getColumns(): int
+    {
+        return 5;
+    }
 
     protected function getStats(): array
     {
-        // ক্যাশ অন ডেলিভারি: এই মাসের সব অর্ডার (বাতিল/রিটার্ন বাদে) ধরা হয়, শুধু "paid" না —
-        // কারণ COD-তে অর্ডার Completed না হওয়া পর্যন্ত paid হয় না, ফলে সংখ্যা সব সময় ০ দেখাত।
-        $todaySales = Order::whereBetween('created_at', [now()->startOfMonth(), now()->endOfMonth()])
-            ->whereNotIn('status', ['cancelled', 'returned'])
-            ->sum('total_amount');
-
         $totalOrders = Order::count();
 
         $pendingOrders = Order::where('status', 'pending')->count();
@@ -33,11 +32,6 @@ class StatsOverview extends BaseWidget
         $stockoutCount = Product::where('is_active', true)->where('stock', '<=', 0)->count();
 
         return [
-            Stat::make('এই মাসের মোট বিক্রি', '৳ ' . number_format($todaySales, 0))
-                ->description('বাতিল ও রিটার্ন বাদে, ' . now()->format('F Y'))
-                ->descriptionIcon('heroicon-m-banknotes')
-                ->color('success'),
-
             Stat::make('সব অর্ডার', $totalOrders)
                 ->description('মোট অর্ডার সংখ্যা')
                 ->descriptionIcon('heroicon-m-shopping-cart')

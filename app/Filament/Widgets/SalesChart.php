@@ -2,39 +2,64 @@
 
 namespace App\Filament\Widgets;
 
-use App\Models\Order;
+use App\Support\SalesStats;
 use Filament\Widgets\ChartWidget;
 
 class SalesChart extends ChartWidget
 {
-    protected static ?string $heading = 'সেলস ও প্রফিট গ্রাফ (গত ৭ দিন)';
+    protected static ?string $heading = 'বিক্রি — গত ১৪ দিন';
 
-    protected static ?int $sort = 5;
+    protected static ?string $description = 'বার = বিক্রি (৳), লাইন = অর্ডার সংখ্যা (বাতিল ও রিটার্ন বাদে)';
+
+    protected static ?int $sort = -8;
+
+    protected int | string | array $columnSpan = 'full';
+
+    protected static ?string $maxHeight = '300px';
 
     protected function getData(): array
     {
-        $days = collect(range(6, 0))->map(fn ($i) => now()->subDays($i));
-
-        $sales = $days->map(function ($day) {
-            return Order::whereDate('created_at', $day)->sum('total_amount');
-        });
+        $d = collect(SalesStats::days(14));
 
         return [
             'datasets' => [
                 [
-                    'label' => 'মোট বিক্রি (৳)',
-                    'data' => $sales->toArray(),
-                    'borderColor' => '#16a34a',
-                    'backgroundColor' => 'rgba(22, 163, 74, 0.1)',
-                    'fill' => true,
+                    'type' => 'bar',
+                    'label' => 'বিক্রি (৳)',
+                    'data' => $d->pluck('revenue')->all(),
+                    'backgroundColor' => '#0a74b8',
+                    'borderRadius' => 6,
+                    'yAxisID' => 'y',
+                    'order' => 2,
+                ],
+                [
+                    'type' => 'line',
+                    'label' => 'অর্ডার',
+                    'data' => $d->pluck('orders')->all(),
+                    'borderColor' => '#ff9f1c',
+                    'backgroundColor' => '#ff9f1c',
+                    'tension' => 0.35,
+                    'pointRadius' => 3,
+                    'yAxisID' => 'y1',
+                    'order' => 1,
                 ],
             ],
-            'labels' => $days->map(fn ($d) => $d->format('d M'))->toArray(),
+            'labels' => $d->pluck('label')->all(),
+        ];
+    }
+
+    protected function getOptions(): array
+    {
+        return [
+            'scales' => [
+                'y' => ['beginAtZero' => true, 'position' => 'left'],
+                'y1' => ['beginAtZero' => true, 'position' => 'right', 'grid' => ['drawOnChartArea' => false], 'ticks' => ['precision' => 0]],
+            ],
         ];
     }
 
     protected function getType(): string
     {
-        return 'line';
+        return 'bar';
     }
 }
