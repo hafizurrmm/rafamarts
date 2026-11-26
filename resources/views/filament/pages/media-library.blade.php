@@ -39,10 +39,10 @@
         @else
             <div class="ml-grid">
                 @foreach($lib['items'] as $f)
-                    <div class="ml-item" wire:key="m-{{ $f['name'] }}">
+                    <div class="ml-item" wire:key="m-{{ $f['path'] }}">
                         <a href="{{ $f['url'] }}" target="_blank" rel="noopener"><img class="ml-thumb" src="{{ $f['url'] }}" alt="{{ $f['name'] }}" loading="lazy"></a>
                         <div class="ml-meta">
-                            <div class="ml-name" title="{{ $f['name'] }}">{{ $f['name'] }}</div>
+                            <div class="ml-name" title="{{ $f['path'] }}">{{ $f['name'] }}</div>
                             <div class="ml-sub">{{ number_format($f['size'] / 1024, 0) }} KB · {{ \Carbon\Carbon::createFromTimestamp($f['time'])->format('d M Y') }}</div>
                         </div>
                         <div class="ml-actions" x-data="{ ok: false }">

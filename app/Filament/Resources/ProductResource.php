@@ -170,7 +170,7 @@ class ProductResource extends Resource
         ];
     }
 
-    /** মিডিয়া লাইব্রেরি থেকে আগে আপলোড করা ছবি বাছাইয়ের অ্যাকশন */
+    /** মিডিয়া লাইব্রেরি (সব আপলোড করা ছবি) থেকে আগে আপলোড করা ছবি বাছাইয়ের অ্যাকশন */
     protected static function libraryAction(string $field, bool $multiple): Forms\Components\Actions\Action
     {
         return Forms\Components\Actions\Action::make('pick_' . $field)
@@ -201,8 +201,8 @@ class ProductResource extends Resource
     protected static function libraryOptions(): array
     {
         $disk = \Illuminate\Support\Facades\Storage::disk('public');
-        $files = collect($disk->files('media'))
-            ->filter(fn ($f) => preg_match('/\.(jpe?g|png|webp|gif)$/i', $f))
+        $files = collect($disk->allFiles())
+            ->filter(fn ($f) => ! str_starts_with($f, 'livewire-tmp/') && preg_match('/\.(jpe?g|png|webp|gif)$/i', $f))
             ->sortByDesc(fn ($f) => $disk->lastModified($f))
             ->take(60);
 

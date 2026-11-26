@@ -109,32 +109,72 @@
                 @endif
             </div>
 
-            <div class="mb-4">
-                <span class="text-2xl text-red-600 font-bold">৳ {{ number_format($product->price, 0) }}</span>
+            @php
+                $save = ($product->compare_price && $product->compare_price > $product->price)
+                    ? (int) round((($product->compare_price - $product->price) / $product->compare_price) * 100) : 0;
+                $waLink = \App\Support\PageBlocks::whatsappLink(\App\Models\Setting::get('whatsapp_number'));
+                $waText = rawurlencode('আমি এই প্রোডাক্টটি অর্ডার করতে চাই: ' . $product->name . ' — ' . url()->current());
+                $showCart = \App\Support\Ui::on('cart');
+            @endphp
+
+            <div class="flex items-center flex-wrap gap-3 pb-4 mb-4 border-b">
+                <span class="text-3xl font-bold" style="color:#f58a1f">৳{{ number_format($product->price, 2) }}</span>
                 @if($product->compare_price)
-                    <span class="text-gray-400 line-through ml-2">৳ {{ number_format($product->compare_price, 0) }}</span>
+                    <span class="text-xl text-gray-400 line-through">৳{{ number_format($product->compare_price, 2) }}</span>
+                @endif
+                @if($save > 0)
+                    <span class="text-xs font-bold text-white px-2 py-0.5 rounded" style="background:#2bb673">Save {{ $save }}%</span>
                 @endif
             </div>
 
-            {{-- "অর্ডার করুন" সরাসরি চেকআউটে নিয়ে যায় (buy_now=1) --}}
-            <form action="{{ route('cart.add', $product) }}" method="POST" class="mb-3">
+            <form action="{{ route('cart.add', $product) }}" method="POST" id="buy-form">
                 @csrf
-                <input type="hidden" name="quantity" value="1">
-                <input type="hidden" name="buy_now" value="1">
-                <button type="submit" class="brand-bg w-full text-white font-semibold px-6 py-2.5 rounded hover:opacity-90 transition">
-                    🛍️ অর্ডার করুন
-                </button>
+                <div class="flex items-center gap-4 mb-4">
+                    <span class="text-sm">Quantity:</span>
+                    <div class="inline-flex items-center border rounded-md px-2 py-1.5 gap-1">
+                        <button type="button" id="q-minus" class="w-7 h-7 rounded-full bg-gray-100 hover:bg-gray-200 text-lg leading-none" aria-label="কমান">−</button>
+                        <input type="number" name="quantity" id="q-input" value="1" min="1" max="{{ max(1, (int) $product->stock ?: 99) }}" class="w-14 text-center border-0 focus:ring-0 focus:outline-none font-semibold">
+                        <button type="button" id="q-plus" class="w-7 h-7 rounded-full bg-gray-100 hover:bg-gray-200 text-lg leading-none" aria-label="বাড়ান">+</button>
+                    </div>
+                </div>
+
+                <div class="grid grid-cols-2 gap-3 mb-3">
+                    @if($showCart)
+                        <button type="submit" class="flex items-center justify-center gap-2 text-white font-semibold py-2.5 rounded-md hover:opacity-90 transition" style="background:#f58a1f">🛍 ADD TO CART</button>
+                    @endif
+                    <button type="submit" name="buy_now" value="1" class="{{ $showCart ? '' : 'col-span-2' }} text-white font-semibold py-2.5 rounded-md hover:opacity-90 transition" style="background:#06201d">BUY NOW</button>
+                </div>
             </form>
 
-            @if($hotline)
-                <a href="tel:{{ preg_replace('/[^0-9+]/', '', $hotline) }}"
-                   class="flex items-center justify-center gap-2 w-full text-center text-white font-semibold px-6 py-2.5 rounded hover:opacity-90 transition mb-4"
-                   style="background-color:#000">
-                    <span>অর্ডার করতে কল করুন</span>
-                    <svg xmlns="http://www.w3.org/2000/svg" class="w-5 h-5 brand-text shrink-0" fill="currentColor" viewBox="0 0 24 24" aria-hidden="true"><path d="M6.62 10.79a15.05 15.05 0 0 0 6.59 6.59l2.2-2.2a1 1 0 0 1 1.02-.24c1.12.37 2.33.57 3.57.57a1 1 0 0 1 1 1V20a1 1 0 0 1-1 1C10.61 21 3 13.39 3 4a1 1 0 0 1 1-1h3.5a1 1 0 0 1 1 1c0 1.25.2 2.45.57 3.57a1 1 0 0 1-.25 1.02l-2.2 2.2z"/></svg>
-                    <span>{{ $hotline }}</span>
-                </a>
+            @if($waLink || $hotline)
+                <div class="grid grid-cols-2 gap-3 mb-4">
+                    @if($waLink)
+                        <a href="{{ $waLink }}?text={{ $waText }}" target="_blank" rel="noopener"
+                           class="{{ $hotline ? '' : 'col-span-2' }} flex items-center justify-center gap-2 text-white font-semibold py-2.5 rounded-md hover:opacity-90 transition" style="background:#1fae63">
+                            <svg class="w-5 h-5" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M20.5 3.5A11 11 0 0 0 3.2 17.3L2 22l4.8-1.2A11 11 0 1 0 20.5 3.5zM12 20a9 9 0 0 1-4.6-1.3l-.3-.2-2.8.7.8-2.7-.2-.3A9 9 0 1 1 12 20zm5-6.7c-.3-.1-1.6-.8-1.9-.9s-.5-.1-.7.1-.8.9-.9 1.1-.3.2-.6.1a7.4 7.4 0 0 1-3.7-3.2c-.3-.5.3-.5.8-1.5.1-.2 0-.4 0-.5l-.9-2c-.2-.5-.4-.4-.6-.4h-.5a1 1 0 0 0-.7.3 3 3 0 0 0-.9 2.2 5.2 5.2 0 0 0 1.1 2.800 11.900 11.900 0 0 0 4.600 4.100c1.700.7 2.400.800 3.200.700.500-.1 1.600-.6 1.800-1.300s.2-1.200.2-1.300-.2-.2-.5-.3z"/></svg>
+                            Order On WhatsApp
+                        </a>
+                    @endif
+                    @if($hotline)
+                        <a href="tel:{{ preg_replace('/[^0-9+]/', '', $hotline) }}"
+                           class="{{ $waLink ? '' : 'col-span-2' }} flex items-center justify-center gap-2 text-white font-semibold py-2.5 rounded-md hover:opacity-90 transition" style="background:#1f3a8a">
+                            <svg class="w-5 h-5" fill="currentColor" viewBox="0 0 24 24" aria-hidden="true"><path d="M6.62 10.79a15.05 15.05 0 0 0 6.59 6.59l2.2-2.2a1 1 0 0 1 1.02-.24c1.12.37 2.33.57 3.57.57a1 1 0 0 1 1 1V20a1 1 0 0 1-1 1A17 17 0 0 1 3 4a1 1 0 0 1 1-1h3.5a1 1 0 0 1 1 1c0 1.25.2 2.45.57 3.57a1 1 0 0 1-.25 1.02l-2.2 2.2z"/></svg>
+                            Call For Order
+                        </a>
+                    @endif
+                </div>
             @endif
+
+            <script>
+            (function () {
+                var i = document.getElementById('q-input');
+                var max = parseInt(i.getAttribute('max'), 10) || 99;
+                function set(v) { i.value = Math.min(max, Math.max(1, v || 1)); }
+                document.getElementById('q-minus').addEventListener('click', function () { set((parseInt(i.value, 10) || 1) - 1); });
+                document.getElementById('q-plus').addEventListener('click', function () { set((parseInt(i.value, 10) || 1) + 1); });
+                i.addEventListener('change', function () { set(parseInt(i.value, 10)); });
+            })();
+            </script>
 
             @if($product->sku)
                 <p class="mb-4 text-sm"><span class="font-bold">Code :</span> {{ $product->sku }}</p>

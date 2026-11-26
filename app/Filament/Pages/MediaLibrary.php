@@ -18,6 +18,8 @@ class MediaLibrary extends Page implements HasForms
 
     private const DIR = 'media';
 
+    private const IMG = '/\.(jpe?g|png|webp|gif|svg)$/i';
+
     protected static ?string $navigationIcon = 'heroicon-o-photo';
 
     protected static ?string $navigationLabel = 'মিডিয়া';
@@ -81,8 +83,8 @@ class MediaLibrary extends Page implements HasForms
 
     public function delete(string $path): void
     {
-        // শুধু media ফোল্ডারের ভেতরের ফাইল মোছা যাবে
-        if (! str_starts_with($path, self::DIR . '/') || str_contains($path, '..')) {
+        // শুধু ছবি-ফাইল মোছা যাবে (লাইব্রেরির বাইরের/টেম্প ফোল্ডার নয়)
+        if (str_contains($path, '..') || str_starts_with($path, 'livewire-tmp/') || ! preg_match(self::IMG, $path)) {
             return;
         }
 
@@ -102,7 +104,10 @@ class MediaLibrary extends Page implements HasForms
         $disk = Storage::disk('public');
         $rows = [];
 
-        foreach ($disk->files(self::DIR) as $path) {
+        foreach ($disk->allFiles() as $path) {
+            if (str_starts_with($path, 'livewire-tmp/') || ! preg_match(self::IMG, $path)) {
+                continue;
+            }
             $name = basename($path);
             if (str_starts_with($name, '.')) {
                 continue;
@@ -113,6 +118,7 @@ class MediaLibrary extends Page implements HasForms
             $rows[] = [
                 'path' => $path,
                 'name' => $name,
+                'folder' => str_contains($path, '/') ? strstr($path, '/', true) : '',
                 'url' => url('storage/' . $path),
                 'size' => $disk->size($path),
                 'time' => $disk->lastModified($path),
