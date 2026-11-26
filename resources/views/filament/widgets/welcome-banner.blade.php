@@ -11,7 +11,7 @@
             </div>
             <div style="display:flex;gap:8px;flex-wrap:wrap">
                 <a href="{{ $ordersUrl }}" style="background:rgba(255,255,255,.16);border:1px solid rgba(255,255,255,.3);color:#fff;padding:8px 14px;border-radius:8px;font-size:13px;font-weight:600;text-decoration:none">সব অর্ডার</a>
-                <a href="{{ $newOrdersUrl }}" style="background:#fff;color:#0a4fa6;padding:8px 14px;border-radius:8px;font-size:13px;font-weight:700;text-decoration:none">+ নতুন অর্ডার</a>
+                <a href="{{ $newProductUrl }}" style="background:#fff;color:#0a4fa6;padding:8px 14px;border-radius:8px;font-size:13px;font-weight:700;text-decoration:none">+ নতুন প্রোডাক্ট</a>
             </div>
         </div>
         <div style="display:flex;gap:36px;flex-wrap:wrap;margin-top:20px">

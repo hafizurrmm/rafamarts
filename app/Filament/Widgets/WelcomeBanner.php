@@ -30,7 +30,7 @@ class WelcomeBanner extends Widget
             'todaySales' => SalesStats::taka($today['revenue']),
             'pending' => Order::where('status', 'pending')->count(),
             'pct' => SalesStats::pct($month['revenue'], $prev['revenue']),
-            'newOrdersUrl' => \App\Filament\Resources\OrderResource::getUrl('create'),
+            'newProductUrl' => \App\Filament\Resources\ProductResource::getUrl('create'),
             'ordersUrl' => \App\Filament\Resources\OrderResource::getUrl('index'),
         ];
     }
