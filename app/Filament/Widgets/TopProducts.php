@@ -11,7 +11,7 @@ class TopProducts extends Widget
 
     protected static string $view = 'filament.widgets.top-products';
 
-    protected int | string | array $columnSpan = ['default' => 'full', 'lg' => 2];
+    protected int | string | array $columnSpan = 1;
 
     protected function getViewData(): array
     {

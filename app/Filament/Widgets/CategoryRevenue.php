@@ -11,7 +11,7 @@ class CategoryRevenue extends Widget
 
     protected static string $view = 'filament.widgets.category-revenue';
 
-    protected int | string | array $columnSpan = ['default' => 'full', 'lg' => 1];
+    protected int | string | array $columnSpan = 1;
 
     protected function getViewData(): array
     {

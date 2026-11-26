@@ -19,7 +19,6 @@ class WelcomeBanner extends Widget
         $today = SalesStats::today();
         $month = SalesStats::month();
         $prev = SalesStats::lastMonthSamePeriod();
-        $pf = SalesStats::profit(now()->startOfDay(), now()->endOfDay());
         $hour = (int) now()->format('G');
 
         return [
@@ -29,7 +28,6 @@ class WelcomeBanner extends Widget
             'date' => now()->translatedFormat('l, d F Y'),
             'todayOrders' => $today['orders'],
             'todaySales' => SalesStats::taka($today['revenue']),
-            'todayProfit' => SalesStats::taka($pf['net']),
             'pending' => Order::where('status', 'pending')->count(),
             'pct' => SalesStats::pct($month['revenue'], $prev['revenue']),
             'newProductUrl' => \App\Filament\Resources\ProductResource::getUrl('create'),
